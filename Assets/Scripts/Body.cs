@@ -44,14 +44,11 @@ public class Body : MonoBehaviour {
 		Vector2 newTile = new Vector2(transform.position.x + direction.x, transform.position.z + direction.y);
 
 		// test if location is occuplied
-		RaycastHit hit;
-		if (Physics.Raycast (new Vector3 (newTile.x, 5f, newTile.y), Vector3.down, out hit, 5f)) {
-			if (hit.collider.gameObject.layer == 8) {
-				if (weapon != null) {
-					weapon.Attack (direction, new Vector2(transform.position.x, transform.position.z));
-				}
-				return;
+		if (CharacterAtPosition (newTile)) {
+			if (weapon != null) {
+				weapon.Attack (direction, new Vector2(transform.position.x, transform.position.z));
 			}
+			return;
 		}
 
 		if (!tm.GetTileAtPosition(newTile)) {
@@ -93,6 +90,19 @@ public class Body : MonoBehaviour {
 				location.EnemyDeath (GetComponent<Body> ());
 				gm.EnemyDeath (GetComponent<Body> ());
 			}
+		}
+	}
+
+	public bool CharacterAtPosition (Vector2 position) {
+		RaycastHit hit;
+		if (Physics.Raycast (new Vector3 (position.x, 5f, position.y), Vector3.down, out hit, 5f)) {
+			if (hit.collider.gameObject.layer == 8) {
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			return false;
 		}
 	}
 }

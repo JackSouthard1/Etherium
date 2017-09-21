@@ -57,6 +57,6 @@ MonoBehaviour:
   resourceCount: 3
   enemyPrefab: {fileID: 1882779021027994, guid: fcfa6dbcf5a80476397530d8a39f4f70,
     type: 2}
-  enemyCount: 2
+  enemyCount: 3
   enemies: []
   index: {x: 0, y: 0}
