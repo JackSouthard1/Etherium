@@ -11,7 +11,6 @@ public class Island : MonoBehaviour {
 
 	[Space(10)]
 	[Header("Resouces")]
-	public GameObject resourcePrefab;
 	public int resourceCount;
 
 	public List<Resource> resources = new List<Resource>();
@@ -32,6 +31,7 @@ public class Island : MonoBehaviour {
 
 	void Start () {
 		tm = GameObject.Find ("Terrain").GetComponent<TerrainManager> ();
+
 		GenerateTiles ();
 		SpawnResources ();
 		SpawnEnemies ();
@@ -99,14 +99,9 @@ public class Island : MonoBehaviour {
 		}
 
 		for (int i = 0; i < spawnIndex.Length; i++) {
-			GameObject resourceGO = Instantiate(resourcePrefab, transform);
 			TerrainManager.ResourceInfo info = tm.resourceInfos [Random.Range (0, tm.resourceInfos.Length)];
-			Resource resource = new Resource (info.type, resourceGO);
-
-			resource.resourceGO.GetComponentInChildren<SpriteRenderer> ().sprite = info.sprite;
-			resource.resourceGO.transform.position = tiles[spawnIndex[i]].tile.transform.position;
+			Resource resource = tm.SpawnResource(position: tiles[spawnIndex[i]].tile.transform.position, info: info, parent: transform);
 			resources.Add (resource);
-			tm.resources.Add (new Vector2 (tiles [spawnIndex [i]].tile.transform.position.x, tiles [spawnIndex [i]].tile.transform.position.z), resource);
 		}
 	}
 
