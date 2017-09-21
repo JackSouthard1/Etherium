@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour {
 	private Body player;
-	private List<Body> enemies = new List<Body>();
+	public List<Body> enemies = new List<Body>();
 	private int enemiesMoving = 0;
 	private TerrainManager tm;
 
@@ -50,5 +50,9 @@ public class GameManager : MonoBehaviour {
 			enemiesMoving = 0;
 			EnemyTurnDone ();
 		}
+	}
+
+	public void EnemyDeath (Body enemy) {
+		enemies.Remove (enemy);
 	}
 }

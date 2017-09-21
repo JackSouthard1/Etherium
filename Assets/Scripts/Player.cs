@@ -4,10 +4,12 @@ using UnityEngine;
 
 public class Player : MonoBehaviour {
 	public List<Resource> inventory = new List<Resource>();
+	Body body;
 	TerrainManager tm;
 
 	void Start () {
 		tm = GameObject.Find ("Terrain").GetComponent<TerrainManager> ();
+		body = GetComponent<Body> ();
 	}
 
 	void Update () {
@@ -27,21 +29,38 @@ public class Player : MonoBehaviour {
 	}
 
 	public void CollectResource (Resource resource) {
-		Resource newResource = new Resource (resource.info, null);
-		inventory.Add (newResource);
-//		print ("Before: " + tm.resources.Count);
+		int stackCount = resource.resourceGO.Count;
+		for (int i = 0; i < stackCount; i++) {
+			Resource newResource = new Resource (resource.info, null, null);
+			inventory.Add (newResource);
+		}
+			
+		resource.island.resources.Remove (resource);
+	
 		tm.resources.Remove (resource.position);
-//		print ("After: " + tm.resources.Count);
-		Destroy (resource.resourceGO);
+		for (int i = 0; i < stackCount; i++) {
+			Destroy (resource.resourceGO [i]);
+		}
 	}
 
 	public void DropResource (int index) {
 		Vector2 posV2 = new Vector2 (transform.position.x, transform.position.z);
-		if (tm.GetResourceAtPosition (posV2) != null || tm.GetTileAtPosition(posV2) == null) {
+		if (tm.GetTileAtPosition(posV2) == null) {
 			return;
 		}
 
-		tm.SpawnResource (transform.position, inventory [index].info, tm.transform);
-		inventory.RemoveAt (index);
+		TerrainManager.ResourceInfo resourceInfoToSpawn = inventory [index].info;
+
+		if (tm.GetResourceAtPosition (posV2) != null) {
+			Resource curResource = tm.GetResourceAtPosition (posV2);
+			if (curResource.info.type == resourceInfoToSpawn.type) {
+				tm.SpawnResource (transform.position, resourceInfoToSpawn, body.location);
+				inventory.RemoveAt (index);
+			}
+		} else {
+//			print((tm.SpawnResource (transform.position, resourceInfoToSpawn, tm.transform, body.location)).island);
+			tm.SpawnResource (transform.position, resourceInfoToSpawn, body.location);
+			inventory.RemoveAt (index);
+		}
 	}
 }

@@ -15,6 +15,7 @@ public class TerrainManager : MonoBehaviour {
 	[Header("Resources")]
 	public ResourceInfo[] resourceInfos;
 	public GameObject resourcePrefab;
+	public float stackHeight;
 
 	[Space(10)]
 	[Header("Layers")]
@@ -31,7 +32,7 @@ public class TerrainManager : MonoBehaviour {
 	[HideInInspector]
 	public Dictionary<Vector2, Tile> tiles = new Dictionary<Vector2, Tile> ();
 
-//	[HideInInspector]
+	[HideInInspector]
 	public Dictionary<Vector2, Resource> resources = new Dictionary<Vector2, Resource> ();
 
 	public void TurnEnd () {
@@ -63,21 +64,33 @@ public class TerrainManager : MonoBehaviour {
 		}
 	}
 
-	public Resource SpawnResource (Vector3 position, ResourceInfo info, Transform parent) {
+	public Resource SpawnResource (Vector3 position, ResourceInfo info, Island island) {
 		Vector2 posV2 = new Vector2 (position.x, position.z);
-		if (resources.ContainsKey(posV2)) {
-			print ("Already resouce on tile");
-			return null;
+		if (resources.ContainsKey (posV2)) {
+			Resource curResource = resources [posV2];
+			if (curResource.info.type == info.type) {
+				GameObject resourceGO = Instantiate (resourcePrefab, island.transform);
+				resourceGO.transform.position = position;
+				resourceGO.gameObject.GetComponentInChildren<SpriteRenderer> ().sprite = info.sprite;
+
+				curResource.resourceGO.Add (resourceGO);
+				resourceGO.transform.Translate (Vector3.up * stackHeight * (curResource.resourceGO.Count - 1));
+
+				return curResource;
+			} else {
+				return null;
+			}
+		} else {
+			GameObject resourceGO = Instantiate (resourcePrefab, island.transform);
+			resourceGO.transform.position = position;
+			Resource resource = new Resource (info, resourceGO, island);
+
+			resourceGO.GetComponentInChildren<SpriteRenderer> ().sprite = info.sprite;
+			resources.Add (posV2, resource);
+			island.resources.Add (resource);
+
+			return resource;
 		}
-
-		GameObject resourceGO = Instantiate(resourcePrefab, transform);
-		resourceGO.transform.position = position;
-		Resource resource = new Resource (info, resourceGO);
-
-		resourceGO.GetComponentInChildren<SpriteRenderer> ().sprite = info.sprite;
-		resources.Add (posV2, resource);
-
-		return resource;
 	}
 
 	public GameObject GetTileAtPosition (Vector2 position) {

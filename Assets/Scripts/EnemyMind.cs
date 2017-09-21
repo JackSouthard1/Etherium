@@ -12,15 +12,15 @@ public class EnemyMind : Mind {
 	public override void TurnStart () {
 		if (active) {
 			if (target.position.x > transform.position.x) {
-				base.RelayMove (Vector2.right);
+				base.RelayAction (Vector2.right);
 			} else if (target.position.x < transform.position.x) {
-				base.RelayMove (Vector2.left);
+				base.RelayAction (Vector2.left);
 			} else if (target.position.z > transform.position.z) {
-				base.RelayMove (Vector2.up);
+				base.RelayAction (Vector2.up);
 			} else if (target.position.z < transform.position.z) {
-				base.RelayMove (Vector2.down);
+				base.RelayAction (Vector2.down);
 			} else {
-				base.RelayMove (Vector2.zero);
+				base.RelayAction (Vector2.zero);
 			}
 		} else {
 			base.Idle ();

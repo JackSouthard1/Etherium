@@ -51,6 +51,7 @@ public class Island : MonoBehaviour {
 
 	public void EnemyDeath (Body enemy) {
 		enemies.Remove (enemy);
+
 		if (enemies.Count <= 0) {
 			Civilize ();
 		}
@@ -100,8 +101,7 @@ public class Island : MonoBehaviour {
 
 		for (int i = 0; i < spawnIndex.Length; i++) {
 			TerrainManager.ResourceInfo info = tm.resourceInfos [Random.Range (0, tm.resourceInfos.Length)];
-			Resource resource = tm.SpawnResource(position: tiles[spawnIndex[i]].tile.transform.position, info: info, parent: transform);
-			resources.Add (resource);
+			Resource resource = tm.SpawnResource(tiles[spawnIndex[i]].tile.transform.position, info, GetComponent<Island>());
 		}
 	}
 
@@ -116,10 +116,25 @@ public class Island : MonoBehaviour {
 			tm.tiles.Remove (new Vector2(tile.transform.position.x, tile.transform.position.z));
 		}
 
+		foreach (Resource resouce in resources) {
+			List<GameObject> resourceGOs = resouce.resourceGO;
+
+			for (int k = 0; k < resourceGOs.Count; k++) {
+				float height = tm.stackHeight * k;
+				resourceGOs[k].transform.position = new Vector3 (resourceGOs[k].transform.position.x, height, resourceGOs[k].transform.position.z);
+			}
+			tm.resources.Remove (resouce.position);
+		}
+
 		transform.position = (transform.position / tm.spacing) * size;
 
 		for (int i = 0; i < tiles.Length; i++) {
 			tm.tiles.Add (new Vector2 (tiles [i].tile.transform.position.x, tiles [i].tile.transform.position.z), tiles [i]);
+		}
+
+		for (int i = 0; i < resources.Count; i++) {
+			resources[i].UpdatePosition();
+			tm.resources.Add (resources[i].position, resources [i]);
 		}
 
 		buildable = true;
