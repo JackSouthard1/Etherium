@@ -12,6 +12,10 @@ public class TerrainManager : MonoBehaviour {
 	public Island[] islands;
 
 	[Space(10)]
+	[Header("Resources")]
+	public ResourceInfo[] resourceInfos;
+
+	[Space(10)]
 	[Header("Layers")]
 	public Layer[] layers;
 
@@ -25,6 +29,9 @@ public class TerrainManager : MonoBehaviour {
 
 	[HideInInspector]
 	public Dictionary<Vector2, Tile> tiles = new Dictionary<Vector2, Tile> ();
+
+	[HideInInspector]
+	public Dictionary<Vector2, Resource> resources = new Dictionary<Vector2, Resource> ();
 
 	public void TurnEnd () {
 		for (int i = 0; i < buses.Count; i++) {
@@ -63,6 +70,14 @@ public class TerrainManager : MonoBehaviour {
 		}
 	}
 
+	public Resource GetResourceAtPosition (Vector2 position) {
+		if (resources.ContainsKey (position)) {
+			return resources [position];
+		} else {
+			return null;
+		}
+	}
+
 	public void CreateBus (Vector3 position) {
 		GameObject bus = (GameObject)Instantiate (busPrefab, transform);
 		bus.transform.position = position;
@@ -76,6 +91,12 @@ public class TerrainManager : MonoBehaviour {
 	[System.Serializable]
 	public struct Layer {
 		public Color color;
+	}
+
+	[System.Serializable]
+	public struct ResourceInfo {
+		public Sprite sprite;
+		public Resource.ResourceType type;
 	}
 
 	public struct Tile {

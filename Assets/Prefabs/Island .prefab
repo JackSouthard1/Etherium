@@ -9,30 +9,30 @@ Prefab:
     m_Modifications: []
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
-  m_RootGameObject: {fileID: 1111769769398402}
+  m_RootGameObject: {fileID: 1957064115911918}
   m_IsPrefabParent: 1
---- !u!1 &1111769769398402
+--- !u!1 &1957064115911918
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 5
   m_Component:
-  - component: {fileID: 4035205832040372}
-  - component: {fileID: 114222592958776046}
+  - component: {fileID: 4012527952835544}
+  - component: {fileID: 114864451118865480}
   m_Layer: 0
-  m_Name: PlayerMind
+  m_Name: 'Island '
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4035205832040372
+--- !u!4 &4012527952835544
 Transform:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1111769769398402}
+  m_GameObject: {fileID: 1957064115911918}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -40,15 +40,26 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &114222592958776046
+--- !u!114 &114864451118865480
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1111769769398402}
+  m_GameObject: {fileID: 1957064115911918}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b6f1c612f4feb43839da0c1beae42257, type: 3}
+  m_Script: {fileID: 11500000, guid: ff95ce2566b464ab382ff5eeff016208, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  body: {fileID: 0}
+  tilePrefab: {fileID: 1583097085892808, guid: 8ae5ea8a9b86b4cb3acb25054f4e7399, type: 2}
+  heightPerLayer: 0.2
+  size: 7
+  resourcePrefab: {fileID: 1957892413181948, guid: 09a9dca98a4b3443c88611ce76cd310d,
+    type: 2}
+  resourceCount: 3
+  resources: []
+  enemyPrefab: {fileID: 1882779021027994, guid: fcfa6dbcf5a80476397530d8a39f4f70,
+    type: 2}
+  enemyCount: 2
+  enemies: []
+  index: {x: 0, y: 0}

@@ -20,6 +20,10 @@ public class PlayerMind : Mind {
 			if (Input.GetKeyDown (KeyCode.LeftArrow)) {
 				base.RelayMove (Vector2.left);
 			}
+
+			if (Input.GetKeyDown (KeyCode.Space)) {
+				base.Idle();
+			}
 		}
 	}
 }

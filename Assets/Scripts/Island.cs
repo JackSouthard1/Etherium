@@ -10,6 +10,13 @@ public class Island : MonoBehaviour {
 	public int size;
 
 	[Space(10)]
+	[Header("Resouces")]
+	public GameObject resourcePrefab;
+	public int resourceCount;
+
+	public List<Resource> resources = new List<Resource>();
+
+	[Space(10)]
 	[Header("Enemies")]
 	public GameObject enemyPrefab;
 	public int enemyCount;
@@ -26,13 +33,8 @@ public class Island : MonoBehaviour {
 	void Start () {
 		tm = GameObject.Find ("Terrain").GetComponent<TerrainManager> ();
 		GenerateTiles ();
+		SpawnResources ();
 		SpawnEnemies ();
-	}
-
-	void Update () {
-		if (Input.GetKeyDown (KeyCode.Space)) {
-			Civilize ();
-		}
 	}
 
 	public void PlayerEnterIsland () {
@@ -44,6 +46,13 @@ public class Island : MonoBehaviour {
 	public void PlayerExitIsland () {
 		for (int i = 0; i < enemies.Count; i++) {
 			enemies [i].GetComponentInChildren<Mind> ().active = false;
+		}
+	}
+
+	public void EnemyDeath (Body enemy) {
+		enemies.Remove (enemy);
+		if (enemies.Count <= 0) {
+			Civilize ();
 		}
 	}
 
@@ -80,6 +89,24 @@ public class Island : MonoBehaviour {
 			GameObject enemy = (GameObject)Instantiate(enemyPrefab, transform);
 			enemy.transform.position = tiles[spawnIndex[i]].tile.transform.position;
 			enemies.Add (enemy.GetComponent<Body>());
+		}
+	}
+
+	void SpawnResources () {
+		int[] spawnIndex = new int[resourceCount];
+		for (int i = 0; i < resourceCount; i++) {
+			spawnIndex [i] = Random.Range (0, tiles.Length - 1);
+		}
+
+		for (int i = 0; i < spawnIndex.Length; i++) {
+			GameObject resourceGO = Instantiate(resourcePrefab, transform);
+			TerrainManager.ResourceInfo info = tm.resourceInfos [Random.Range (0, tm.resourceInfos.Length)];
+			Resource resource = new Resource (info.type, resourceGO);
+
+			resource.resourceGO.GetComponentInChildren<SpriteRenderer> ().sprite = info.sprite;
+			resource.resourceGO.transform.position = tiles[spawnIndex[i]].tile.transform.position;
+			resources.Add (resource);
+			tm.resources.Add (new Vector2 (tiles [spawnIndex [i]].tile.transform.position.x, tiles [spawnIndex [i]].tile.transform.position.z), resource);
 		}
 	}
 
