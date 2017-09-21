@@ -15,7 +15,7 @@ public class EnemyMind : Mind {
 			List<Vector2> availableDirections = new List<Vector2>() {Vector2.right, Vector2.up, Vector2.left, Vector2.down};
 			for (int i = 0; i < availableDirections.Count; i++) {
 				Vector2 position = new Vector2 (transform.position.x, transform.position.z) + availableDirections[i];
-				if (body.CharacterAtPosition (position)) {
+				if (body.EnemyAtPosition (position)) {
 					availableDirections.Remove (availableDirections[i]);
 				}
 			}

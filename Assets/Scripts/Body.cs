@@ -44,11 +44,22 @@ public class Body : MonoBehaviour {
 		Vector2 newTile = new Vector2(transform.position.x + direction.x, transform.position.z + direction.y);
 
 		// test if location is occuplied
-		if (CharacterAtPosition (newTile)) {
-			if (weapon != null) {
-				weapon.Attack (direction, new Vector2(transform.position.x, transform.position.z));
+		if (player) {
+			if (EnemyAtPosition (newTile)) {
+				if (weapon != null) {
+					weapon.Attack (direction, new Vector2 (transform.position.x, transform.position.z));
+					transform.eulerAngles = new Vector3 (0f, Mathf.Atan2 (direction.x, direction.y) * Mathf.Rad2Deg, 0f);
+				}
+				return;
 			}
-			return;
+		} else {
+			if (PlayerAtPosition (newTile)) {
+				if (weapon != null) {
+					weapon.Attack (direction, new Vector2 (transform.position.x, transform.position.z));
+					transform.eulerAngles = new Vector3 (0f, Mathf.Atan2 (direction.x, direction.y) * Mathf.Rad2Deg, 0f);
+				}
+				return;
+			}
 		}
 
 		if (!tm.GetTileAtPosition(newTile)) {
@@ -93,14 +104,23 @@ public class Body : MonoBehaviour {
 		}
 	}
 
-	public bool CharacterAtPosition (Vector2 position) {
+	public bool EnemyAtPosition (Vector2 position) {
 		RaycastHit hit;
 		if (Physics.Raycast (new Vector3 (position.x, 5f, position.y), Vector3.down, out hit, 5f)) {
-			if (hit.collider.gameObject.layer == 8) {
+			if (hit.collider.gameObject.layer == 8 && hit.collider.gameObject.tag == "Enemy") {
 				return true;
 			} else {
 				return false;
 			}
+		} else {
+			return false;
+		}
+	}
+
+	public bool PlayerAtPosition (Vector2 position) {
+		Vector3 playerPosition = GameObject.Find("Player").transform.position;
+		if (new Vector2 (playerPosition.x, playerPosition.z) == position) {
+			return true;
 		} else {
 			return false;
 		}
