@@ -22,6 +22,7 @@ GameObject:
   - component: {fileID: 65622183942903568}
   - component: {fileID: 114058207423221644}
   - component: {fileID: 114904232830584146}
+  - component: {fileID: 114095079550600526}
   m_Layer: 8
   m_Name: Player
   m_TagString: Player
@@ -144,7 +145,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1005610837828854}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4954429993774742}
@@ -178,7 +179,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 4e0d4f75021fd43cbaf54db59c95f8bf, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -281,6 +282,21 @@ MonoBehaviour:
   player: 0
   health: 3
   location: {fileID: 0}
+--- !u!114 &114095079550600526
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1005610837828854}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9dacc4093c1e84898a51a53aa54fe14b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  offset: {x: -1.5, y: 5, z: -1.5}
+  detectionRange: 20
+  revealTile: {fileID: 1377789561812212, guid: 500c438f357f04fe7966e84cb62e1097, type: 2}
+  scale: 0.1
 --- !u!114 &114194003752450706
 MonoBehaviour:
   m_ObjectHideFlags: 1

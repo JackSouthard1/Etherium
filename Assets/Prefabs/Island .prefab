@@ -51,13 +51,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff95ce2566b464ab382ff5eeff016208, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  teir: 0
   tilePrefab: {fileID: 1583097085892808, guid: 8ae5ea8a9b86b4cb3acb25054f4e7399, type: 2}
   heightPerLayer: 0.2
   size: 5
   resourceCount: 3
   enemyPrefab: {fileID: 1882779021027994, guid: fcfa6dbcf5a80476397530d8a39f4f70,
     type: 2}
-  enemyCount: 3
   enemies: []
+  civilizedColor: {r: 0.39705884, g: 0.39705884, b: 0.39705884, a: 0}
   timeToCivilize: 2
   index: {x: 0, y: 0}

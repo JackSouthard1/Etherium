@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Island : MonoBehaviour {
+	[Header("Teir")]
+	private TerrainManager.Teir teirInfo;
+	public int teir;
+
+	[Space(10)]
 	[Header("Tiles")]
 	public GameObject tilePrefab;
 	public Layer[] layers;
@@ -18,7 +23,6 @@ public class Island : MonoBehaviour {
 	[Space(10)]
 	[Header("Enemies")]
 	public GameObject enemyPrefab;
-	public int enemyCount;
 
 	public List<Body> enemies = new List<Body>();
 
@@ -26,6 +30,7 @@ public class Island : MonoBehaviour {
 
 	[Space(10)]
 	[Header("Civilizing")]
+	public Color civilizedColor;
 	public float timeToCivilize;
 	private float civStartTime;
 	private Vector3 targetPos;
@@ -41,9 +46,14 @@ public class Island : MonoBehaviour {
 		tm = GameObject.Find ("Terrain").GetComponent<TerrainManager> ();
 		gm = GameObject.Find ("GameManager").GetComponent<GameManager> ();
 
+		teir = Mathf.RoundToInt(index.x + index.y);
+		teirInfo = tm.teirs [teir];
+
 		GenerateTiles ();
 		SpawnResources ();
 		SpawnEnemies ();
+
+//		TestEnemyCount ();
 	}
 
 	public void PlayerEnterIsland () {
@@ -75,16 +85,16 @@ public class Island : MonoBehaviour {
 		tiles = new TerrainManager.Tile[size * size];
 		for (int z = 0; z < size; z++) {
 			for (int x = 0; x < size; x++) {
-				int layer = Random.Range (0, tm.layers.Length);
+				int layer = Random.Range (0, teirInfo.layers.Length);
 				float y = layer * heightPerLayer;
 				Vector3 position = new Vector3 (x, y, z);
 
 				GameObject tile = (GameObject)Instantiate (tilePrefab, transform);
 				tile.transform.localPosition = position;
 				tile.name = "Tile (" + x + "," + z + ")";
-				tile.GetComponent<MeshRenderer> ().material.color = tm.layers [layer].color;
+				tile.GetComponent<MeshRenderer> ().material.color = teirInfo.layers [layer].color;
 
-				TerrainManager.Tile tileInfo = new TerrainManager.Tile(tile, GetComponent<Island>(), tm.layers [layer].color, y);
+				TerrainManager.Tile tileInfo = new TerrainManager.Tile(tile, GetComponent<Island>(), teirInfo.layers [layer].color, y);
 				tiles [index] = tileInfo;
 				tm.tiles.Add (new Vector2 (x + transform.position.x, z + transform.position.z), tileInfo);
 
@@ -94,14 +104,24 @@ public class Island : MonoBehaviour {
 	}
 
 	void SpawnEnemies () {
-		int[] spawnIndex = new int[enemyCount];
-		for (int i = 0; i < enemyCount; i++) {
-			spawnIndex [i] = Random.Range (0, tiles.Length - 1);
+		List<int> spawnIndexs = new List<int> ();
+
+		for (int f = 0; f < teirInfo.enemyCount; f++) {
+			int random = Random.Range (0, tiles.Length - 1);
+
+			if (spawnIndexs.Contains(random)) {
+				while (spawnIndexs.Contains(random)) {
+					random = Random.Range (0, tiles.Length - 1);
+				}
+			}
+
+			spawnIndexs.Add (random);
+
 		}
 
-		for (int i = 0; i < spawnIndex.Length; i++) {
+		for (int i = 0; i < spawnIndexs.Count; i++) {
 			GameObject enemy = (GameObject)Instantiate(enemyPrefab, transform);
-			enemy.transform.position = tiles[spawnIndex[i]].tile.transform.position;
+			enemy.transform.position = tiles[spawnIndexs[i]].tile.transform.position;
 			enemies.Add (enemy.GetComponent<Body>());
 		}
 	}
@@ -113,7 +133,7 @@ public class Island : MonoBehaviour {
 		}
 
 		for (int i = 0; i < spawnIndex.Length; i++) {
-			TerrainManager.ResourceInfo info = tm.resourceInfos [Random.Range (0, tm.resourceInfos.Length)];
+			TerrainManager.ResourceInfo info = tm.resourceInfos [teirInfo.resourceIndexes[Random.Range(0, teirInfo.resourceIndexes.Length)]];
 			tm.SpawnResource(tiles[spawnIndex[i]].tile.transform.position, info, GetComponent<Island>());
 		}
 	}
@@ -125,12 +145,16 @@ public class Island : MonoBehaviour {
 		startPos = transform.position;
 		targetPos = (transform.position / tm.spacing) * size;
 		Transform player = GameObject.FindGameObjectWithTag ("Player").transform;
-		player.parent = tm.GetTileAtPosition(new Vector2((int)player.position.x, (int)player.position.z)).transform;
+		player.parent = tm.GetTileAtPosition(new Vector2(Mathf.RoundToInt(player.position.x), Mathf.RoundToInt(player.position.z))).transform;
 		player.Find ("Model").localPosition = Vector3.zero;
 
 		for (int i = 0; i < tiles.Length; i++) {
 			GameObject tile = tiles [i].tile;
 			tm.tiles.Remove (new Vector2(tile.transform.position.x, tile.transform.position.z));
+		}
+
+		foreach (Resource resouce in resources) {
+			tm.resources.Remove (resouce.position);
 		}
 	}
 
@@ -144,13 +168,13 @@ public class Island : MonoBehaviour {
 				float newHeight = tiles [i].originalY * (1f - timeRatio);
 				tileGO.transform.position = new Vector3 (tileGO.transform.position.x, newHeight, tileGO.transform.position.z);
 
-				Color newColor = Color.Lerp (tiles [i].originalColor, tm.layers [0].color, timeRatio);
+				Color newColor = Color.Lerp (tiles [i].originalColor, civilizedColor, timeRatio);
 				tileGO.GetComponentInChildren<MeshRenderer> ().material.color = newColor;
 			}
 
 			foreach (var resource in resources) {
 				for (int i = 0; i < resource.resourceGO.Count; i++) {
-					float newHeight = (resource.originalBaseHeight + (tm.stackHeight * i)) * (1f - timeRatio);
+					float newHeight = ((resource.originalBaseHeight) * (1f - timeRatio)) + (tm.stackHeight * i);
 					Vector3 newPos = new Vector3 (resource.resourceGO [i].transform.position.x, newHeight, resource.resourceGO [i].transform.position.z);
 					resource.resourceGO[i].transform.position = newPos;
 				}
@@ -173,9 +197,8 @@ public class Island : MonoBehaviour {
 
 			for (int k = 0; k < resourceGOs.Count; k++) {
 				float height = tm.stackHeight * k;
-				resourceGOs[k].transform.position = new Vector3 (resourceGOs[k].transform.position.x, height, resourceGOs[k].transform.position.z);
+				resourceGOs[k].transform.position = new Vector3 ((int)resourceGOs[k].transform.position.x, height, (int)resourceGOs[k].transform.position.z);
 			}
-			tm.resources.Remove (resouce.position);
 		}
 			
 		for (int i = 0; i < tiles.Length; i++) {

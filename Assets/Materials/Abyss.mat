@@ -6,8 +6,8 @@ Material:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: Chracter
-  m_Shader: {fileID: 4800000, guid: 1472ba02a312d4226876e4a6b960bc3c, type: 3}
+  m_Name: Abyss
+  m_Shader: {fileID: 4800000, guid: 6226460d0b73d466798207155c6df7d4, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -72,5 +72,5 @@ Material:
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 0.86764705, g: 0.15949394, b: 0.15949394, a: 1}
+    - _Color: {r: 0.102941155, g: 0.102941155, b: 0.102941155, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}

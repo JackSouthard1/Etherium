@@ -12,14 +12,14 @@ public class TerrainManager : MonoBehaviour {
 	public Island[] islands;
 
 	[Space(10)]
+	[Header("Teirs")]
+	public Teir[] teirs;
+
+	[Space(10)]
 	[Header("Resources")]
 	public ResourceInfo[] resourceInfos;
 	public GameObject resourcePrefab;
 	public float stackHeight;
-
-	[Space(10)]
-	[Header("Layers")]
-	public Layer[] layers;
 
 	[Space(10)]
 	[Header("Buses")]
@@ -182,5 +182,12 @@ public class TerrainManager : MonoBehaviour {
 
 		}
 
+	}
+
+	[System.Serializable]
+	public struct Teir {
+		public Layer[] layers;
+		public int[] resourceIndexes;
+		public int enemyCount;
 	}
 }

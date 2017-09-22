@@ -9,6 +9,7 @@ public class Body : MonoBehaviour {
 	private Mind mind;
 	private Player playerScript;
 	private Weapon weapon;
+	private MapReveal mr;
 	[HideInInspector]
 	public bool player = false;
 
@@ -31,6 +32,13 @@ public class Body : MonoBehaviour {
 		}
 	}
 
+	void Start () {
+		if (player) {
+			mr = GetComponent<MapReveal> ();
+			StartAction (Vector2.zero);
+		}
+	}
+
 	public void TurnStart () {
 		mind.TurnStart ();
 	}
@@ -38,13 +46,13 @@ public class Body : MonoBehaviour {
 	public void TurnEnd () {
 		if (player) {
 			gm.PlayerTurnEnd ();
+			mr.PlayerPositionChanged ();
 		} else {
 			gm.EnemyTurnDone ();
 		}
 	}
 
 	public void StartAction (Vector2 direction) {
-		Vector3 dir3;
 		Vector2 newTile = new Vector2(transform.position.x + direction.x, transform.position.z + direction.y);
 		Quaternion targetRot = Quaternion.Euler(new Vector3 (0f, Mathf.Atan2 (direction.x, direction.y) * Mathf.Rad2Deg, 0f));
 
