@@ -24,6 +24,7 @@ public class GameManager : MonoBehaviour {
 
 	public void PlayerTurnEnd () {
 		tm.TurnEnd ();
+
 //		print ("Player Turn End");
 		if (!transitioning) {
 			EnemyTurnStart ();

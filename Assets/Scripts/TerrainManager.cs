@@ -39,6 +39,9 @@ public class TerrainManager : MonoBehaviour {
 		for (int i = 0; i < buses.Count; i++) {
 			buses [i].TurnEnd ();
 		}
+		for (int i = 0; i < islands.Length; i++) {
+			islands [i].TestEnemyCount ();
+		}
 	}
 
 	void Awake () {

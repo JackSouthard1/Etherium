@@ -59,9 +59,11 @@ public class Island : MonoBehaviour {
 	}
 
 	public void EnemyDeath (Body enemy) {
-		if (!buildable) {
-			enemies.Remove (enemy);
+		enemies.Remove (enemy);
+	}
 
+	public void TestEnemyCount () {
+		if (!buildable) {
 			if (enemies.Count <= 0) {
 				StartCivilizing ();
 			}
@@ -122,12 +124,12 @@ public class Island : MonoBehaviour {
 		civilizing = true;
 		startPos = transform.position;
 		targetPos = (transform.position / tm.spacing) * size;
-		GameObject.FindGameObjectWithTag ("Player").transform.parent = this.transform;
+		Transform player = GameObject.FindGameObjectWithTag ("Player").transform;
+		player.parent = tm.GetTileAtPosition(new Vector2((int)player.position.x, (int)player.position.z)).transform;
+		player.Find ("Model").localPosition = Vector3.zero;
 
 		for (int i = 0; i < tiles.Length; i++) {
 			GameObject tile = tiles [i].tile;
-//			tile.transform.position = new Vector3 (tile.transform.position.x, 0, tile.transform.position.z);
-//			tile.GetComponent<MeshRenderer> ().material.color = tm.layers [0].color;
 			tm.tiles.Remove (new Vector2(tile.transform.position.x, tile.transform.position.z));
 		}
 	}
@@ -144,6 +146,15 @@ public class Island : MonoBehaviour {
 
 				Color newColor = Color.Lerp (tiles [i].originalColor, tm.layers [0].color, timeRatio);
 				tileGO.GetComponentInChildren<MeshRenderer> ().material.color = newColor;
+			}
+
+			foreach (var resource in resources) {
+				for (int i = 0; i < resource.resourceGO.Count; i++) {
+					float newHeight = (resource.originalBaseHeight + (tm.stackHeight * i)) * (1f - timeRatio);
+					print ((resource.originalBaseHeight + (tm.stackHeight * i)));
+					Vector3 newPos = new Vector3 (resource.resourceGO [i].transform.position.x, newHeight, resource.resourceGO [i].transform.position.z);
+					resource.resourceGO[i].transform.position = newPos;
+				}
 			}
 
 			if (timeRatio == 1) {

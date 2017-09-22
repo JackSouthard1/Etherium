@@ -209,7 +209,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 130359723be5042288d10f08bdeb6d27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 392920618}
+  target: {fileID: 955666599}
 --- !u!1 &217313258
 GameObject:
   m_ObjectHideFlags: 0
@@ -273,11 +273,6 @@ MonoBehaviour:
   - color: {r: 0.2640571, g: 0.6173227, b: 0.9705882, a: 0}
   busPrefab: {fileID: 1583097085892808, guid: 859b0483d012d49e885107ea349ae083, type: 2}
   lifeTime: 3
---- !u!4 &392920618 stripped
-Transform:
-  m_PrefabParentObject: {fileID: 4898675696869018, guid: 358c1bfa6076b43bcbb2fb513cc28f17,
-    type: 2}
-  m_PrefabInternal: {fileID: 1282045861}
 --- !u!1 &919949631
 GameObject:
   m_ObjectHideFlags: 0
@@ -320,6 +315,11 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &955666599 stripped
+Transform:
+  m_PrefabParentObject: {fileID: 4505286570645870, guid: 358c1bfa6076b43bcbb2fb513cc28f17,
+    type: 2}
+  m_PrefabInternal: {fileID: 2079141942}
 --- !u!1 &1267711800
 GameObject:
   m_ObjectHideFlags: 0
@@ -399,7 +399,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 45, y: -45, z: 0}
---- !u!1001 &1282045861
+--- !u!1001 &2079141942
 Prefab:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -437,15 +437,6 @@ Prefab:
     - target: {fileID: 4898675696869018, guid: 358c1bfa6076b43bcbb2fb513cc28f17, type: 2}
       propertyPath: m_RootOrder
       value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 1005610837828854, guid: 358c1bfa6076b43bcbb2fb513cc28f17, type: 2}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 114058207423221644, guid: 358c1bfa6076b43bcbb2fb513cc28f17,
-        type: 2}
-      propertyPath: health
-      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 358c1bfa6076b43bcbb2fb513cc28f17, type: 2}
