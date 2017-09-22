@@ -8,6 +8,8 @@ public class GameManager : MonoBehaviour {
 	private int enemiesMoving = 0;
 	private TerrainManager tm;
 
+	public bool transitioning = false;
+
 	void Start () {
 		player = GameObject.Find ("Player").GetComponent<Body> ();
 		tm = GameObject.Find ("Terrain").GetComponent<TerrainManager> ();
@@ -23,7 +25,9 @@ public class GameManager : MonoBehaviour {
 	public void PlayerTurnEnd () {
 		tm.TurnEnd ();
 //		print ("Player Turn End");
-		EnemyTurnStart ();
+		if (!transitioning) {
+			EnemyTurnStart ();
+		}
 	}
 
 	public void EnemyTurnDone () {
@@ -54,5 +58,14 @@ public class GameManager : MonoBehaviour {
 
 	public void EnemyDeath (Body enemy) {
 		enemies.Remove (enemy);
+	}
+
+	public void CivilizeStart () {
+		transitioning = true;
+	}
+
+	public void CivilizeEnd () {
+		transitioning = false;
+		PlayerTurnStart ();
 	}
 }

@@ -140,10 +140,14 @@ public class TerrainManager : MonoBehaviour {
 	public struct Tile {
 		public GameObject tile;
 		public Island island;
+		public Color originalColor;
+		public float originalY;
 
-		public Tile (GameObject _tile, Island _island) {
+		public Tile (GameObject _tile, Island _island, Color _originalColor, float _originalY) {
 			tile = _tile;
 			island = _island;
+			originalColor = _originalColor;
+			originalY = _originalY;
 		}
 	}
 

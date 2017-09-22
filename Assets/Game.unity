@@ -306,6 +306,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemies: []
+  transitioning: 0
 --- !u!4 &919949633
 Transform:
   m_ObjectHideFlags: 0
@@ -407,7 +408,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4898675696869018, guid: 358c1bfa6076b43bcbb2fb513cc28f17, type: 2}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 4898675696869018, guid: 358c1bfa6076b43bcbb2fb513cc28f17, type: 2}
       propertyPath: m_LocalPosition.y

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerMind : Mind {
 	void Update () {
-		if (myTurn) {
+		if (myTurn && !gm.transitioning) {
 			if (Input.GetKeyDown (KeyCode.UpArrow)) {
 				base.RelayAction (Vector2.up);
 			}

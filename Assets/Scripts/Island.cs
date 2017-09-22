@@ -24,13 +24,22 @@ public class Island : MonoBehaviour {
 
 	private bool buildable = false;
 
+	[Space(10)]
+	[Header("Civilizing")]
+	public float timeToCivilize;
+	private float civStartTime;
+	private Vector3 targetPos;
+	private Vector3 startPos;
+	private bool civilizing = false;
 
 	public TerrainManager.Tile[] tiles;
 	private TerrainManager tm;
+	private GameManager gm;
 	public Vector2 index;
 
 	void Start () {
 		tm = GameObject.Find ("Terrain").GetComponent<TerrainManager> ();
+		gm = GameObject.Find ("GameManager").GetComponent<GameManager> ();
 
 		GenerateTiles ();
 		SpawnResources ();
@@ -50,10 +59,12 @@ public class Island : MonoBehaviour {
 	}
 
 	public void EnemyDeath (Body enemy) {
-		enemies.Remove (enemy);
+		if (!buildable) {
+			enemies.Remove (enemy);
 
-		if (enemies.Count <= 0) {
-			Civilize ();
+			if (enemies.Count <= 0) {
+				StartCivilizing ();
+			}
 		}
 	}
 
@@ -71,7 +82,7 @@ public class Island : MonoBehaviour {
 				tile.name = "Tile (" + x + "," + z + ")";
 				tile.GetComponent<MeshRenderer> ().material.color = tm.layers [layer].color;
 
-				TerrainManager.Tile tileInfo = new TerrainManager.Tile(tile, GetComponent<Island>());
+				TerrainManager.Tile tileInfo = new TerrainManager.Tile(tile, GetComponent<Island>(), tm.layers [layer].color, y);
 				tiles [index] = tileInfo;
 				tm.tiles.Add (new Vector2 (x + transform.position.x, z + transform.position.z), tileInfo);
 
@@ -101,21 +112,55 @@ public class Island : MonoBehaviour {
 
 		for (int i = 0; i < spawnIndex.Length; i++) {
 			TerrainManager.ResourceInfo info = tm.resourceInfos [Random.Range (0, tm.resourceInfos.Length)];
-			Resource resource = tm.SpawnResource(tiles[spawnIndex[i]].tile.transform.position, info, GetComponent<Island>());
+			tm.SpawnResource(tiles[spawnIndex[i]].tile.transform.position, info, GetComponent<Island>());
 		}
 	}
 
-	public void Civilize () {
+	void StartCivilizing () {
+		gm.CivilizeStart();
+		civStartTime = Time.time;
+		civilizing = true;
+		startPos = transform.position;
+		targetPos = (transform.position / tm.spacing) * size;
+		GameObject.FindGameObjectWithTag ("Player").transform.parent = this.transform;
+		print ("B:" + tm.tiles.Count);
+
+		for (int i = 0; i < tiles.Length; i++) {
+			GameObject tile = tiles [i].tile;
+//			tile.transform.position = new Vector3 (tile.transform.position.x, 0, tile.transform.position.z);
+//			tile.GetComponent<MeshRenderer> ().material.color = tm.layers [0].color;
+			tm.tiles.Remove (new Vector2(tile.transform.position.x, tile.transform.position.z));
+		}
+	}
+
+	void Update () {
+		if (civilizing) {
+			float timeRatio = Mathf.Clamp01((Time.time - civStartTime) / timeToCivilize);
+
+			transform.position = Vector3.Lerp (startPos, targetPos, timeRatio);
+			for (int i = 0; i < tiles.Length; i++) {
+				GameObject tileGO = tiles [i].tile;
+				float newHeight = tiles [i].originalY * (1f - timeRatio);
+				tileGO.transform.position = new Vector3 (tileGO.transform.position.x, newHeight, tileGO.transform.position.z);
+
+				Color newColor = Color.Lerp (tiles [i].originalColor, tm.layers [0].color, timeRatio);
+				tileGO.GetComponentInChildren<MeshRenderer> ().material.color = newColor;
+			}
+
+			if (timeRatio == 1) {
+				FinishCivilizing();
+			}
+		}
+	}
+
+	void FinishCivilizing () {
 		if (buildable) {
 			return;
 		}
-		for (int i = 0; i < tiles.Length; i++) {
-			GameObject tile = tiles [i].tile;
-			tile.transform.position = new Vector3 (tile.transform.position.x, 0, tile.transform.position.z);
-			tile.GetComponent<MeshRenderer> ().material.color = tm.layers [0].color;
-			tm.tiles.Remove (new Vector2(tile.transform.position.x, tile.transform.position.z));
-		}
 
+
+		print ("M:" + tm.tiles.Count);
+		transform.position = targetPos;
 		foreach (Resource resouce in resources) {
 			List<GameObject> resourceGOs = resouce.resourceGO;
 
@@ -125,22 +170,27 @@ public class Island : MonoBehaviour {
 			}
 			tm.resources.Remove (resouce.position);
 		}
-
-		transform.position = (transform.position / tm.spacing) * size;
-
+			
 		for (int i = 0; i < tiles.Length; i++) {
+			tiles [i].tile.transform.position = new Vector3 (Mathf.RoundToInt (tiles [i].tile.transform.position.x), 0f, Mathf.RoundToInt (tiles [i].tile.transform.position.z));
 			tm.tiles.Add (new Vector2 (tiles [i].tile.transform.position.x, tiles [i].tile.transform.position.z), tiles [i]);
 		}
+
+		print ("A:" + tm.tiles.Count);
 
 		for (int i = 0; i < resources.Count; i++) {
 			resources[i].UpdatePosition();
 			tm.resources.Add (resources[i].position, resources [i]);
 		}
 
+		GameObject.FindGameObjectWithTag ("Player").transform.parent = null;
+
 		buildable = true;
+		civilizing = false;
 
+		gm.CivilizeEnd();
 	}
-
+		
 	public struct Layer {
 		public Color color;
 	}

@@ -4,11 +4,13 @@ using UnityEngine;
 
 public class Mind : MonoBehaviour {
 	public Body body;
+	protected GameManager gm;
 	public bool myTurn = false;
 	public bool active = false;
 
 	void Start () {
 		body = GetComponentInParent<Body> ();
+		gm = GameObject.Find ("GameManager").GetComponent<GameManager> ();
 		MindStart ();
 	}
 

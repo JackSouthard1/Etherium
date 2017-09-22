@@ -5,7 +5,7 @@ using UnityEngine;
 public class MeleeWeapon : Weapon {
 
 	public override void Attack (Vector2 direction, Vector2 anchor) {
-		List<Body> enemies = new List<Body> ();
+//		List<Body> enemies = new List<Body> ();
 		List<Vector2> affectedPositions = new List<Vector2> ();
 		affectedPositions.Add (anchor + direction);
 
