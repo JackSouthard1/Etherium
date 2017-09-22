@@ -151,7 +151,6 @@ public class Island : MonoBehaviour {
 			foreach (var resource in resources) {
 				for (int i = 0; i < resource.resourceGO.Count; i++) {
 					float newHeight = (resource.originalBaseHeight + (tm.stackHeight * i)) * (1f - timeRatio);
-					print ((resource.originalBaseHeight + (tm.stackHeight * i)));
 					Vector3 newPos = new Vector3 (resource.resourceGO [i].transform.position.x, newHeight, resource.resourceGO [i].transform.position.z);
 					resource.resourceGO[i].transform.position = newPos;
 				}
