@@ -15,6 +15,8 @@ public class Body : MonoBehaviour {
 
 	public Island location = null;
 
+	private float moveTime = 0.2f;
+
 	void Awake () {
 		tm = GameObject.Find ("Terrain").GetComponent<TerrainManager> ();
 		gm = GameObject.Find ("GameManager").GetComponent<GameManager> ();
@@ -39,17 +41,20 @@ public class Body : MonoBehaviour {
 		}
 	}
 
-	public void Move (Vector2 direction) {
+	public void StartAction (Vector2 direction) {
 		Vector3 dir3;
 		Vector2 newTile = new Vector2(transform.position.x + direction.x, transform.position.z + direction.y);
+		Vector3 targetRot = new Vector3 (0f, Mathf.Atan2 (direction.x, direction.y) * Mathf.Rad2Deg, 0f);
+
 
 		// test if location is occuplied
 		if (player) {
 			if (EnemyAtPosition (newTile)) {
 				if (weapon != null) {
 					weapon.Attack (direction, new Vector2 (transform.position.x, transform.position.z));
-					transform.eulerAngles = new Vector3 (0f, Mathf.Atan2 (direction.x, direction.y) * Mathf.Rad2Deg, 0f);
+//					transform.eulerAngles = new Vector3 (0f, Mathf.Atan2 (direction.x, direction.y) * Mathf.Rad2Deg, 0f);
 				}
+				StartCoroutine(MoveToPosition (transform.position, targetRot, moveTime)); // TODO Replace with weapon effect
 				return;
 			}
 		} else {
@@ -58,14 +63,17 @@ public class Body : MonoBehaviour {
 					weapon.Attack (direction, new Vector2 (transform.position.x, transform.position.z));
 					transform.eulerAngles = new Vector3 (0f, Mathf.Atan2 (direction.x, direction.y) * Mathf.Rad2Deg, 0f);
 				}
+				StartCoroutine(MoveToPosition (transform.position, targetRot, moveTime)); // TODO Replace with weapon effect
 				return;
 			}
 		}
 
 		if (!tm.GetTileAtPosition(newTile)) {
-			dir3 = new Vector3 (direction.x, -transform.position.y, direction.y);
-			transform.Translate (dir3, Space.World);
-			tm.CreateBus (transform.position);
+			Vector3 targetPos = new Vector3 (transform.position.x + direction.x, 0f, transform.position.z + direction.y);
+			StartCoroutine (MoveToPosition (targetPos, targetRot, moveTime));
+//			dir3 = new Vector3 (direction.x, -transform.position.y, direction.y);
+//			transform.Translate (dir3, Space.World);
+			tm.CreateBus (targetPos);
 
 			// update location
 			if (player && location != null) {
@@ -74,21 +82,29 @@ public class Body : MonoBehaviour {
 			location = null;
 		} else {
 			float newTileHeight = tm.GetTileAtPosition(newTile).transform.position.y;
-			float heightDiff = newTileHeight - transform.position.y;
-			dir3 = new Vector3 (direction.x, heightDiff, direction.y);
-			transform.Translate (dir3, Space.World);
+			Vector3 targetPos = new Vector3 (transform.position.x + direction.x, newTileHeight, transform.position.z + direction.y);
+			StartCoroutine (MoveToPosition (targetPos, targetRot, moveTime));
+//			float heightDiff = newTileHeight - transform.position.y;
+//			dir3 = new Vector3 (direction.x, heightDiff, direction.y);
+//			transform.Translate (dir3, Space.World);
 
 			// update location
 			location = tm.tiles [newTile].island;
 			if (player) {
 				location.PlayerEnterIsland ();
-				if (tm.GetResourceAtPosition (newTile) != null) {
-					playerScript.CollectResource (tm.GetResourceAtPosition (newTile));
-				}
+			}
+		}
+	}
+
+	void CompleteAction () {
+		Vector2 newTile = new Vector2 (transform.position.x, transform.position.z);
+		if (player) {
+			if (tm.GetResourceAtPosition (newTile) != null) {
+				playerScript.CollectResource (tm.GetResourceAtPosition (newTile));
 			}
 		}
 
-		transform.eulerAngles = new Vector3 (0f, Mathf.Atan2 (direction.x, direction.y) * Mathf.Rad2Deg, 0f);
+		TurnEnd ();
 	}
 
 	public void TakeDamage (float damage) {
@@ -124,5 +140,22 @@ public class Body : MonoBehaviour {
 		} else {
 			return false;
 		}
+	}
+
+	IEnumerator MoveToPosition (Vector3 targetPos, Vector3 targetRot, float time)
+	{
+		float elapsedTime = 0;
+		Vector3 startingPos = transform.position;
+		Vector3 startingRot = transform.eulerAngles;
+		while (elapsedTime < time)
+		{
+			transform.position = Vector3.Lerp(startingPos, targetPos, (elapsedTime / time));
+			transform.eulerAngles = Vector3.Lerp(startingRot, targetRot, (elapsedTime / time));
+			elapsedTime += Time.deltaTime;
+			yield return null;
+		}
+		transform.position = targetPos;
+		transform.eulerAngles = targetRot;
+		CompleteAction ();
 	}
 }

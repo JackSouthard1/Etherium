@@ -123,7 +123,6 @@ public class Island : MonoBehaviour {
 		startPos = transform.position;
 		targetPos = (transform.position / tm.spacing) * size;
 		GameObject.FindGameObjectWithTag ("Player").transform.parent = this.transform;
-		print ("B:" + tm.tiles.Count);
 
 		for (int i = 0; i < tiles.Length; i++) {
 			GameObject tile = tiles [i].tile;
@@ -158,8 +157,6 @@ public class Island : MonoBehaviour {
 			return;
 		}
 
-
-		print ("M:" + tm.tiles.Count);
 		transform.position = targetPos;
 		foreach (Resource resouce in resources) {
 			List<GameObject> resourceGOs = resouce.resourceGO;
@@ -175,9 +172,7 @@ public class Island : MonoBehaviour {
 			tiles [i].tile.transform.position = new Vector3 (Mathf.RoundToInt (tiles [i].tile.transform.position.x), 0f, Mathf.RoundToInt (tiles [i].tile.transform.position.z));
 			tm.tiles.Add (new Vector2 (tiles [i].tile.transform.position.x, tiles [i].tile.transform.position.z), tiles [i]);
 		}
-
-		print ("A:" + tm.tiles.Count);
-
+			
 		for (int i = 0; i < resources.Count; i++) {
 			resources[i].UpdatePosition();
 			tm.resources.Add (resources[i].position, resources [i]);

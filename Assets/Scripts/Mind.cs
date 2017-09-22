@@ -26,9 +26,8 @@ public class Mind : MonoBehaviour {
 	}
 
 	protected void RelayAction (Vector2 direction) {
-		body.Move (direction);
+		body.StartAction (direction);
 		myTurn = false;
-		body.TurnEnd ();
 	}
 
 	protected void Idle () {
