@@ -30,6 +30,24 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &1026748778144674
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4213944005557982}
+  - component: {fileID: 33342073167253020}
+  - component: {fileID: 64990124720694702}
+  - component: {fileID: 23177262213674458}
+  m_Layer: 0
+  m_Name: Abyss
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!1 &1431558225556246
 GameObject:
   m_ObjectHideFlags: 1
@@ -110,6 +128,19 @@ Transform:
   m_Father: {fileID: 4505286570645870}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &4213944005557982
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1026748778144674}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: -1, z: 0}
+  m_LocalScale: {x: 3, y: 1, z: 3}
+  m_Children: []
+  m_Father: {fileID: 4898675696869018}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4505286570645870
 Transform:
   m_ObjectHideFlags: 1
@@ -150,6 +181,7 @@ Transform:
   m_Children:
   - {fileID: 4954429993774742}
   - {fileID: 4505286570645870}
+  - {fileID: 4213944005557982}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -166,6 +198,38 @@ Transform:
   m_Father: {fileID: 4898675696869018}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!23 &23177262213674458
+MeshRenderer:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1026748778144674}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_Materials:
+  - {fileID: 2100000, guid: 15c39736121a044e89dc3da90a6a5953, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_PreserveUVs: 1
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
 --- !u!23 &23642154509156862
 MeshRenderer:
   m_ObjectHideFlags: 1
@@ -230,6 +294,13 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!33 &33342073167253020
+MeshFilter:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1026748778144674}
+  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!33 &33454803624749270
 MeshFilter:
   m_ObjectHideFlags: 1
@@ -244,6 +315,20 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1431558225556246}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!64 &64990124720694702
+MeshCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1026748778144674}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Convex: 0
+  m_InflateMesh: 0
+  m_SkinWidth: 0.01
+  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!65 &65622183942903568
 BoxCollider:
   m_ObjectHideFlags: 1
@@ -293,7 +378,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9dacc4093c1e84898a51a53aa54fe14b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  offset: {x: -1.5, y: 5, z: -1.5}
+  offset: {x: -1.54, y: 5, z: -1.54}
   detectionRange: 20
   revealTile: {fileID: 1377789561812212, guid: 500c438f357f04fe7966e84cb62e1097, type: 2}
   scale: 0.1
@@ -334,3 +419,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fbee093b7b7c34df5a7bae549e134442, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  inventoryParent: {fileID: 0}
+  uiResourcePrefab: {fileID: 1231923437215244, guid: 176c95135f840468098990ee7c8d1fa1,
+    type: 2}
