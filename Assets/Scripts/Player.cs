@@ -10,7 +10,7 @@ public class Player : MonoBehaviour {
 
 	//TODO: what would be the best data structures to use here?
 	//we could simplify these to lists, and then get the ResourceInfo from the TerrainManager instead
-	Dictionary<TerrainManager.ResourceInfo, int> inventory = new Dictionary<TerrainManager.ResourceInfo, int>();
+	Dictionary<TerrainManager.ResourceInfo, float> inventory = new Dictionary<TerrainManager.ResourceInfo, float>();
 	Dictionary<TerrainManager.ResourceInfo, UIResource> inventoryUI = new Dictionary<TerrainManager.ResourceInfo, UIResource>();
 
 	public GameObject uiResourcePrefab;
@@ -24,7 +24,7 @@ public class Player : MonoBehaviour {
 
 	void InitInventory () {
 		foreach (TerrainManager.ResourceInfo resourceInfo in tm.resourceInfos) {
-			inventory.Add(resourceInfo, 0);
+			inventory.Add(resourceInfo, 0f);
 
 			GameObject newUIResourceObj = (GameObject)Instantiate (uiResourcePrefab, inventoryParent);
 			UIResource newUIResource = newUIResourceObj.GetComponent<UIResource> ();
@@ -39,7 +39,7 @@ public class Player : MonoBehaviour {
 	void Update () {
 		if (Input.GetKeyDown (KeyCode.I)) {
 			string str = "Inventory - ";
-			foreach (KeyValuePair<TerrainManager.ResourceInfo, int> keyValuePair in inventory) {
+			foreach (KeyValuePair<TerrainManager.ResourceInfo, float> keyValuePair in inventory) {
 				str += keyValuePair.Key.type.ToString () + ": " + keyValuePair.Value.ToString () + ", ";
 			}
 			print (str);
@@ -48,7 +48,7 @@ public class Player : MonoBehaviour {
 
 	public void CollectResource (Resource resource) {
 		int stackCount = resource.resourceGO.Count;
-		inventory [resource.info] += stackCount;
+		inventory [resource.info] += (float) stackCount;
 			
 		resource.island.resources.Remove (resource);
 	
@@ -61,7 +61,7 @@ public class Player : MonoBehaviour {
 	}
 
 	public void DropResource (TerrainManager.ResourceInfo resourceInfo) {
-		if (inventory [resourceInfo] == 0) {
+		if (inventory [resourceInfo] < 1f) {
 			return;
 		}
 
@@ -78,7 +78,7 @@ public class Player : MonoBehaviour {
 		}
 
 		tm.SpawnResource (transform.position, resourceInfo, body.location);
-		inventory[resourceInfo]--;
+		inventory[resourceInfo] -= 1f;
 		UpdateInventoryUI ();
 	}
 
