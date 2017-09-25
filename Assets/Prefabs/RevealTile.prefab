@@ -21,7 +21,7 @@ GameObject:
   - component: {fileID: 4461535342848888}
   - component: {fileID: 33943034056254130}
   - component: {fileID: 23359594676692218}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: RevealTile
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -75,6 +75,7 @@ public class TerrainManager : MonoBehaviour {
 				GameObject resourceGO = Instantiate (resourcePrefab, island.transform);
 				resourceGO.transform.position = position;
 				resourceGO.gameObject.GetComponentInChildren<SpriteRenderer> ().sprite = info.sprite;
+				resourceGO.gameObject.GetComponentInChildren<SpriteRenderer> ().color = info.color;
 
 				curResource.resourceGO.Add (resourceGO);
 				resourceGO.transform.Translate (Vector3.up * stackHeight * (curResource.resourceGO.Count - 1));
@@ -89,6 +90,7 @@ public class TerrainManager : MonoBehaviour {
 			Resource resource = new Resource (info, resourceGO, island);
 
 			resourceGO.GetComponentInChildren<SpriteRenderer> ().sprite = info.sprite;
+			resourceGO.gameObject.GetComponentInChildren<SpriteRenderer> ().color = info.color;
 			resources.Add (posV2, resource);
 			island.resources.Add (resource);
 
@@ -130,8 +132,10 @@ public class TerrainManager : MonoBehaviour {
 	[System.Serializable]
 	public struct ResourceInfo {
 		public Sprite sprite;
+		public Color color;
 		public enum ResourceType
 		{
+			None,
 			Yellow,
 			Green,
 			Purple,
@@ -142,12 +146,14 @@ public class TerrainManager : MonoBehaviour {
 
 	public struct Tile {
 		public GameObject tile;
+		public ResourceInfo.ResourceType resourceType;
 		public Island island;
 		public Color originalColor;
 		public float originalY;
 
-		public Tile (GameObject _tile, Island _island, Color _originalColor, float _originalY) {
+		public Tile (GameObject _tile, ResourceInfo.ResourceType _resourceType, Island _island, Color _originalColor, float _originalY) {
 			tile = _tile;
+			resourceType = _resourceType;
 			island = _island;
 			originalColor = _originalColor;
 			originalY = _originalY;

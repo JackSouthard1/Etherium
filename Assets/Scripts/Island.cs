@@ -17,6 +17,7 @@ public class Island : MonoBehaviour {
 	[Space(10)]
 	[Header("Resouces")]
 	public int resourceCount;
+	public int resourceTileCount;
 
 	public List<Resource> resources = new List<Resource>();
 
@@ -83,6 +84,21 @@ public class Island : MonoBehaviour {
 	void GenerateTiles () {
 		int index = 0;
 		tiles = new TerrainManager.Tile[size * size];
+
+		List<int> resourceTileSpawnIndexs = new List<int> ();
+
+		for (int i = 0; i < resourceTileCount; i++) {
+			int random = Random.Range (0, tiles.Length - 1);
+
+			if (resourceTileSpawnIndexs.Contains(random)) {
+				while (resourceTileSpawnIndexs.Contains(random)) {
+					random = Random.Range (0, tiles.Length - 1);
+				}
+			}
+			resourceTileSpawnIndexs.Add (random);
+
+		}
+
 		for (int z = 0; z < size; z++) {
 			for (int x = 0; x < size; x++) {
 				int layer = Random.Range (0, teirInfo.layers.Length);
@@ -92,9 +108,22 @@ public class Island : MonoBehaviour {
 				GameObject tile = (GameObject)Instantiate (tilePrefab, transform);
 				tile.transform.localPosition = position;
 				tile.name = "Tile (" + x + "," + z + ")";
-				tile.GetComponent<MeshRenderer> ().material.color = teirInfo.layers [layer].color;
 
-				TerrainManager.Tile tileInfo = new TerrainManager.Tile(tile, GetComponent<Island>(), teirInfo.layers [layer].color, y);
+				TerrainManager.ResourceInfo.ResourceType resourceInfoType;
+				Color tileColor;
+				if (resourceTileSpawnIndexs.Contains (index)) {
+					int resourceIndex = teirInfo.resourceIndexes [Random.Range (0, teirInfo.resourceIndexes.Length)];
+					TerrainManager.ResourceInfo resourceInfo = tm.resourceInfos [resourceIndex];
+					resourceInfoType = resourceInfo.type;
+					tileColor = resourceInfo.color;
+				} else {
+					resourceInfoType = TerrainManager.ResourceInfo.ResourceType.None;
+					tileColor = teirInfo.layers [layer].color;
+				}
+
+				TerrainManager.Tile tileInfo = new TerrainManager.Tile(tile, resourceInfoType, GetComponent<Island>(), tileColor, y);
+				tile.GetComponent<MeshRenderer> ().material.color = tileColor;
+
 				tiles [index] = tileInfo;
 				tm.tiles.Add (new Vector2 (x + transform.position.x, z + transform.position.z), tileInfo);
 
@@ -168,8 +197,10 @@ public class Island : MonoBehaviour {
 				float newHeight = tiles [i].originalY * (1f - timeRatio);
 				tileGO.transform.position = new Vector3 (tileGO.transform.position.x, newHeight, tileGO.transform.position.z);
 
-				Color newColor = Color.Lerp (tiles [i].originalColor, civilizedColor, timeRatio);
-				tileGO.GetComponentInChildren<MeshRenderer> ().material.color = newColor;
+				if (tiles [i].resourceType == TerrainManager.ResourceInfo.ResourceType.None) {
+					Color newColor = Color.Lerp (tiles [i].originalColor, civilizedColor, timeRatio);
+					tileGO.GetComponentInChildren<MeshRenderer> ().material.color = newColor;
+				}
 			}
 
 			foreach (var resource in resources) {
@@ -197,7 +228,7 @@ public class Island : MonoBehaviour {
 
 			for (int k = 0; k < resourceGOs.Count; k++) {
 				float height = tm.stackHeight * k;
-				resourceGOs[k].transform.position = new Vector3 ((int)resourceGOs[k].transform.position.x, height, (int)resourceGOs[k].transform.position.z);
+				resourceGOs[k].transform.position = new Vector3 (Mathf.RoundToInt(resourceGOs[k].transform.position.x), height, Mathf.RoundToInt(resourceGOs[k].transform.position.z));
 			}
 		}
 			

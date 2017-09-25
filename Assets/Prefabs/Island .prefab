@@ -56,9 +56,10 @@ MonoBehaviour:
   heightPerLayer: 0.2
   size: 5
   resourceCount: 3
+  resourceTileCount: 3
   enemyPrefab: {fileID: 1882779021027994, guid: fcfa6dbcf5a80476397530d8a39f4f70,
     type: 2}
   enemies: []
-  civilizedColor: {r: 0.39705884, g: 0.39705884, b: 0.39705884, a: 0}
+  civilizedColor: {r: 0.58823526, g: 0.45459962, b: 0.31141865, a: 0}
   timeToCivilize: 2
   index: {x: 0, y: 0}
