@@ -8,7 +8,7 @@ public class UIResource : MonoBehaviour
 	Text amountText;
 	Button resourceButton;
 
-	public int amount;
+	public float amount;
 
 	public float totalWidth {
 		get {
@@ -31,7 +31,7 @@ public class UIResource : MonoBehaviour
 	}
 
 	public void UpdateVisual() {
-		if (amount > 0) {
+		if (amount >= 1f) {
 			float textWidth = (float)(amount.ToString ().Length * amountText.fontSize);
 			amountText.rectTransform.sizeDelta = new Vector2 (textWidth, amountText.rectTransform.rect.height);
 			amountText.text = amount.ToString ();
