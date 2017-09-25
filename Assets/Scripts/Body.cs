@@ -33,10 +33,8 @@ public class Body : MonoBehaviour {
 	}
 
 	void Start () {
-		if (player) {
-			mr = GetComponent<MapReveal> ();
-			StartAction (Vector2.zero);
-		}
+		mr = GetComponent<MapReveal> ();
+		StartAction (Vector2.zero);
 	}
 
 	public void TurnStart () {
