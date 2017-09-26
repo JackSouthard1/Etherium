@@ -80,6 +80,7 @@ public class TerrainManager : MonoBehaviour {
 				curResource.resourceGO.Add (resourceGO);
 				resourceGO.transform.Translate (Vector3.up * stackHeight * (curResource.resourceGO.Count - 1));
 
+				UpdateResources ();
 				return curResource;
 			} else {
 				return null;
@@ -94,7 +95,14 @@ public class TerrainManager : MonoBehaviour {
 			resources.Add (posV2, resource);
 			island.resources.Add (resource);
 
+			UpdateResources ();
 			return resource;
+		}
+	}
+
+	void UpdateResources () {
+		foreach (KeyValuePair<Vector2, Resource> resource in resources) {
+			resource.Value.TestForCrafting ();
 		}
 	}
 
@@ -111,6 +119,14 @@ public class TerrainManager : MonoBehaviour {
 			return resources [position];
 		} else {
 			return null;
+		}
+	}
+
+	public bool ResourceAtPosition (Vector2 position) {
+		if (resources.ContainsKey (position)) {
+			return true;
+		} else {
+			return false;
 		}
 	}
 
