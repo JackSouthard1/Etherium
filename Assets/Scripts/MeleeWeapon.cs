@@ -5,10 +5,12 @@ using UnityEngine;
 public class MeleeWeapon : Weapon {
 	Vector3 endRay;
 	LineRenderer lr;
+	Animation attackAnimation;
 
 	List<Body> hitBodies = new List<Body>();
 
 	public override void ChildStart () {
+		attackAnimation = transform.parent.GetComponentInChildren<Animation> ();
 		lr = GetComponent<LineRenderer> ();
 		lr.enabled = false;
 		lr.positionCount = 2;
@@ -34,6 +36,7 @@ public class MeleeWeapon : Weapon {
 	}
 
 	IEnumerator RenderAttack () {
+		attackAnimation.Play ();
 		yield return new WaitForSeconds (0.25f);
 
 		lr.enabled = true;
