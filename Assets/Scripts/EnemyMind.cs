@@ -11,7 +11,6 @@ public class EnemyMind : Mind {
 
 	public override void TurnStart () {
 		if (active) {
-//			Vector2[] directions = new Vector2[4] {Vector2.right, Vector2.up, Vector2.left, Vector2.down};
 			List<Vector2> availableDirections = new List<Vector2>() {Vector2.right, Vector2.up, Vector2.left, Vector2.down};
 			for (int i = 0; i < availableDirections.Count; i++) {
 				Vector2 position = new Vector2 (transform.position.x, transform.position.z) + availableDirections[i];
@@ -47,22 +46,5 @@ public class EnemyMind : Mind {
 		}
 
 		return bestDirection;
-				
-
-
-//		bool movingOnX;
-//		if (Mathf.Abs (rawDiff.x) > Mathf.Abs (rawDiff.y)) {
-//			movingOnX = true;
-//		} else {
-//			movingOnX = false;
-//		}
-//
-//		if (movingOnX) {
-//			rawDiff = new Vector2 (rawDiff.x / Mathf.Abs (rawDiff.x), 0f);
-//		} else {
-//			rawDiff = new Vector2 (0f, rawDiff.y / Mathf.Abs (rawDiff.y));
-//		}
-//
-//		return rawDiff;
 	}
 }

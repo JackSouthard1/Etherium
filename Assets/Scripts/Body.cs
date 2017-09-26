@@ -12,6 +12,7 @@ public class Body : MonoBehaviour {
 	private MapReveal mr;
 	[HideInInspector]
 	public bool player = false;
+	public bool inAction = false;
 
 	public float health;
 
@@ -58,19 +59,12 @@ public class Body : MonoBehaviour {
 		// test if location is occuplied
 		if (player) {
 			if (EnemyAtPosition (newTile)) {
-				if (weapon != null) {
-					weapon.Attack (direction, new Vector2 (transform.position.x, transform.position.z));
-				}
-				MoveToPos (transform.position, targetRot); // TODO Replace with weapon effect
+				AttackInDir (targetRot, direction);
 				return;
 			}
 		} else {
 			if (PlayerAtPosition (newTile)) {
-				if (weapon != null) {
-					weapon.Attack (direction, new Vector2 (transform.position.x, transform.position.z));
-					transform.eulerAngles = new Vector3 (0f, Mathf.Atan2 (direction.x, direction.y) * Mathf.Rad2Deg, 0f);
-				}
-				MoveToPos (transform.position, targetRot); // TODO Replace with weapon effect
+				AttackInDir (targetRot, direction);
 				return;
 			}
 		}
@@ -102,20 +96,28 @@ public class Body : MonoBehaviour {
 	}
 
 	void MoveToPos (Vector3 targetPos, Quaternion targetRot) {
-		StartCoroutine (MoveToPosition (targetPos, targetRot, moveTime));
+		inAction = true;
+		StartCoroutine (MoveToPosition (targetPos, moveTime));
+		StartCoroutine (RotateToDir (targetRot, moveTime));
 		Vector3 oldPos = transform.position;
 		transform.position = targetPos;
 		model.position = oldPos;
 	}
 
-	void CompleteAction () {
+	void AttackInDir (Quaternion targetRot, Vector2 direction) {
+		inAction = true;
+		StartCoroutine (RotateToDir (targetRot, moveTime));
+		weapon.Attack (direction, new Vector2 (transform.position.x, transform.position.z));
+	}
+
+	public void CompleteAction () {
 		Vector2 newTile = new Vector2 (transform.position.x, transform.position.z);
 		if (player) {
 			if (tm.GetResourceAtPosition (newTile) != null) {
 				playerScript.CollectResource (tm.GetResourceAtPosition (newTile));
 			}
 		}
-
+		inAction = false;
 		TurnEnd ();
 	}
 
@@ -154,21 +156,32 @@ public class Body : MonoBehaviour {
 		}
 	}
 
-	IEnumerator MoveToPosition (Vector3 targetPos, Quaternion targetRot, float time)
+	IEnumerator MoveToPosition (Vector3 targetPos, float time)
 	{
 		float elapsedTime = 0;
 		Vector3 startingPos = model.transform.position;
-		Quaternion startingRot = model.transform.rotation;
 
 		while (elapsedTime < time)
 		{
 			model.position = Vector3.Lerp(startingPos, targetPos, (elapsedTime / time));
-			model.rotation = Quaternion.Lerp(startingRot, targetRot, (elapsedTime / time));
 			elapsedTime += Time.deltaTime;
 			yield return null;
 		}
 		model.position = targetPos;
-		model.rotation = targetRot;
+
 		CompleteAction ();
+	}
+
+	IEnumerator RotateToDir (Quaternion targetRot, float time) {
+		float elapsedTime = 0;
+		Quaternion startingRot = model.transform.rotation;
+
+		while (elapsedTime < time)
+		{
+			model.rotation = Quaternion.Lerp(startingRot, targetRot, (elapsedTime / time));
+			elapsedTime += Time.deltaTime;
+			yield return null;
+		}
+		model.rotation = targetRot;
 	}
 }
