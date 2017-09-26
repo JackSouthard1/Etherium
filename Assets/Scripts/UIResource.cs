@@ -32,9 +32,11 @@ public class UIResource : MonoBehaviour
 
 	public void UpdateVisual() {
 		if (amount >= 1f) {
-			float textWidth = (float)(amount.ToString ().Length * amountText.fontSize);
+			int displayAmount = Mathf.FloorToInt (amount);
+
+			float textWidth = (float)(displayAmount.ToString ().Length * amountText.fontSize);
 			amountText.rectTransform.sizeDelta = new Vector2 (textWidth, amountText.rectTransform.rect.height);
-			amountText.text = amount.ToString ();
+			amountText.text = displayAmount.ToString ();
 
 			SetVisible (true);
 		} else {
