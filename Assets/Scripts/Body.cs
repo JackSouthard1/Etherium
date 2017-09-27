@@ -93,6 +93,9 @@ public class Body : MonoBehaviour {
 				location.PlayerEnterIsland ();
 			}
 		}
+
+		if (direction != Vector2.zero)
+			playerScript.HandlePlayerMove ();
 	}
 
 	void MoveToPos (Vector3 targetPos, Quaternion targetRot) {

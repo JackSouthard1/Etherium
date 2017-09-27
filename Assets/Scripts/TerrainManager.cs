@@ -212,4 +212,20 @@ public class TerrainManager : MonoBehaviour {
 		public int[] resourceIndexes;
 		public int enemyCount;
 	}
+
+	//TODO: make these static
+	public ResourceInfo ResourceIndexToInfo(int index) {
+		return resourceInfos[index];
+	}
+
+	//TODO: do we want to store the list as a dictionary here in the TerrainManager to possibly improve searching?
+	public int ResourceTypeToIndex(ResourceInfo.ResourceType resourceType) {
+		for (int i = 0; i < resourceInfos.Length; i++) {
+			if (resourceInfos [i].type == resourceType)
+				return i;
+		}
+
+		Debug.LogError ("Resource type " + resourceType.ToString () + " not found in list");
+		return 0;
+	}
 }

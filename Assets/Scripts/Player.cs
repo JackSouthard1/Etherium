@@ -4,14 +4,13 @@ using UnityEngine;
 
 public class Player : MonoBehaviour {
 	public Transform inventoryParent;
+	public int movesPerResource;
 
 	Body body;
 	TerrainManager tm;
 
-	//TODO: what would be the best data structures to use here?
-	//we could simplify these to lists, and then get the ResourceInfo from the TerrainManager instead
-	Dictionary<TerrainManager.ResourceInfo, float> inventory = new Dictionary<TerrainManager.ResourceInfo, float>();
-	Dictionary<TerrainManager.ResourceInfo, UIResource> inventoryUI = new Dictionary<TerrainManager.ResourceInfo, UIResource>();
+	List<float> inventory = new List<float>();
+	List<UIResource> inventoryUI = new List<UIResource>();
 
 	public GameObject uiResourcePrefab;
 
@@ -24,14 +23,17 @@ public class Player : MonoBehaviour {
 
 	void InitInventory () {
 		foreach (TerrainManager.ResourceInfo resourceInfo in tm.resourceInfos) {
-			inventory.Add(resourceInfo, 0f);
+			inventory.Add(0f);
 
 			GameObject newUIResourceObj = (GameObject)Instantiate (uiResourcePrefab, inventoryParent);
 			UIResource newUIResource = newUIResourceObj.GetComponent<UIResource> ();
 			newUIResource.Init (resourceInfo);
 
-			inventoryUI.Add(resourceInfo, newUIResource);
+			inventoryUI.Add(newUIResource);
 		}
+
+		//temp
+		inventory[tm.ResourceTypeToIndex(TerrainManager.ResourceInfo.ResourceType.Green)] = 3f;
 
 		UpdateInventoryUI ();
 	}
@@ -39,8 +41,8 @@ public class Player : MonoBehaviour {
 	void Update () {
 		if (Input.GetKeyDown (KeyCode.I)) {
 			string str = "Inventory - ";
-			foreach (KeyValuePair<TerrainManager.ResourceInfo, float> keyValuePair in inventory) {
-				str += keyValuePair.Key.type.ToString () + ": " + keyValuePair.Value.ToString () + ", ";
+			for (int i = 0; i < tm.resourceInfos.Length; i++) {
+				str += tm.ResourceIndexToInfo(i).type.ToString() + ": " + inventory[i].ToString() + ", ";
 			}
 			print (str);
 		}
@@ -48,7 +50,7 @@ public class Player : MonoBehaviour {
 
 	public void CollectResource (Resource resource) {
 		int stackCount = resource.resourceGO.Count;
-		inventory [resource.info] += (float) stackCount;
+		inventory [tm.ResourceTypeToIndex(resource.info.type)] += (float) stackCount;
 			
 		resource.island.resources.Remove (resource);
 	
@@ -61,7 +63,9 @@ public class Player : MonoBehaviour {
 	}
 
 	public void DropResource (TerrainManager.ResourceInfo resourceInfo) {
-		if (inventory [resourceInfo] < 1f) {
+		int resourceIndex = tm.ResourceTypeToIndex (resourceInfo.type);
+
+		if (inventory [resourceIndex] < 1f) {
 			return;
 		}
 
@@ -78,18 +82,30 @@ public class Player : MonoBehaviour {
 		}
 
 		tm.SpawnResource (transform.position, resourceInfo, body.location);
-		inventory[resourceInfo] -= 1f;
+		inventory[resourceIndex] -= 1f;
+		UpdateInventoryUI ();
+	}
+
+	public void HandlePlayerMove () {
+		float resourcesPerMove = 1f / ((float) movesPerResource);
+		int resourceIndex = tm.ResourceTypeToIndex (TerrainManager.ResourceInfo.ResourceType.Green);
+
+		float newAmount = inventory [resourceIndex] - resourcesPerMove;
+		//TODO: better way to fix float innacuracy?
+		inventory [resourceIndex] = Mathf.Round(newAmount * 10f) / 10f;
+
 		UpdateInventoryUI ();
 	}
 
 	void UpdateInventoryUI () {
 		float leftAnchor = 0f;
-		foreach (KeyValuePair<TerrainManager.ResourceInfo, UIResource> keyValuePair in inventoryUI) {
-			keyValuePair.Value.amount = inventory[keyValuePair.Key];
-			keyValuePair.Value.UpdateVisual();
+		for (int i = 0; i < inventory.Count; i++) {
+			UIResource uiResource = inventoryUI [i];
+			uiResource.amount = inventory[i];
+			uiResource.UpdateVisual();
 
-			keyValuePair.Value.gameObject.GetComponent<RectTransform> ().offsetMin = new Vector2 (leftAnchor, 0f);
-			leftAnchor += keyValuePair.Value.totalWidth;
+			uiResource.gameObject.GetComponent<RectTransform> ().offsetMin = new Vector2 (leftAnchor, 0f);
+			leftAnchor += uiResource.totalWidth;
 		}
 	}
 }
