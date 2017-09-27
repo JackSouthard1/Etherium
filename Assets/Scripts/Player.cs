@@ -14,6 +14,8 @@ public class Player : MonoBehaviour {
 
 	public GameObject uiResourcePrefab;
 
+	const float inventoryPadding = 15f;
+
 	void Start () {
 		tm = GameObject.Find ("Terrain").GetComponent<TerrainManager> ();
 		body = GetComponent<Body> ();
@@ -108,7 +110,7 @@ public class Player : MonoBehaviour {
 			uiResource.UpdateVisual();
 
 			uiResource.gameObject.GetComponent<RectTransform> ().offsetMin = new Vector2 (leftAnchor, 0f);
-			leftAnchor += uiResource.totalWidth;
+			leftAnchor += (uiResource.totalWidth + inventoryPadding);
 		}
 	}
 }

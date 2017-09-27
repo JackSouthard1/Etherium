@@ -10,9 +10,12 @@ public class UIResource : MonoBehaviour
 
 	public float amount;
 
+	const float numberWidth = 30f;
+	const float decimalWidth = 15f;
+
 	public float totalWidth {
 		get {
-			if (amount > 0)
+			if (amount >= 1f)
 				return amountText.rectTransform.localPosition.x + amountText.rectTransform.rect.width;
 			else
 				return 0f;
@@ -31,10 +34,13 @@ public class UIResource : MonoBehaviour
 	}
 
 	public void UpdateVisual() {
-		if (amount >= 1f) {
+		if (amount > 0f) {
 			//int displayAmount = Mathf.FloorToInt (amount);
 
-			float textWidth = (float)(amount.ToString ().Length * amountText.fontSize);
+			float textWidth = (float)(amount.ToString ().Length * numberWidth);
+			if(amount.ToString().Contains("."))
+				textWidth -= (numberWidth - decimalWidth);
+
 			amountText.rectTransform.sizeDelta = new Vector2 (textWidth, amountText.rectTransform.rect.height);
 			amountText.text = amount.ToString ();
 
