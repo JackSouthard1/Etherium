@@ -96,6 +96,9 @@ public class Player : MonoBehaviour {
 		int resourceIndex = tm.ResourceTypeToIndex (TerrainManager.ResourceInfo.ResourceType.Green);
 
 		float newAmount = inventory [resourceIndex] - resourcesPerMove;
+		if (newAmount < 0f) {
+			newAmount = 0f;
+		}
 		//TODO: better way to fix float innacuracy?
 		inventory [resourceIndex] = Mathf.Round(newAmount * 10f) / 10f;
 
