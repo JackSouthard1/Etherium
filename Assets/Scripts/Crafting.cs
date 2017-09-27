@@ -6,6 +6,16 @@ public class Crafting : MonoBehaviour {
 	[Header("Crafting")]
 	public List<BuildingInfo> buildingInfos;
 
+	[System.Serializable]
+	public class EditorRecipe {
+		public List<EditorRecipeRow> rows = new List<EditorRecipeRow>();
+	}
+
+	[System.Serializable]
+	public class EditorRecipeRow {
+		public List<Crafting.Stack> columns = new List<Crafting.Stack>();
+	}
+
 	private TerrainManager tm;
 
 	[HideInInspector]
@@ -19,22 +29,7 @@ public class Crafting : MonoBehaviour {
 		GenerateDictionary ();
 		// *** buildings ***
 
-		// basic farm
-		Stack[,] basicFarm = new Stack[1,1];
-		basicFarm [0, 0] = new Stack (TerrainManager.ResourceInfo.ResourceType.Yellow, TerrainManager.ResourceInfo.ResourceType.Green, 2);
-
-		recipes.Add(new Recipe ("BasicFarm", basicFarm));
-		anchors.Add (basicFarm [0, 0]);
-
-		// generator
-		Stack[,] generator = new Stack[2,2];
-		generator [0, 0] = new Stack (TerrainManager.ResourceInfo.ResourceType.Yellow, TerrainManager.ResourceInfo.ResourceType.Blue, 2);
-		generator [1, 0] = new Stack (TerrainManager.ResourceInfo.ResourceType.Purple, TerrainManager.ResourceInfo.ResourceType.None, 1);
-		generator [0, 1] = new Stack (TerrainManager.ResourceInfo.ResourceType.Blue, TerrainManager.ResourceInfo.ResourceType.None, 3);
-		generator [1, 1] = new Stack (TerrainManager.ResourceInfo.ResourceType.Green, TerrainManager.ResourceInfo.ResourceType.None, 1);
-
-		recipes.Add(new Recipe ("Generator", generator));
-		anchors.Add (generator [0, 0]);
+		GenerateRecipes ();
 
 		// *** weapons ***
 	}
@@ -49,6 +44,7 @@ public class Crafting : MonoBehaviour {
 		}
 	}
 
+	[System.Serializable]
 	public struct Stack {
 		public TerrainManager.ResourceInfo.ResourceType resourceType;
 		public TerrainManager.ResourceInfo.ResourceType tileType;
@@ -134,8 +130,24 @@ public class Crafting : MonoBehaviour {
 	}
 
 	void GenerateDictionary () {
-		foreach (var buildingInfo in buildingInfos) {
-			buildings.Add (buildingInfo.name, new BuildingInfo(buildingInfo.name, buildingInfo.prefab, buildingInfo.mainColor, buildingInfo.secondaryColor));
+		foreach (BuildingInfo buildingInfo in buildingInfos) {
+			buildings.Add (buildingInfo.name, buildingInfo);
+		}
+	}
+
+	void GenerateRecipes () {
+		foreach (BuildingInfo buildingInfo in buildingInfos) {
+			EditorRecipe editorRecipe = buildingInfo.recipe;
+
+			Stack[,] recipe = new Stack[editorRecipe.rows[0].columns.Count,editorRecipe.rows.Count];
+			for (int y = 0; y < editorRecipe.rows.Count; y++) {
+				for (int x = 0; x < editorRecipe.rows [y].columns.Count; x++) {
+					recipe [x, y] = editorRecipe.rows [y].columns [x];
+				}
+			}
+
+			recipes.Add (new Recipe (buildingInfo.name, recipe));
+			anchors.Add (recipe [0, 0]);
 		}
 	}
 
@@ -146,11 +158,6 @@ public class Crafting : MonoBehaviour {
 		public Color mainColor;
 		public Color secondaryColor;
 
-		public BuildingInfo (string _name, GameObject _prefab, Color _mainColor, Color _secondaryColor) {
-			name = _name;
-			prefab = _prefab;
-			mainColor = _mainColor;
-			secondaryColor = _secondaryColor;
-		}
+		public EditorRecipe recipe;
 	}
 }
