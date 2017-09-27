@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Body : MonoBehaviour {
-	private TerrainManager tm;
+	[HideInInspector]
+	public TerrainManager tm;
 	private GameManager gm;
 	private Transform model;
 	private Mind mind;
@@ -70,17 +71,21 @@ public class Body : MonoBehaviour {
 		}
 
 		if (!tm.GetTileAtPosition(newTile)) {
-			Vector3 targetPos = new Vector3 (transform.position.x + direction.x, 0f, transform.position.z + direction.y);
+			if (player) {
+				Vector3 targetPos = new Vector3 (transform.position.x + direction.x, 0f, transform.position.z + direction.y);
 
-			MoveToPos (targetPos, targetRot);
+				MoveToPos (targetPos, targetRot);
 
-			tm.CreateBus (targetPos);
+				tm.CreateBus (targetPos);
 
-			// update location
-			if (player && location != null) {
-				location.PlayerExitIsland ();
+				// update location
+				if (location != null) {
+					location.PlayerExitIsland ();
+				}
+				location = null;
+			} else {
+				Idle ();
 			}
-			location = null;
 		} else {
 			if (BuildingAtPosition (newTile)) {
 				Idle ();

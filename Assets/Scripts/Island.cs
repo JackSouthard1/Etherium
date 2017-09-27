@@ -38,6 +38,12 @@ public class Island : MonoBehaviour {
 	private Vector3 startPos;
 	private bool civilizing = false;
 
+	[Space(10)]
+	[Header("Voids")]
+	public int voidCount;
+	public List<int> voidTileIndexes;
+
+	public List<int> usedTiles = new List<int>();
 	public TerrainManager.Tile[] tiles;
 	private TerrainManager tm;
 	private GameManager gm;
@@ -82,50 +88,51 @@ public class Island : MonoBehaviour {
 	}
 
 	void GenerateTiles () {
-		int index = 0;
 		tiles = new TerrainManager.Tile[size * size];
 
+		// void tiles
+		voidTileIndexes = new List<int> ();
+		for (int i = 0; i < voidCount; i++) {
+			voidTileIndexes.Add (GetAvaiableTile());
+		}
+
+		// resource tiles
 		List<int> resourceTileSpawnIndexs = new List<int> ();
 
 		for (int i = 0; i < resourceTileCount; i++) {
-			int random = Random.Range (0, tiles.Length - 1);
-
-			if (resourceTileSpawnIndexs.Contains(random)) {
-				while (resourceTileSpawnIndexs.Contains(random)) {
-					random = Random.Range (0, tiles.Length - 1);
-				}
-			}
-			resourceTileSpawnIndexs.Add (random);
+			resourceTileSpawnIndexs.Add (GetAvaiableTile ());
 
 		}
-
+		int index = 0;
 		for (int z = 0; z < size; z++) {
 			for (int x = 0; x < size; x++) {
-				int layer = Random.Range (0, teirInfo.layers.Length);
-				float y = layer * heightPerLayer;
-				Vector3 position = new Vector3 (x, y, z);
+				if (!voidTileIndexes.Contains (index)) {
+					int layer = Random.Range (0, teirInfo.layers.Length);
+					float y = layer * heightPerLayer;
+					Vector3 position = new Vector3 (x, y, z);
 
-				GameObject tile = (GameObject)Instantiate (tilePrefab, transform);
-				tile.transform.localPosition = position;
-				tile.name = "Tile (" + x + "," + z + ")";
+					GameObject tile = (GameObject)Instantiate (tilePrefab, transform);
+					tile.transform.localPosition = position;
+					tile.name = "Tile (" + x + "," + z + ")";
 
-				TerrainManager.ResourceInfo.ResourceType resourceInfoType;
-				Color tileColor;
-				if (resourceTileSpawnIndexs.Contains (index)) {
-					int resourceIndex = teirInfo.resourceIndexes [Random.Range (0, teirInfo.resourceIndexes.Length)];
-					TerrainManager.ResourceInfo resourceInfo = tm.resourceInfos [resourceIndex];
-					resourceInfoType = resourceInfo.type;
-					tileColor = resourceInfo.color;
-				} else {
-					resourceInfoType = TerrainManager.ResourceInfo.ResourceType.None;
-					tileColor = teirInfo.layers [layer].color;
+					TerrainManager.ResourceInfo.ResourceType resourceInfoType;
+					Color tileColor;
+					if (resourceTileSpawnIndexs.Contains (index)) {
+						int resourceIndex = teirInfo.resourceIndexes [Random.Range (0, teirInfo.resourceIndexes.Length)];
+						TerrainManager.ResourceInfo resourceInfo = tm.resourceInfos [resourceIndex];
+						resourceInfoType = resourceInfo.type;
+						tileColor = resourceInfo.color;
+					} else {
+						resourceInfoType = TerrainManager.ResourceInfo.ResourceType.None;
+						tileColor = teirInfo.layers [layer].color;
+					}
+
+					TerrainManager.Tile tileInfo = new TerrainManager.Tile (tile, resourceInfoType, GetComponent<Island> (), tileColor, y);
+					tile.GetComponent<MeshRenderer> ().material.color = tileColor;
+
+					tiles [index] = tileInfo;
+					tm.tiles.Add (new Vector2 (x + transform.position.x, z + transform.position.z), tileInfo);
 				}
-
-				TerrainManager.Tile tileInfo = new TerrainManager.Tile(tile, resourceInfoType, GetComponent<Island>(), tileColor, y);
-				tile.GetComponent<MeshRenderer> ().material.color = tileColor;
-
-				tiles [index] = tileInfo;
-				tm.tiles.Add (new Vector2 (x + transform.position.x, z + transform.position.z), tileInfo);
 
 				index++;
 			}
@@ -136,16 +143,7 @@ public class Island : MonoBehaviour {
 		List<int> spawnIndexs = new List<int> ();
 
 		for (int f = 0; f < teirInfo.enemyCount; f++) {
-			int random = Random.Range (0, tiles.Length - 1);
-
-			if (spawnIndexs.Contains(random)) {
-				while (spawnIndexs.Contains(random)) {
-					random = Random.Range (0, tiles.Length - 1);
-				}
-			}
-
-			spawnIndexs.Add (random);
-
+			spawnIndexs.Add (GetAvaiableTile ());
 		}
 
 		for (int i = 0; i < spawnIndexs.Count; i++) {
@@ -156,12 +154,12 @@ public class Island : MonoBehaviour {
 	}
 
 	void SpawnResources () {
-		int[] spawnIndex = new int[resourceCount];
+		List<int> spawnIndex = new List<int>();
 		for (int i = 0; i < resourceCount; i++) {
-			spawnIndex [i] = Random.Range (0, tiles.Length - 1);
+			spawnIndex.Add(GetAvaiableTile());
 		}
 
-		for (int i = 0; i < spawnIndex.Length; i++) {
+		for (int i = 0; i < spawnIndex.Count; i++) {
 			TerrainManager.ResourceInfo info = tm.resourceInfos [teirInfo.resourceIndexes[Random.Range(0, teirInfo.resourceIndexes.Length)]];
 			tm.SpawnResource(tiles[spawnIndex[i]].tile.transform.position, info, GetComponent<Island>());
 		}
@@ -178,8 +176,10 @@ public class Island : MonoBehaviour {
 		player.Find ("Model").localPosition = Vector3.zero;
 
 		for (int i = 0; i < tiles.Length; i++) {
-			GameObject tile = tiles [i].tile;
-			tm.tiles.Remove (new Vector2(tile.transform.position.x, tile.transform.position.z));
+			if (!voidTileIndexes.Contains (i)) {
+				GameObject tile = tiles [i].tile;
+				tm.tiles.Remove (new Vector2 (tile.transform.position.x, tile.transform.position.z));
+			}
 		}
 
 		foreach (Resource resouce in resources) {
@@ -193,13 +193,15 @@ public class Island : MonoBehaviour {
 
 			transform.position = Vector3.Lerp (startPos, targetPos, timeRatio);
 			for (int i = 0; i < tiles.Length; i++) {
-				GameObject tileGO = tiles [i].tile;
-				float newHeight = tiles [i].originalY * (1f - timeRatio);
-				tileGO.transform.position = new Vector3 (tileGO.transform.position.x, newHeight, tileGO.transform.position.z);
+				if (!voidTileIndexes.Contains (i)) {
+					GameObject tileGO = tiles [i].tile;
+					float newHeight = tiles [i].originalY * (1f - timeRatio);
+					tileGO.transform.position = new Vector3 (tileGO.transform.position.x, newHeight, tileGO.transform.position.z);
 
-				if (tiles [i].resourceType == TerrainManager.ResourceInfo.ResourceType.None) {
-					Color newColor = Color.Lerp (tiles [i].originalColor, civilizedColor, timeRatio);
-					tileGO.GetComponentInChildren<MeshRenderer> ().material.color = newColor;
+					if (tiles [i].resourceType == TerrainManager.ResourceInfo.ResourceType.None) {
+						Color newColor = Color.Lerp (tiles [i].originalColor, civilizedColor, timeRatio);
+						tileGO.GetComponentInChildren<MeshRenderer> ().material.color = newColor;
+					}
 				}
 			}
 
@@ -215,6 +217,21 @@ public class Island : MonoBehaviour {
 				FinishCivilizing();
 			}
 		}
+	}
+
+	private int GetAvaiableTile () {
+		int random = Random.Range (0, tiles.Length - 1);
+		int playerTileIndex = 0; // hacl
+//		Vector2 playerPos = new Vector2 (gm.player.transform.position.x, gm.player.transform.position.z);
+
+		if (usedTiles.Contains(random) || random == playerTileIndex) {
+			while (usedTiles.Contains(random) || random == playerTileIndex) {
+				random = Random.Range (0, tiles.Length - 1);
+			}
+		}
+		usedTiles.Add (random);
+
+		return random;
 	}
 
 	void FinishCivilizing () {
@@ -233,8 +250,10 @@ public class Island : MonoBehaviour {
 		}
 			
 		for (int i = 0; i < tiles.Length; i++) {
-			tiles [i].tile.transform.position = new Vector3 (Mathf.RoundToInt (tiles [i].tile.transform.position.x), 0f, Mathf.RoundToInt (tiles [i].tile.transform.position.z));
-			tm.tiles.Add (new Vector2 (tiles [i].tile.transform.position.x, tiles [i].tile.transform.position.z), tiles [i]);
+			if (!voidTileIndexes.Contains (i)) {
+				tiles [i].tile.transform.position = new Vector3 (Mathf.RoundToInt (tiles [i].tile.transform.position.x), 0f, Mathf.RoundToInt (tiles [i].tile.transform.position.z));
+				tm.tiles.Add (new Vector2 (tiles [i].tile.transform.position.x, tiles [i].tile.transform.position.z), tiles [i]);
+			}
 		}
 			
 		for (int i = 0; i < resources.Count; i++) {

@@ -3,17 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour {
-	private Body player;
+	public Body player;
 	public List<Body> enemies = new List<Body>();
 	private int enemiesMoving = 0;
 	private TerrainManager tm;
 
 	public bool transitioning = false;
 
-	void Start () {
+	void Awake () {
 		player = GameObject.Find ("Player").GetComponent<Body> ();
 		tm = GameObject.Find ("Terrain").GetComponent<TerrainManager> ();
+	}
 
+	void Start () {
 		GameObject[] enemiesGOArray = GameObject.FindGameObjectsWithTag ("Enemy");
 		for (int i = 0; i < enemiesGOArray.Length; i++) {
 			enemies.Add (enemiesGOArray [i].GetComponent<Body> ());
