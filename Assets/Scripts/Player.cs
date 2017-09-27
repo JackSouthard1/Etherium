@@ -48,14 +48,10 @@ public class Player : MonoBehaviour {
 
 	public void CollectResource (Resource resource) {
 		int stackCount = resource.resourceGO.Count;
+
 		inventory [resource.info] += (float) stackCount;
-			
-		resource.island.resources.Remove (resource);
-	
-		tm.resources.Remove (resource.position);
-		for (int i = 0; i < stackCount; i++) {
-			Destroy (resource.resourceGO [i]);
-		}
+		List<Resource> affectedResources = new List<Resource> {resource};
+		tm.ResourceConsumed (affectedResources);
 
 		UpdateInventoryUI ();
 	}

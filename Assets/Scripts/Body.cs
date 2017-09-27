@@ -82,17 +82,25 @@ public class Body : MonoBehaviour {
 			}
 			location = null;
 		} else {
-			float newTileHeight = tm.GetTileAtPosition(newTile).transform.position.y;
-			Vector3 targetPos = new Vector3 (transform.position.x + direction.x, newTileHeight, transform.position.z + direction.y);
+			if (BuildingAtPosition (newTile)) {
+				Idle ();
+			} else {
+				float newTileHeight = tm.GetTileAtPosition (newTile).transform.position.y;
+				Vector3 targetPos = new Vector3 (transform.position.x + direction.x, newTileHeight, transform.position.z + direction.y);
 
-			MoveToPos (targetPos, targetRot);
+				MoveToPos (targetPos, targetRot);
 
-			// update location
-			location = tm.tiles [newTile].island;
-			if (player) {
-				location.PlayerEnterIsland ();
+				// update location
+				location = tm.tiles [newTile].island;
+				if (player) {
+					location.PlayerEnterIsland ();
+				}
 			}
 		}
+	}
+
+	void Idle () {
+		MoveToPos(transform.position, transform.rotation);
 	}
 
 	void MoveToPos (Vector3 targetPos, Quaternion targetRot) {
@@ -151,6 +159,19 @@ public class Body : MonoBehaviour {
 		Vector3 playerPosition = GameObject.Find("Player").transform.position;
 		if (new Vector2 (playerPosition.x, playerPosition.z) == position) {
 			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public bool BuildingAtPosition (Vector2 position) {
+		RaycastHit hit;
+		if (Physics.Raycast (new Vector3 (position.x, 5f, position.y), Vector3.down, out hit, 5f)) {
+			if (hit.collider.gameObject.layer == 8 && hit.collider.gameObject.tag == "Building") {
+				return true;
+			} else {
+				return false;
+			}
 		} else {
 			return false;
 		}
