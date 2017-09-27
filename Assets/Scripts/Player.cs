@@ -113,7 +113,9 @@ public class Player : MonoBehaviour {
 			uiResource.UpdateVisual();
 
 			uiResource.gameObject.GetComponent<RectTransform> ().offsetMin = new Vector2 (leftAnchor, 0f);
-			leftAnchor += (uiResource.totalWidth + inventoryPadding);
+
+			if(uiResource.totalWidth > 0)
+				leftAnchor += (uiResource.totalWidth + inventoryPadding);
 		}
 	}
 }
