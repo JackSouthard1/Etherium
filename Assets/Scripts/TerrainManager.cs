@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class TerrainManager : MonoBehaviour {
 	[Header("Islands")]
@@ -35,6 +36,8 @@ public class TerrainManager : MonoBehaviour {
 	[HideInInspector]
 	public Dictionary<Vector2, Resource> resources = new Dictionary<Vector2, Resource> ();
 
+	private Crafting crafting;
+
 	public void TurnEnd () {
 		for (int i = 0; i < buses.Count; i++) {
 			buses [i].TurnEnd ();
@@ -45,6 +48,7 @@ public class TerrainManager : MonoBehaviour {
 	}
 
 	void Awake () {
+		crafting = GameObject.Find ("GameManager").GetComponent<Crafting> ();
 		GenerateIslands ();
 	}
 
@@ -63,6 +67,18 @@ public class TerrainManager : MonoBehaviour {
 				islands [index] = island.GetComponent<Island>();
 
 				index++;
+			}
+		}
+	}
+
+	public void SpawnBuilding (Vector3 position, GameObject prefab, Color mainColor, Color secondaryColor) {
+		GameObject building = (GameObject)Instantiate (prefab, position, Quaternion.identity, transform);
+		MeshRenderer[] mrs = building.GetComponentsInChildren<MeshRenderer> ();
+		for (int i = 0; i < mrs.Length; i++) {
+			if (mrs [i].gameObject.name.Contains ("(P)")) {
+				mrs [i].material.color = mainColor;
+			} else {
+				mrs [i].material.color = secondaryColor;
 			}
 		}
 	}
@@ -100,9 +116,41 @@ public class TerrainManager : MonoBehaviour {
 		}
 	}
 
+	public void ResourceConsumed (List<Resource> consumedResources) {
+		List<Vector2> keysToRemove = new List<Vector2> ();
+
+		for (int k = 0; k < consumedResources.Count; k++) {
+			consumedResources[k].island.resources.Remove (consumedResources[k]);
+			List<GameObject> destroying = new List<GameObject> ();
+			for (int i = 0; i < consumedResources[k].resourceGO.Count; i++) {
+				destroying.Add (consumedResources[k].resourceGO [i]);
+			}
+
+			for (int i = 0; i < destroying.Count; i++) {
+				Destroy (destroying [i]);
+			}
+
+			keysToRemove.Add (consumedResources[k].position);
+		}
+
+//		for (int i = 0; i < keys.Count; i++) {
+//			resources.Remove (keys [i]);
+//		}
+		foreach (Vector2 resourceKey in resources.Keys.ToList()) {
+			if (keysToRemove.Contains (resourceKey)) {
+				resources.Remove (resourceKey);
+			}
+		}
+	}
+
 	void UpdateResources () {
-		foreach (KeyValuePair<Vector2, Resource> resource in resources) {
-			resource.Value.TestForCrafting ();
+//		foreach (KeyValuePair<Vector2, Resource> resource in resources) {
+//			crafting.TestForCrafting (resource.Value);
+//		}
+
+		foreach (Vector2 key in resources.Keys.ToList()) {
+			Resource resourceToTest = resources [key];
+			crafting.TestForCrafting (resourceToTest);
 		}
 	}
 

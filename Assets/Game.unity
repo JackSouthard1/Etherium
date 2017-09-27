@@ -253,7 +253,7 @@ MonoBehaviour:
   islandPrefab: {fileID: 1957064115911918, guid: 2445b5953a110497c9303ac250f66a2c,
     type: 2}
   count: 4
-  spacing: 20
+  spacing: 10
   islands: []
   teirs:
   - layers:
@@ -272,7 +272,7 @@ MonoBehaviour:
     - color: {r: 0.199827, g: 0.9705882, b: 0.71802235, a: 0}
     - color: {r: 0.17225347, g: 0.86764705, b: 0.63744783, a: 0}
     - color: {r: 0.14889707, g: 0.75, b: 0.55302835, a: 0}
-    resourceIndexes: 0200000003000000
+    resourceIndexes: 03000000
     enemyCount: 4
   resourceInfos:
   - sprite: {fileID: 21300000, guid: d29fb7a7ea0cb4b23bef81c77fa3020e, type: 3}
@@ -285,7 +285,7 @@ MonoBehaviour:
     color: {r: 0.5475152, g: 0.89705884, b: 0.15170847, a: 1}
     type: 2
   - sprite: {fileID: 21300000, guid: 87ddf2f332a8a40f48ab5a87b39801a8, type: 3}
-    color: {r: 0.18247189, g: 0.52330416, b: 0.99264705, a: 1}
+    color: {r: 0.18247189, g: 0.79150003, b: 0.99264705, a: 1}
     type: 4
   resourcePrefab: {fileID: 1957892413181948, guid: 09a9dca98a4b3443c88611ce76cd310d,
     type: 2}
@@ -455,6 +455,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3044807271d304069b474e13c5988913, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  buildingInfos:
+  - name: BasicFarm
+    prefab: {fileID: 1731185760413756, guid: c3874527b6b064014abec4efad740b2c, type: 2}
+    mainColor: {r: 0.1583045, g: 0.89705884, b: 0.2551069, a: 0}
+    secondaryColor: {r: 0.43382353, g: 0.43382353, b: 0.43382353, a: 0}
+  - name: Generator
+    prefab: {fileID: 1731185760413756, guid: c3874527b6b064014abec4efad740b2c, type: 2}
+    mainColor: {r: 0.15327641, g: 0.71478665, b: 0.99264705, a: 0}
+    secondaryColor: {r: 0.43529415, g: 0.43529415, b: 0.43529415, a: 0}
 --- !u!1 &940644546
 GameObject:
   m_ObjectHideFlags: 0

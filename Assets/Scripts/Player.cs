@@ -50,7 +50,6 @@ public class Player : MonoBehaviour {
 
 	public void CollectResource (Resource resource) {
 		int stackCount = resource.resourceGO.Count;
-		inventory [tm.ResourceTypeToIndex(resource.info.type)] += (float) stackCount;
 			
 		resource.island.resources.Remove (resource);
 	
@@ -58,6 +57,10 @@ public class Player : MonoBehaviour {
 		for (int i = 0; i < stackCount; i++) {
 			Destroy (resource.resourceGO [i]);
 		}
+
+		inventory [tm.ResourceTypeToIndex(resource.info.type)] += (float) stackCount;
+		List<Resource> affectedResources = new List<Resource> {resource};
+		tm.ResourceConsumed (affectedResources);
 
 		UpdateInventoryUI ();
 	}
