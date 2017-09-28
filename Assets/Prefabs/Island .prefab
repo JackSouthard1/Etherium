@@ -55,7 +55,7 @@ MonoBehaviour:
   tilePrefab: {fileID: 1583097085892808, guid: 8ae5ea8a9b86b4cb3acb25054f4e7399, type: 2}
   heightPerLayer: 0.2
   size: 5
-  resourceCount: 3
+  resourceCount: 5
   resourceTileCount: 3
   enemyPrefab: {fileID: 1882779021027994, guid: fcfa6dbcf5a80476397530d8a39f4f70,
     type: 2}

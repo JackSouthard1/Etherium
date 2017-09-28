@@ -101,10 +101,15 @@ public class Body : MonoBehaviour {
 				Idle ();
 			}
 		} else {
-			if (BuildingAtPosition (newTile)) {
+			if (UnstandableBuildingAtPosition (newTile)) {
 				Idle ();
 			} else {
 				float newTileHeight = tm.GetTileAtPosition (newTile).transform.position.y;
+
+				if (GetBuildingAtPosition (newTile)) {
+					GameObject building = GetBuildingAtPosition (newTile);
+					newTileHeight += building.GetComponent<Building> ().height;
+				}
 				Vector3 targetPos = new Vector3 (transform.position.x + direction.x, newTileHeight, transform.position.z + direction.y);
 
 				MoveToPos (targetPos, targetRot);
@@ -186,16 +191,29 @@ public class Body : MonoBehaviour {
 		}
 	}
 
-	public bool BuildingAtPosition (Vector2 position) {
+	public bool UnstandableBuildingAtPosition (Vector2 position) {
 		RaycastHit hit;
 		if (Physics.Raycast (new Vector3 (position.x, 5f, position.y), Vector3.down, out hit, 5f)) {
-			if (hit.collider.gameObject.layer == 8 && hit.collider.gameObject.tag == "Building") {
+			if (hit.collider.gameObject.layer == 8 && hit.collider.gameObject.tag == "Building" && !hit.collider.gameObject.GetComponent<Building>().standable) {
 				return true;
 			} else {
 				return false;
 			}
 		} else {
 			return false;
+		}
+	}
+
+	public GameObject GetBuildingAtPosition (Vector2 position) {
+		RaycastHit hit;
+		if (Physics.Raycast (new Vector3 (position.x, 5f, position.y), Vector3.down, out hit, 5f)) {
+			if (hit.collider.gameObject.tag == "Building") {
+				return hit.collider.gameObject;
+			} else {
+				return null;
+			}
+		} else {
+			return null;
 		}
 	}
 
