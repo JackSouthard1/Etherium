@@ -19,15 +19,18 @@ public class Mind : MonoBehaviour {
 	public virtual void TurnStart () {
 		if (active) {
 			myTurn = true;
+			CalculateMove ();
 		} else {
 			myTurn = false;
 			body.TurnEnd ();
 		}
 	}
 
+	protected virtual void CalculateMove () {}
+
 	protected void RelayAction (Vector2 direction) {
 		if (!body.inAction) {
-			body.StartAction (direction);
+			body.StartActionAttempt (direction);
 			myTurn = false;
 		}
 	}

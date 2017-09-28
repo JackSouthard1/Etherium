@@ -36,7 +36,7 @@ public class Body : MonoBehaviour {
 
 	void Start () {
 		mr = GetComponent<MapReveal> ();
-		StartAction (Vector2.zero);
+		StartActionAttempt (Vector2.zero);
 	}
 
 	public void TurnStart () {
@@ -52,23 +52,37 @@ public class Body : MonoBehaviour {
 		}
 	}
 
-	public void StartAction (Vector2 direction) {
+	public void StartActionAttempt (Vector2 direction) {
 		Vector2 newTile = new Vector2(transform.position.x + direction.x, transform.position.z + direction.y);
 		Quaternion targetRot = Quaternion.Euler(new Vector3 (0f, Mathf.Atan2 (direction.x, direction.y) * Mathf.Rad2Deg, 0f));
 
-
-		// test if location is occuplied
+		// test to see if body is standing on tile
+		bool canAttack = false;
+		bool wantsToAttack = false;
+	
 		if (player) {
 			if (EnemyAtPosition (newTile)) {
-				AttackInDir (targetRot, direction);
-				return;
+				wantsToAttack = true;
 			}
 		} else {
 			if (PlayerAtPosition (newTile)) {
-				AttackInDir (targetRot, direction);
-				return;
+				wantsToAttack = true;
 			}
 		}
+
+		if (tm.GetTileAtPosition (new Vector2 (transform.position.x, transform.position.z))) {
+			canAttack = true;
+		}
+//		print ("Wants to atk: " + wantsToAttack + " , Can Atk: " + canAttack);
+
+		if (wantsToAttack && canAttack) {
+			AttackInDir (targetRot, direction);
+			return;
+		} else if (wantsToAttack && !canAttack) {
+			Idle ();
+			return;
+		}
+
 
 		if (!tm.GetTileAtPosition(newTile)) {
 			if (player) {
@@ -152,8 +166,10 @@ public class Body : MonoBehaviour {
 
 	public bool EnemyAtPosition (Vector2 position) {
 		RaycastHit hit;
-		if (Physics.Raycast (new Vector3 (position.x, 5f, position.y), Vector3.down, out hit, 5f)) {
-			if (hit.collider.gameObject.layer == 8 && hit.collider.gameObject.tag == "Enemy") {
+		if (Physics.Raycast (new Vector3 (position.x, 2f, position.y), Vector3.down, out hit, 2f)) {
+			Debug.DrawRay (new Vector3 (position.x, 2f, position.y), Vector3.down, Color.yellow, 1f);
+			if (hit.collider.gameObject.tag == "Enemy") {
+				print ("Enemy");
 				return true;
 			} else {
 				return false;
