@@ -16,10 +16,13 @@ public class Body : MonoBehaviour {
 	public bool inAction = false;
 
 	public float health;
+	private float maxHealth;
 
 	public Island location = null;
 
 	private float moveTime = 0.2f;
+
+	public HealthBar healthBar;
 
 	void Awake () {
 		tm = GameObject.Find ("Terrain").GetComponent<TerrainManager> ();
@@ -36,6 +39,10 @@ public class Body : MonoBehaviour {
 
 	void Start () {
 		mr = GetComponent<MapReveal> ();
+		maxHealth = health;
+		if (healthBar != null)
+			healthBar.UpdateBar (health, maxHealth);
+
 		StartActionAttempt (Vector2.zero);
 	}
 
@@ -158,6 +165,9 @@ public class Body : MonoBehaviour {
 
 	public void TakeDamage (float damage) {
 		health -= damage;
+		if (healthBar != null)
+			healthBar.UpdateBar (health, maxHealth);
+
 		if (health <= 0) {
 			Destroy (gameObject);
 			if (player) {
