@@ -167,7 +167,6 @@ public class Body : MonoBehaviour {
 	public bool EnemyAtPosition (Vector2 position) {
 		RaycastHit hit;
 		if (Physics.Raycast (new Vector3 (position.x, 2f, position.y), Vector3.down, out hit, 2f)) {
-			Debug.DrawRay (new Vector3 (position.x, 2f, position.y), Vector3.down, Color.yellow, 1f);
 			if (hit.collider.gameObject.tag == "Enemy") {
 				print ("Enemy");
 				return true;
