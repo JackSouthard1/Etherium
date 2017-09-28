@@ -15,7 +15,7 @@ public class UIResource : MonoBehaviour
 
 	public float totalWidth {
 		get {
-			if (amount >= 1f)
+			if (amount > 0f)
 				return amountText.rectTransform.localPosition.x + amountText.rectTransform.rect.width;
 			else
 				return 0f;

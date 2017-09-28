@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44824833, g: 0.49827534, b: 0.57558256, a: 1}
+  m_IndirectSpecularColor: {r: 0.44824868, g: 0.49827576, b: 0.575583, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -461,10 +461,33 @@ MonoBehaviour:
     prefab: {fileID: 1731185760413756, guid: c3874527b6b064014abec4efad740b2c, type: 2}
     mainColor: {r: 0.1583045, g: 0.89705884, b: 0.2551069, a: 0}
     secondaryColor: {r: 0.43382353, g: 0.43382353, b: 0.43382353, a: 0}
+    recipe:
+      rows:
+      - columns:
+        - resourceType: 1
+          tileType: 2
+          count: 2
   - name: Generator
     prefab: {fileID: 1731185760413756, guid: c3874527b6b064014abec4efad740b2c, type: 2}
     mainColor: {r: 0.15327641, g: 0.71478665, b: 0.99264705, a: 0}
     secondaryColor: {r: 0.43529415, g: 0.43529415, b: 0.43529415, a: 0}
+    recipe:
+      rows:
+      - columns:
+        - resourceType: 1
+          tileType: 4
+          count: 2
+        - resourceType: 3
+          tileType: 0
+          count: 1
+      - columns:
+        - resourceType: 4
+          tileType: 0
+          count: 3
+        - resourceType: 2
+          tileType: 0
+          count: 1
+  anchors: []
 --- !u!1 &940644546
 GameObject:
   m_ObjectHideFlags: 0
@@ -640,20 +663,6 @@ Light:
   m_Lightmapping: 4
   m_AreaSize: {x: 1, y: 1}
   m_BounceIntensity: 1
-  m_FalloffTable:
-    m_Table[0]: 0
-    m_Table[1]: 0
-    m_Table[2]: 0
-    m_Table[3]: 0
-    m_Table[4]: 0
-    m_Table[5]: 0
-    m_Table[6]: 0
-    m_Table[7]: 0
-    m_Table[8]: 0
-    m_Table[9]: 0
-    m_Table[10]: 0
-    m_Table[11]: 0
-    m_Table[12]: 0
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
   m_ShadowRadius: 0
