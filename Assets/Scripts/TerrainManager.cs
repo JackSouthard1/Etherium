@@ -38,12 +38,18 @@ public class TerrainManager : MonoBehaviour {
 
 	private Crafting crafting;
 
+	//TODO: I was gonna use a System.Action so we can all of these at once but eh
+	List<ProductionBuilding> productionBuildings = new List<ProductionBuilding>();
+
 	public void TurnEnd () {
 		for (int i = 0; i < buses.Count; i++) {
 			buses [i].TurnEnd ();
 		}
 		for (int i = 0; i < islands.Length; i++) {
 			islands [i].TestEnemyCount ();
+		}
+		for (int i = 0; i < productionBuildings.Count; i++) {
+			productionBuildings [i].TurnEnd ();
 		}
 	}
 
@@ -81,9 +87,14 @@ public class TerrainManager : MonoBehaviour {
 				mrs [i].material.color = secondaryColor;
 			}
 		}
+
+		ProductionBuilding production = building.GetComponent<ProductionBuilding> ();
+		if (production != null) {
+			productionBuildings.Add (production);
+		}
 	}
 
-	public Resource SpawnResource (Vector3 position, ResourceInfo info, Island island) {
+	public Resource SpawnResource (Vector3 position, ResourceInfo info, Island island, float startingHeight = 0f) {
 		Vector2 posV2 = new Vector2 (position.x, position.z);
 		if (resources.ContainsKey (posV2)) {
 			Resource curResource = resources [posV2];
@@ -94,7 +105,7 @@ public class TerrainManager : MonoBehaviour {
 				resourceGO.gameObject.GetComponentInChildren<SpriteRenderer> ().color = info.color;
 
 				curResource.resourceGO.Add (resourceGO);
-				resourceGO.transform.Translate (Vector3.up * stackHeight * (curResource.resourceGO.Count - 1));
+				resourceGO.transform.Translate (Vector3.up * (stackHeight * (curResource.resourceGO.Count - 1) + startingHeight));
 
 				UpdateResources ();
 				return curResource;
@@ -110,6 +121,8 @@ public class TerrainManager : MonoBehaviour {
 			resourceGO.gameObject.GetComponentInChildren<SpriteRenderer> ().color = info.color;
 			resources.Add (posV2, resource);
 			island.resources.Add (resource);
+
+			resourceGO.transform.Translate (Vector3.up * startingHeight);
 
 			UpdateResources ();
 			return resource;
@@ -275,5 +288,15 @@ public class TerrainManager : MonoBehaviour {
 
 		Debug.LogError ("Resource type " + resourceType.ToString () + " not found in list");
 		return 0;
+	}
+
+	public ResourceInfo ResourceTypeToInfo(ResourceInfo.ResourceType resourceType) {
+		for (int i = 0; i < resourceInfos.Length; i++) {
+			if (resourceInfos [i].type == resourceType)
+				return resourceInfos[i];
+		}
+
+		Debug.LogError ("Resource type " + resourceType.ToString () + " not found in list");
+		return new ResourceInfo();
 	}
 }
