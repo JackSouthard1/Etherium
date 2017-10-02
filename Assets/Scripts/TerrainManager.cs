@@ -177,6 +177,10 @@ public class TerrainManager : MonoBehaviour {
 //		}
 
 		foreach (Vector2 key in resources.Keys.ToList()) {
+			//HACK right now this is being called as you build the building, so sometimes it tries to check a resource that has just been destroyed
+			if (!resources.ContainsKey (key))
+				continue;
+
 			Resource resourceToTest = resources [key];
 			crafting.TestForCrafting (resourceToTest);
 		}
