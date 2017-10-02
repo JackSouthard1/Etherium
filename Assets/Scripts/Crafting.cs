@@ -123,7 +123,7 @@ public class Crafting : MonoBehaviour {
 		if (hasRecipe) {
 			// Craft
 			Crafting.BuildingInfo buildingInfo = buildings[confirmedRecipe.name];
-			tm.SpawnBuilding(anchorResource.resourceGO[0].transform.position, buildingInfo.prefab, buildingInfo.mainColor, buildingInfo.secondaryColor);
+			tm.SpawnBuilding(anchorResource.resourceGO[0].transform.position, buildingInfo.prefab, buildingInfo.mainColor, buildingInfo.secondaryColor, anchorResource.island);
 
 			tm.ResourceConsumed (affectedResources);
 		}

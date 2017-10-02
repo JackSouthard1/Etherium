@@ -77,7 +77,7 @@ public class TerrainManager : MonoBehaviour {
 		}
 	}
 
-	public void SpawnBuilding (Vector3 position, GameObject prefab, Color mainColor, Color secondaryColor) {
+	public void SpawnBuilding (Vector3 position, GameObject prefab, Color mainColor, Color secondaryColor, Island island) {
 		GameObject building = (GameObject)Instantiate (prefab, position, Quaternion.identity, transform);
 		MeshRenderer[] mrs = building.GetComponentsInChildren<MeshRenderer> ();
 		for (int i = 0; i < mrs.Length; i++) {
@@ -90,6 +90,7 @@ public class TerrainManager : MonoBehaviour {
 
 		ProductionBuilding production = building.GetComponent<ProductionBuilding> ();
 		if (production != null) {
+			production.Init (island);
 			productionBuildings.Add (production);
 		}
 	}

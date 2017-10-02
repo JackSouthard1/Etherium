@@ -10,14 +10,10 @@ public class ProductionBuilding : Building
 
 	TerrainManager tm;
 	int turnsUntilNextResource;
-	Island island;
 
 	void Start () {
 		turnsUntilNextResource = turnWaitPerResource;
 		tm = GameObject.FindObjectOfType<TerrainManager> ();
-
-		//HACK
-		island = tm.GetTileAtPosition(transform.position).transform.parent.GetComponent<Island>();
 	}
 
 	public void TurnEnd() {
