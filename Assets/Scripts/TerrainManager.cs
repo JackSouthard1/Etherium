@@ -80,14 +80,16 @@ public class TerrainManager : MonoBehaviour {
 		}
 	}
 
-	public void SpawnBuilding (Vector3 position, GameObject prefab, Color mainColor, Color secondaryColor, Island island) {
+	public void SpawnBuilding (Vector3 position, GameObject prefab, Color mainColor, Color secondaryColor, Color alternateColor, Island island) {
 		GameObject building = (GameObject)Instantiate (prefab, position, Quaternion.identity, transform);
 		MeshRenderer[] mrs = building.transform.Find("Model").GetComponentsInChildren<MeshRenderer> ();
 		for (int i = 0; i < mrs.Length; i++) {
 			if (mrs [i].gameObject.name.Contains ("(P)")) {
 				mrs [i].material.color = mainColor;
-			} else {
+			} else if (mrs [i].gameObject.name.Contains ("(S)")) {
 				mrs [i].material.color = secondaryColor;
+			} else if (mrs [i].gameObject.name.Contains ("(A)")) {
+				mrs [i].material.color = alternateColor;
 			}
 		}
 
@@ -172,13 +174,11 @@ public class TerrainManager : MonoBehaviour {
 	}
 
 	void UpdateResources () {
-//		foreach (KeyValuePair<Vector2, Resource> resource in resources) {
-//			crafting.TestForCrafting (resource.Value);
-//		}
-
 		foreach (Vector2 key in resources.Keys.ToList()) {
-			Resource resourceToTest = resources [key];
-			crafting.TestForCrafting (resourceToTest);
+			if (resources.ContainsKey (key)) {
+				Resource resourceToTest = resources [key];
+				crafting.TestForCrafting (resourceToTest);
+			}
 		}
 	}
 

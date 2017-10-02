@@ -114,6 +114,7 @@ public class Crafting : MonoBehaviour {
 					}
 				}
 			}
+
 			if (correct >= recipe.resources.Length) {
 				hasRecipe = true;
 				confirmedRecipe = recipe;
@@ -124,7 +125,7 @@ public class Crafting : MonoBehaviour {
 			// Craft
 			Crafting.BuildingInfo buildingInfo = buildings[confirmedRecipe.name];
 			Vector3 spawnPos = anchorResource.resourceGO[0].transform.position + new Vector3 (buildingInfo.anchorOffset.x, 0, buildingInfo.anchorOffset.y);
-			tm.SpawnBuilding(spawnPos, buildingInfo.prefab, buildingInfo.mainColor, buildingInfo.secondaryColor, anchorResource.island);
+			tm.SpawnBuilding(spawnPos, buildingInfo.prefab, buildingInfo.mainColor, buildingInfo.secondaryColor, buildingInfo.alternateColor, anchorResource.island);
 
 			tm.ResourceConsumed (affectedResources);
 		}
@@ -158,6 +159,7 @@ public class Crafting : MonoBehaviour {
 		public GameObject prefab;
 		public Color mainColor;
 		public Color secondaryColor;
+		public Color alternateColor;
 
 		public EditorRecipe recipe;
 		public Vector2 anchorOffset;

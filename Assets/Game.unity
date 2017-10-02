@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44824868, g: 0.49827576, b: 0.575583, a: 1}
+  m_IndirectSpecularColor: {r: 0.44824833, g: 0.49827534, b: 0.57558256, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -602,6 +602,7 @@ MonoBehaviour:
     prefab: {fileID: 1731185760413756, guid: c3874527b6b064014abec4efad740b2c, type: 2}
     mainColor: {r: 0.1583045, g: 0.89705884, b: 0.2551069, a: 0}
     secondaryColor: {r: 0.43382353, g: 0.43382353, b: 0.43382353, a: 0}
+    alternateColor: {r: 0, g: 0, b: 0, a: 0}
     recipe:
       rows:
       - columns:
@@ -609,21 +610,21 @@ MonoBehaviour:
           tileType: 2
           count: 2
     anchorOffset: {x: 0, y: 0}
-  - name: Generator
-    prefab: {fileID: 1731185760413756, guid: c3874527b6b064014abec4efad740b2c, type: 2}
-    mainColor: {r: 0.98955375, g: 1, b: 0.24264705, a: 0}
+  - name: Extractor
+    prefab: {fileID: 1322542648624708, guid: 601b061a752f84fea8504c08e3a15486, type: 2}
+    mainColor: {r: 0.24313727, g: 0.9686275, b: 1, a: 0}
     secondaryColor: {r: 0.9096647, g: 0.24410684, b: 0.9485294, a: 0}
+    alternateColor: {r: 0.86666673, g: 0.6509804, b: 0.18431373, a: 0}
     recipe:
       rows:
       - columns:
         - resourceType: 1
           tileType: 0
           count: 1
-      - columns:
         - resourceType: 3
           tileType: 1
-          count: 2
-    anchorOffset: {x: 0, y: 1}
+          count: 3
+    anchorOffset: {x: 1, y: 0}
   anchors: []
 --- !u!1 &940644546
 GameObject:
@@ -801,6 +802,20 @@ Light:
   m_Lightmapping: 4
   m_AreaSize: {x: 1, y: 1}
   m_BounceIntensity: 1
+  m_FalloffTable:
+    m_Table[0]: 0
+    m_Table[1]: 0
+    m_Table[2]: 0
+    m_Table[3]: 0
+    m_Table[4]: 0
+    m_Table[5]: 0
+    m_Table[6]: 0
+    m_Table[7]: 0
+    m_Table[8]: 0
+    m_Table[9]: 0
+    m_Table[10]: 0
+    m_Table[11]: 0
+    m_Table[12]: 0
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
   m_ShadowRadius: 0
