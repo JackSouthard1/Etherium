@@ -11,7 +11,8 @@ public class ProductionBuilding : Building
 	TerrainManager tm;
 	int turnsUntilNextResource;
 
-	void Start () {
+	//has to be awake because base class has Start
+	void Awake () {
 		turnsUntilNextResource = turnWaitPerResource;
 		tm = GameObject.FindObjectOfType<TerrainManager> ();
 	}
@@ -20,7 +21,10 @@ public class ProductionBuilding : Building
 		turnsUntilNextResource -= 1;
 		if (turnsUntilNextResource <= 0) {
 			turnsUntilNextResource = turnWaitPerResource;
-			tm.SpawnResource (transform.position, tm.ResourceTypeToInfo (resourceType), island, height);
+
+			Vector3 spawnPos = (pad != null) ? pad.position : transform.position;
+			float spawnHeight = (pad != null) ? pad.position.y : height;
+			tm.SpawnResource (spawnPos, tm.ResourceTypeToInfo (resourceType), island, spawnHeight);
 		}
 	}
 }

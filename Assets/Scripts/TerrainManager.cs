@@ -36,6 +36,9 @@ public class TerrainManager : MonoBehaviour {
 	[HideInInspector]
 	public Dictionary<Vector2, Resource> resources = new Dictionary<Vector2, Resource> ();
 
+	[HideInInspector]
+	public Dictionary<Vector2, float> pads = new Dictionary<Vector2, float> ();
+
 	private Crafting crafting;
 
 	//TODO: I was gonna use a System.Action so we can all of these at once but eh
@@ -79,7 +82,7 @@ public class TerrainManager : MonoBehaviour {
 
 	public void SpawnBuilding (Vector3 position, GameObject prefab, Color mainColor, Color secondaryColor, Island island) {
 		GameObject building = (GameObject)Instantiate (prefab, position, Quaternion.identity, transform);
-		MeshRenderer[] mrs = building.GetComponentsInChildren<MeshRenderer> ();
+		MeshRenderer[] mrs = building.transform.Find("Model").GetComponentsInChildren<MeshRenderer> ();
 		for (int i = 0; i < mrs.Length; i++) {
 			if (mrs [i].gameObject.name.Contains ("(P)")) {
 				mrs [i].material.color = mainColor;
@@ -93,10 +96,21 @@ public class TerrainManager : MonoBehaviour {
 			production.Init (island);
 			productionBuildings.Add (production);
 		}
+
+		Transform pad = building.transform.Find ("Pad");
+		if(pad != null) {
+			Vector2 pos2D = new Vector2 (Mathf.RoundToInt(pad.position.x), Mathf.RoundToInt(pad.position.z));
+			pads.Add(pos2D, pad.position.y);
+		}
 	}
 
 	public Resource SpawnResource (Vector3 position, ResourceInfo info, Island island, float startingHeight = 0f) {
 		Vector2 posV2 = new Vector2 (position.x, position.z);
+
+		if (island == null) {
+			return null;
+		}
+
 		if (resources.ContainsKey (posV2)) {
 			Resource curResource = resources [posV2];
 			if (curResource.info.type == info.type) {
@@ -189,6 +203,14 @@ public class TerrainManager : MonoBehaviour {
 			return true;
 		} else {
 			return false;
+		}
+	}
+
+	public float? PadAtPosition (Vector2 position) {
+		if (pads.ContainsKey (position)) {
+			return pads [position];
+		} else {
+			return null;
 		}
 	}
 

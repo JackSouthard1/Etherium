@@ -74,19 +74,15 @@ public class Player : MonoBehaviour {
 			return;
 		}
 
-		Vector2 posV2 = new Vector2 (transform.position.x, transform.position.z);
-		if (tm.GetTileAtPosition(posV2) == null) {
+		Vector2 posV2 = new Vector2 (Mathf.RoundToInt (transform.position.x), Mathf.RoundToInt (transform.position.y));
+		if (tm.PadAtPosition (posV2) != null) {
 			return;
 		}
-			
-		if (tm.GetResourceAtPosition (posV2) != null) {
-			Resource curResource = tm.GetResourceAtPosition (posV2);
-			if (curResource.info.type != resourceInfo.type) {
-				return;
-			}
-		}
 
-		tm.SpawnResource (transform.position, resourceInfo, body.location);
+		if (tm.SpawnResource (transform.position, resourceInfo, body.location) == null) {
+			return;
+		}
+		
 		inventory[resourceIndex] -= 1f;
 		UpdateInventoryUI ();
 	}

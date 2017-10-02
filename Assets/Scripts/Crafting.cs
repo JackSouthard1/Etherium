@@ -123,7 +123,8 @@ public class Crafting : MonoBehaviour {
 		if (hasRecipe) {
 			// Craft
 			Crafting.BuildingInfo buildingInfo = buildings[confirmedRecipe.name];
-			tm.SpawnBuilding(anchorResource.resourceGO[0].transform.position, buildingInfo.prefab, buildingInfo.mainColor, buildingInfo.secondaryColor, anchorResource.island);
+			Vector3 spawnPos = anchorResource.resourceGO[0].transform.position + new Vector3 (buildingInfo.anchorOffset.x, 0, buildingInfo.anchorOffset.y);
+			tm.SpawnBuilding(spawnPos, buildingInfo.prefab, buildingInfo.mainColor, buildingInfo.secondaryColor, anchorResource.island);
 
 			tm.ResourceConsumed (affectedResources);
 		}
@@ -159,5 +160,6 @@ public class Crafting : MonoBehaviour {
 		public Color secondaryColor;
 
 		public EditorRecipe recipe;
+		public Vector2 anchorOffset;
 	}
 }

@@ -608,26 +608,22 @@ MonoBehaviour:
         - resourceType: 1
           tileType: 2
           count: 2
+    anchorOffset: {x: 0, y: 0}
   - name: Generator
     prefab: {fileID: 1731185760413756, guid: c3874527b6b064014abec4efad740b2c, type: 2}
-    mainColor: {r: 0.15327641, g: 0.71478665, b: 0.99264705, a: 0}
-    secondaryColor: {r: 0.43529415, g: 0.43529415, b: 0.43529415, a: 0}
+    mainColor: {r: 0.98955375, g: 1, b: 0.24264705, a: 0}
+    secondaryColor: {r: 0.9096647, g: 0.24410684, b: 0.9485294, a: 0}
     recipe:
       rows:
       - columns:
         - resourceType: 1
-          tileType: 4
-          count: 2
-        - resourceType: 3
           tileType: 0
           count: 1
       - columns:
-        - resourceType: 4
-          tileType: 0
-          count: 3
-        - resourceType: 2
-          tileType: 0
-          count: 1
+        - resourceType: 3
+          tileType: 1
+          count: 2
+    anchorOffset: {x: 0, y: 1}
   anchors: []
 --- !u!1 &940644546
 GameObject:
