@@ -517,5 +517,7 @@ MonoBehaviour:
   height: 0
   island: {fileID: 0}
   pad: {fileID: 0}
+  supply: 50
+  isActive: 1
   resourceType: 1
   turnWaitPerResource: 5

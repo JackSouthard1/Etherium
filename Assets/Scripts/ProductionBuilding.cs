@@ -17,7 +17,10 @@ public class ProductionBuilding : Building
 		tm = GameObject.FindObjectOfType<TerrainManager> ();
 	}
 
-	public void TurnEnd() {
+	public override void TurnEnd() {
+		if (!isActive)
+			return;
+		
 		turnsUntilNextResource -= 1;
 		if (turnsUntilNextResource <= 0) {
 			turnsUntilNextResource = turnWaitPerResource;
@@ -25,6 +28,10 @@ public class ProductionBuilding : Building
 			Vector3 spawnPos = (pad != null) ? pad.position : transform.position;
 			float spawnHeight = (pad != null) ? pad.position.y : height;
 			tm.SpawnResource (spawnPos, tm.ResourceTypeToInfo (resourceType), island, spawnHeight);
+
+			supply -= 1;
 		}
+
+		base.TurnEnd ();
 	}
 }

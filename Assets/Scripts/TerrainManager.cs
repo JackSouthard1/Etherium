@@ -42,7 +42,7 @@ public class TerrainManager : MonoBehaviour {
 	private Crafting crafting;
 
 	//TODO: I was gonna use a System.Action so we can all of these at once but eh
-	List<ProductionBuilding> productionBuildings = new List<ProductionBuilding>();
+	List<Building> buildings = new List<Building>();
 
 	public void TurnEnd () {
 		for (int i = 0; i < buses.Count; i++) {
@@ -51,8 +51,8 @@ public class TerrainManager : MonoBehaviour {
 		for (int i = 0; i < islands.Length; i++) {
 			islands [i].TestEnemyCount ();
 		}
-		for (int i = 0; i < productionBuildings.Count; i++) {
-			productionBuildings [i].TurnEnd ();
+		for (int i = 0; i < buildings.Count; i++) {
+			buildings [i].TurnEnd ();
 		}
 	}
 
@@ -93,11 +93,9 @@ public class TerrainManager : MonoBehaviour {
 			}
 		}
 
-		ProductionBuilding production = building.GetComponent<ProductionBuilding> ();
-		if (production != null) {
-			production.Init (island);
-			productionBuildings.Add (production);
-		}
+		Building buildingScript = building.GetComponent<Building> ();
+		buildingScript.Init (island);
+		buildings.Add (buildingScript);
 
 		Transform pad = building.transform.Find ("Pad");
 		if(pad != null) {

@@ -10,6 +10,10 @@ public class Building : MonoBehaviour {
 
 	public Transform pad;
 
+	public int supply;
+
+	public bool isActive = true;
+
 	//has to be in Start because subclasses use Awake
 	void Start () {
 		pad = transform.Find ("Pad");
@@ -17,5 +21,11 @@ public class Building : MonoBehaviour {
 
 	public void Init(Island island) {
 		this.island = island;
+	}
+
+	public virtual void TurnEnd() {
+		if (supply <= 0) {
+			isActive = false;
+		}
 	}
 }

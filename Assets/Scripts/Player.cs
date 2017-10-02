@@ -74,7 +74,7 @@ public class Player : MonoBehaviour {
 			return;
 		}
 
-		Vector2 posV2 = new Vector2 (Mathf.RoundToInt (transform.position.x), Mathf.RoundToInt (transform.position.y));
+		Vector2 posV2 = new Vector2 (Mathf.RoundToInt (transform.position.x), Mathf.RoundToInt (transform.position.z));
 		if (tm.PadAtPosition (posV2) != null) {
 			return;
 		}
