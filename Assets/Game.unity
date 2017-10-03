@@ -252,8 +252,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   islandPrefab: {fileID: 1957064115911918, guid: 2445b5953a110497c9303ac250f66a2c,
     type: 2}
-  count: 4
-  spacing: 10
+  count: 9
+  spacing: 12
   islands: []
   teirs:
   - layers:
@@ -391,7 +391,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_FirstSelected: {fileID: 0}
-  m_sendNavigationEvents: 1
+  m_sendNavigationEvents: 0
   m_DragThreshold: 5
 --- !u!4 &588331890
 Transform:

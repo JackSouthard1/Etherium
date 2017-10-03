@@ -53,7 +53,7 @@ public class Island : MonoBehaviour {
 		tm = GameObject.Find ("Terrain").GetComponent<TerrainManager> ();
 		gm = GameObject.Find ("GameManager").GetComponent<GameManager> ();
 
-		teir = Mathf.RoundToInt(index.x + index.y);
+		teir = Mathf.Clamp(Mathf.RoundToInt(index.x + index.y), 0, tm.teirs.Length - 1);
 		teirInfo = tm.teirs [teir];
 
 		GenerateTiles ();
