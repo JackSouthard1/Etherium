@@ -44,7 +44,7 @@ public class Island : MonoBehaviour {
 	public List<int> voidTileIndexes;
 
 	[HideInInspector]
-	public List<Vector2> voidTilePositions = new List<Vector2>();
+	public List<Vector2> usedTilePositions = new List<Vector2>();
 
 	public List<int> usedTiles = new List<int>();
 	public TerrainManager.Tile[] tiles;
@@ -96,14 +96,14 @@ public class Island : MonoBehaviour {
 		// void tiles
 		voidTileIndexes = new List<int> ();
 		for (int i = 0; i < voidCount; i++) {
-			voidTileIndexes.Add (GetAvaiableTile(true));
+			voidTileIndexes.Add (GetAvaiableTileIndex(true));
 		}
 
 		int tileIndex = 0;
 		for (int z = 0; z < size; z++) {
 			for (int x = 0; x < size; x++) {
 				if (voidTileIndexes.Contains (tileIndex)) {
-					voidTilePositions.Add (new Vector2(x, z));
+					usedTilePositions.Add (new Vector2(x, z));
 				}
 				tileIndex++;
 			}
@@ -113,8 +113,7 @@ public class Island : MonoBehaviour {
 		List<int> resourceTileSpawnIndexs = new List<int> ();
 
 		for (int i = 0; i < resourceTileCount; i++) {
-			resourceTileSpawnIndexs.Add (GetAvaiableTile (false));
-
+			resourceTileSpawnIndexs.Add (GetAvaiableTileIndex (false));
 		}
 		int index = 0;
 		for (int z = 0; z < size; z++) {
@@ -156,7 +155,7 @@ public class Island : MonoBehaviour {
 		List<int> spawnIndexs = new List<int> ();
 
 		for (int f = 0; f < teirInfo.enemyCount; f++) {
-			spawnIndexs.Add (GetAvaiableTile (true));
+			spawnIndexs.Add (GetAvaiableTileIndex (true));
 		}
 
 		for (int i = 0; i < spawnIndexs.Count; i++) {
@@ -169,7 +168,7 @@ public class Island : MonoBehaviour {
 	void SpawnResources () {
 		List<int> spawnIndex = new List<int>();
 		for (int i = 0; i < resourceCount; i++) {
-			spawnIndex.Add(GetAvaiableTile(true));
+			spawnIndex.Add(GetAvaiableTileIndex(true));
 		}
 
 		for (int i = 0; i < spawnIndex.Count; i++) {
@@ -232,39 +231,48 @@ public class Island : MonoBehaviour {
 		}
 	}
 
-	private int GetAvaiableTile (bool canBeNextToVoid) {
+	private int GetAvaiableTileIndex (bool canBeNextToUsedTile) {
 		int random = Random.Range (0, tiles.Length - 1);
 		int playerTileIndex = 0; // hack?
-		if (canBeNextToVoid) {
+
+		int x = random % size;
+		int y = Mathf.FloorToInt (random / size);
+		Vector2 pos = new Vector2 (x, y);
+
+		if (canBeNextToUsedTile) {
 			if (usedTiles.Contains (random) || random == playerTileIndex) {
 				while (usedTiles.Contains (random) || random == playerTileIndex) {
 					random = Random.Range (0, tiles.Length - 1);
+					x = random % size;
+					y = Mathf.FloorToInt (random / size);
+					pos = new Vector2 (x, y);
 				}
 			}
 		} else {
-			if (usedTiles.Contains (random) || random == playerTileIndex || NextToVoid(random)) {
-				while (usedTiles.Contains (random) || random == playerTileIndex || NextToVoid(random)) {
+			if (usedTiles.Contains (random) || random == playerTileIndex || NextToUsedTile(pos, random)) {
+				while (usedTiles.Contains (random) || random == playerTileIndex || NextToUsedTile(pos, random)) {
 					random = Random.Range (0, tiles.Length - 1);
+					x = random % size;
+					y = Mathf.FloorToInt (random / size);
+					pos = new Vector2 (x, y);
 				}
 			}
 		}
 		usedTiles.Add (random);
+		usedTilePositions.Add (pos);
 
 		return random;
 	}
 
-	private bool NextToVoid (int tileIndex) {
+	private bool NextToUsedTile (Vector2 pos, int tileIndex) {
 		if (voidTileIndexes.Contains (tileIndex)) {
 			return true;
 		} else {
-			int x = tileIndex % size;
-			int y = Mathf.FloorToInt (tileIndex / size);
-			Vector2 pos = new Vector2 (x, y);
 			List<Vector2> allDirections = new List<Vector2> () { Vector2.right, Vector2.up, Vector2.left, Vector2.down };
 
 			foreach (var direction in allDirections) {
 				Vector2 testingPos = pos + direction;
-				if (voidTilePositions.Contains (testingPos)) {
+				if (usedTilePositions.Contains (testingPos)) {
 					return true;
 				}
 			}
