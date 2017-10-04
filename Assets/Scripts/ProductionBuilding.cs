@@ -27,7 +27,7 @@ public class ProductionBuilding : Building
 
 			Vector3 spawnPos = (pad != null) ? pad.position : transform.position;
 			float spawnHeight = (pad != null) ? pad.position.y : height;
-			tm.SpawnResource (spawnPos, tm.ResourceTypeToInfo (resourceType), island, spawnHeight);
+			tm.SpawnResource (position: spawnPos, info: tm.ResourceTypeToInfo (resourceType), island: island, startingHeight: spawnHeight);
 
 			supply -= 1;
 		}

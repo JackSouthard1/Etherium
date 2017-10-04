@@ -18,6 +18,7 @@ public class Island : MonoBehaviour {
 	[Header("Resouces")]
 	public int resourceCount;
 	public int resourceTileCount;
+	private int resourcesPerTile;
 
 	public List<Resource> resources = new List<Resource>();
 
@@ -59,11 +60,10 @@ public class Island : MonoBehaviour {
 		teir = Mathf.Clamp(Mathf.RoundToInt(index.x + index.y), 0, tm.teirs.Length - 1);
 		teirInfo = tm.teirs [teir];
 
-		GenerateTiles ();
-		SpawnResources ();
-		SpawnEnemies ();
+		resourcesPerTile = Mathf.CeilToInt (resourceCount / resourceTileCount);
 
-//		TestEnemyCount ();
+		GenerateTiles ();
+		SpawnEnemies ();
 	}
 
 	public void PlayerEnterIsland () {
@@ -134,6 +134,10 @@ public class Island : MonoBehaviour {
 						TerrainManager.ResourceInfo resourceInfo = tm.resourceInfos [resourceIndex];
 						resourceInfoType = resourceInfo.type;
 						tileColor = resourceInfo.color;
+
+						for (int i = 0; i < resourcesPerTile; i++) {
+							tm.SpawnResource(position: transform.TransformPoint(position), info: resourceInfo, island: GetComponent<Island>(), initialSpawn: true);
+						}
 					} else {
 						resourceInfoType = TerrainManager.ResourceInfo.ResourceType.None;
 						tileColor = teirInfo.layers [layer].color;
@@ -162,18 +166,6 @@ public class Island : MonoBehaviour {
 			GameObject enemy = (GameObject)Instantiate(enemyPrefab, transform);
 			enemy.transform.position = tiles[spawnIndexs[i]].tile.transform.position;
 			enemies.Add (enemy.GetComponent<Body>());
-		}
-	}
-
-	void SpawnResources () {
-		List<int> spawnIndex = new List<int>();
-		for (int i = 0; i < resourceCount; i++) {
-			spawnIndex.Add(GetAvaiableTileIndex(true));
-		}
-
-		for (int i = 0; i < spawnIndex.Count; i++) {
-			TerrainManager.ResourceInfo info = tm.resourceInfos [teirInfo.resourceIndexes[Random.Range(0, teirInfo.resourceIndexes.Length)]];
-			tm.SpawnResource(tiles[spawnIndex[i]].tile.transform.position, info, GetComponent<Island>());
 		}
 	}
 

@@ -104,7 +104,7 @@ public class TerrainManager : MonoBehaviour {
 		}
 	}
 
-	public Resource SpawnResource (Vector3 position, ResourceInfo info, Island island, float startingHeight = 0f) {
+	public Resource SpawnResource (Vector3 position, ResourceInfo info, Island island, bool initialSpawn = false, float startingHeight = 0f) {
 		Vector2 posV2 = new Vector2 (position.x, position.z);
 
 		if (island == null) {
@@ -122,7 +122,9 @@ public class TerrainManager : MonoBehaviour {
 				curResource.resourceGO.Add (resourceGO);
 				resourceGO.transform.Translate (Vector3.up * (stackHeight * (curResource.resourceGO.Count - 1) + startingHeight));
 
-				UpdateResources ();
+				if (!initialSpawn) {
+					UpdateResources ();
+				}
 				return curResource;
 			} else {
 				return null;
@@ -138,8 +140,9 @@ public class TerrainManager : MonoBehaviour {
 			island.resources.Add (resource);
 
 			resourceGO.transform.Translate (Vector3.up * startingHeight);
-
-			UpdateResources ();
+			if (!initialSpawn) {
+				UpdateResources ();
+			}
 			return resource;
 		}
 	}
@@ -161,9 +164,6 @@ public class TerrainManager : MonoBehaviour {
 			keysToRemove.Add (consumedResources[k].position);
 		}
 
-//		for (int i = 0; i < keys.Count; i++) {
-//			resources.Remove (keys [i]);
-//		}
 		foreach (Vector2 resourceKey in resources.Keys.ToList()) {
 			if (keysToRemove.Contains (resourceKey)) {
 				resources.Remove (resourceKey);
