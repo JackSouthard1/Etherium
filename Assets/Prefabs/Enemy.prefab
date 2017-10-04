@@ -380,10 +380,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf1a02818662c46c7a21ab3a71f2db12, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  dropType: 3
+  dropCount: 1
+  tm: {fileID: 0}
   player: 0
   inAction: 0
   health: 1
   location: {fileID: 0}
+  healthBar: {fileID: 0}
 --- !u!114 &114499003438243520
 MonoBehaviour:
   m_ObjectHideFlags: 1

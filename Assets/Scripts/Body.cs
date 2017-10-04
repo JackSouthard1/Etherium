@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Body : MonoBehaviour {
+	[Header("Drops")]
+	public TerrainManager.ResourceInfo.ResourceType dropType;
+	public int dropCount;
+
 	[HideInInspector]
 	public TerrainManager tm;
 	private GameManager gm;
@@ -13,16 +17,19 @@ public class Body : MonoBehaviour {
 	private MapReveal mr;
 	[HideInInspector]
 	public bool player = false;
+	[HideInInspector]
 	public bool inAction = false;
 
+	[Space(10)]
 	public float health;
 	private float maxHealth;
 	public bool canHeal { get { return health < maxHealth; } }
 
+	[HideInInspector]
 	public Island location = null;
 
 	private float moveTime = 0.2f;
-
+	[HideInInspector]
 	public HealthBar healthBar;
 
 	void Awake () {
@@ -179,13 +186,16 @@ public class Body : MonoBehaviour {
 
 		if (amount < 0f) {
 			if (health <= 0) {
-				Destroy (gameObject);
 				if (player) {
 					print ("Player Dead");
 				} else {
+					for (int i = 0; i < dropCount; i++) {
+						tm.SpawnResource (transform.position, tm.ResourceTypeToInfo (dropType), location);
+					}
 					location.EnemyDeath (GetComponent<Body> ());
 					gm.EnemyDeath (GetComponent<Body> ());
 				}
+				Destroy (gameObject);
 			}
 		} else {
 			if (health > maxHealth) {
@@ -270,4 +280,10 @@ public class Body : MonoBehaviour {
 		}
 		model.rotation = targetRot;
 	}
+
+//	[System.Serializable]
+//	public struct DropInfo {
+//		int count;
+//		TerrainManager.ResourceInfo.ResourceType type;
+//	}
 }
