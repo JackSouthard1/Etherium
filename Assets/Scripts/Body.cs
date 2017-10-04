@@ -17,6 +17,7 @@ public class Body : MonoBehaviour {
 
 	public float health;
 	private float maxHealth;
+	public bool canHeal { get { return health < maxHealth; } }
 
 	public Island location = null;
 
@@ -163,18 +164,32 @@ public class Body : MonoBehaviour {
 		TurnEnd ();
 	}
 
-	public void TakeDamage (float damage) {
-		health -= damage;
+	public void TakeDamage(float damage) {
+		ChangeHealth (-damage);
+	}
+
+	public void Heal(float extraHealth) {
+		ChangeHealth (extraHealth);
+	}
+
+	void ChangeHealth (float amount) {
+		health += amount;
 		if (healthBar != null)
 			healthBar.UpdateBar (health, maxHealth);
 
-		if (health <= 0) {
-			Destroy (gameObject);
-			if (player) {
-				print ("Player Dead");
-			} else {
-				location.EnemyDeath (GetComponent<Body> ());
-				gm.EnemyDeath (GetComponent<Body> ());
+		if (amount < 0f) {
+			if (health <= 0) {
+				Destroy (gameObject);
+				if (player) {
+					print ("Player Dead");
+				} else {
+					location.EnemyDeath (GetComponent<Body> ());
+					gm.EnemyDeath (GetComponent<Body> ());
+				}
+			}
+		} else {
+			if (health > maxHealth) {
+				health = maxHealth;
 			}
 		}
 	}
