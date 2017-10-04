@@ -14,6 +14,7 @@ public class Player : MonoBehaviour {
 
 	public GameObject uiResourcePrefab;
 
+	const float healAmount = 1f;
 	const float inventoryPadding = 15f;
 
 	void Start () {
@@ -84,6 +85,22 @@ public class Player : MonoBehaviour {
 		}
 		
 		inventory[resourceIndex] -= 1f;
+		UpdateInventoryUI ();
+	}
+
+	public void Heal(float resourcesConsumed) {
+		int resourceIndex = tm.ResourceTypeToIndex (TerrainManager.ResourceInfo.ResourceType.Green);
+
+		if (!body.canHeal)
+			return;
+
+		float newAmount = inventory [resourceIndex] - resourcesConsumed;
+		if (newAmount < 0f)
+			return;
+
+		inventory [resourceIndex] = Mathf.Round (newAmount * 10f) / 10f;
+		body.Heal (healAmount);
+
 		UpdateInventoryUI ();
 	}
 
