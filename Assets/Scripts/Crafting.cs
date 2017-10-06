@@ -127,7 +127,7 @@ public class Crafting : MonoBehaviour {
 			Vector3 spawnPos = anchorResource.resourceGO[0].transform.position + new Vector3 (buildingInfo.anchorOffset.x, 0, buildingInfo.anchorOffset.y);
 			tm.SpawnBuilding(spawnPos, buildingInfo.prefab, buildingInfo.mainColor, buildingInfo.secondaryColor, buildingInfo.alternateColor, anchorResource.island);
 
-			tm.ResourceConsumed (affectedResources);
+			tm.ConsumeResources (affectedResources);
 		}
 	}
 

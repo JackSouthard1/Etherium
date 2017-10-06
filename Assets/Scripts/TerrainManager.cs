@@ -147,21 +147,30 @@ public class TerrainManager : MonoBehaviour {
 		}
 	}
 
-	public void ResourceConsumed (List<Resource> consumedResources) {
+	public void ConsumeResources (List<Resource> consumedResources, List<int> amountsToConsume = null) {
 		List<Vector2> keysToRemove = new List<Vector2> ();
 
 		for (int k = 0; k < consumedResources.Count; k++) {
-			consumedResources[k].island.resources.Remove (consumedResources[k]);
+			int amountToConsume = (amountsToConsume != null) ? amountsToConsume [k] : consumedResources [k].resourceGO.Count;
+			bool consumesFullStack = amountToConsume == consumedResources [k].resourceGO.Count;
+
+			if (consumesFullStack)
+				consumedResources [k].island.resources.Remove (consumedResources [k]);
+
 			List<GameObject> destroying = new List<GameObject> ();
-			for (int i = 0; i < consumedResources[k].resourceGO.Count; i++) {
+			int max = (consumedResources [k].resourceGO.Count - 1);
+			int min = (consumedResources [k].resourceGO.Count - amountToConsume);
+			for (int i = max; i >= min; i--) {
 				destroying.Add (consumedResources[k].resourceGO [i]);
+				consumedResources [k].resourceGO.RemoveAt (i);
 			}
 
 			for (int i = 0; i < destroying.Count; i++) {
 				Destroy (destroying [i]);
 			}
 
-			keysToRemove.Add (consumedResources[k].position);
+			if(consumesFullStack)
+				keysToRemove.Add (consumedResources[k].position);
 		}
 
 		foreach (Vector2 resourceKey in resources.Keys.ToList()) {

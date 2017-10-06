@@ -63,7 +63,7 @@ public class Player : MonoBehaviour {
 
 		inventory [tm.ResourceTypeToIndex(resource.info.type)] += (float) stackCount;
 		List<Resource> affectedResources = new List<Resource> {resource};
-		tm.ResourceConsumed (affectedResources);
+		tm.ConsumeResources (affectedResources);
 
 		UpdateInventoryUI ();
 	}
