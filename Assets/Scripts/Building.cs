@@ -14,6 +14,8 @@ public class Building : MonoBehaviour {
 
 	public bool isActive = true;
 
+	public Animator anim;
+
 	//has to be in Start because subclasses use Awake
 	void Start () {
 		pad = transform.Find ("Pad");
@@ -26,6 +28,12 @@ public class Building : MonoBehaviour {
 	public virtual void TurnEnd() {
 		if (supply <= 0) {
 			isActive = false;
+			SetAnimTrigger ("Deactivate");
 		}
+	}
+
+	public void SetAnimTrigger(string triggerName) {
+		if (anim != null)
+			anim.SetTrigger (triggerName);
 	}
 }

@@ -12,6 +12,7 @@ public class ProductionBuilding : Building
 	public bool isRefinery;
 	public TerrainManager.ResourceInfo.ResourceType consumedType;
 	public int resourcesConsumed;
+	public float productionAnimationTime;
 
 	TerrainManager tm;
 	int turnsUntilNextResource;
@@ -25,6 +26,9 @@ public class ProductionBuilding : Building
 
 		if (isRefinery) {
 			adjacentTiles = GetAdjacentTiles ();
+			SetAnimTrigger ("Waiting");
+		} else {
+			SetAnimTrigger ("Producing");
 		}
 	}
 
@@ -40,8 +44,11 @@ public class ProductionBuilding : Building
 				if (!ConsumeAdjacentResources) {
 					return;
 				}
+
+				if (anim != null) {
+					StartCoroutine (RefineryProductionAnimation ());
+				}
 			}
-				
 
 			Vector3 spawnPos = (pad != null) ? pad.position : transform.position;
 			float spawnHeight = (pad != null) ? pad.position.y : height;
@@ -92,5 +99,11 @@ public class ProductionBuilding : Building
 		adjacentTiles.Add (curPosV2 + new Vector2(0f, -1f));
 
 		return adjacentTiles;
+	}
+
+	IEnumerator RefineryProductionAnimation() {
+		SetAnimTrigger ("Producing");
+		yield return new WaitForSeconds (productionAnimationTime);
+		SetAnimTrigger ("Waiting");
 	}
 }
