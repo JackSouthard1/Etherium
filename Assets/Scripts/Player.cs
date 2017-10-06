@@ -40,7 +40,7 @@ public class Player : MonoBehaviour {
 		}
 
 		//temp
-		inventory[tm.ResourceTypeToIndex(TerrainManager.ResourceInfo.ResourceType.Green)] = 3f;
+		inventory[tm.ResourceTypeToIndex(TerrainManager.ResourceInfo.ResourceType.Green)] = 3.1f;
 
 		UpdateInventoryUI ();
 	}
@@ -108,13 +108,14 @@ public class Player : MonoBehaviour {
 		UpdateInventoryUI ();
 	}
 
-	public void HandlePlayerMove () {
+	public void Eat() {
 		float resourcesPerMove = 1f / ((float) movesPerResource);
 		int resourceIndex = tm.ResourceTypeToIndex (TerrainManager.ResourceInfo.ResourceType.Green);
 
 		float newAmount = inventory [resourceIndex] - resourcesPerMove;
 		if (newAmount < 0f) {
 			newAmount = 0f;
+			body.TakeDamage (0.5f);
 		}
 		//TODO: better way to fix float innacuracy?
 		inventory [resourceIndex] = Mathf.Round(newAmount * 10f) / 10f;

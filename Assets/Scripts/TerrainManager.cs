@@ -59,6 +59,7 @@ public class TerrainManager : MonoBehaviour {
 	void Awake () {
 		crafting = GameObject.Find ("GameManager").GetComponent<Crafting> ();
 		GenerateIslands ();
+
 	}
 
 	void GenerateIslands () {
@@ -72,8 +73,12 @@ public class TerrainManager : MonoBehaviour {
 				GameObject island = (GameObject)Instantiate (islandPrefab, transform);
 				island.transform.position = pos;
 				island.name = "Island (" + x + "," + z + ")";
-				island.GetComponent<Island>().index = new Vector2(x, z);
-				islands [index] = island.GetComponent<Island>();
+
+				Island islandScript = island.GetComponent<Island> ();
+				islandScript.index = new Vector2(x, z);
+				islands [index] = islandScript;
+				islandScript.InitIsland ();
+				
 
 				index++;
 			}

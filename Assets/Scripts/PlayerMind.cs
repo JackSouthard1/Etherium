@@ -14,6 +14,10 @@ public class PlayerMind : Mind {
 		player = GameObject.FindObjectOfType<Player> ();
 	}
 
+	protected override void MindStart () {
+		return;
+	}
+
 	void Update () {
 		if (myTurn && !gm.transitioning) {
 			HandleKeyboardInput ();
@@ -66,5 +70,15 @@ public class PlayerMind : Mind {
 				}
 			}
 		}
+	}
+
+	protected override void EmptyAction () {
+		return;
+	}
+
+	protected override bool IsAvailableDirection (Vector2 direction) {
+		Vector2 position = new Vector2 (transform.position.x, transform.position.z) + direction;
+
+		return !UnstandableBuildingAtPosition (position);
 	}
 }

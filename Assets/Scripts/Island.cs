@@ -53,10 +53,12 @@ public class Island : MonoBehaviour {
 	private GameManager gm;
 	public Vector2 index;
 
-	void Start () {
+	void Awake () {
 		tm = GameObject.Find ("Terrain").GetComponent<TerrainManager> ();
 		gm = GameObject.Find ("GameManager").GetComponent<GameManager> ();
+	}
 
+	public void InitIsland() {
 		teir = Mathf.Clamp(Mathf.RoundToInt(index.x + index.y), 0, tm.teirs.Length - 1);
 		teirInfo = tm.teirs [teir];
 
