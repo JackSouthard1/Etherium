@@ -6,7 +6,13 @@ public class PlayerMind : Mind {
 	Vector2? startingTouchPos = null;
 	bool finishedSwipe = false;
 
+	Player player;
+
 	const float minDistanceForMove = 5f;
+
+	void Awake () {
+		player = GameObject.FindObjectOfType<Player> ();
+	}
 
 	void Update () {
 		if (myTurn && !gm.transitioning) {
@@ -34,6 +40,7 @@ public class PlayerMind : Mind {
 
 		if (Input.GetKeyDown (KeyCode.Space)) {
 			base.Idle();
+			StartCoroutine (player.ShowIdleUI ());
 		}
 	}
 

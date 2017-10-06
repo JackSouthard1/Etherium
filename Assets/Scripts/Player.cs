@@ -6,6 +6,8 @@ public class Player : MonoBehaviour {
 	public Transform inventoryParent;
 	public int movesPerResource;
 
+	public GameObject idleIcon;
+
 	Body body;
 	TerrainManager tm;
 
@@ -22,6 +24,8 @@ public class Player : MonoBehaviour {
 		body = GetComponent<Body> ();
 
 		InitInventory ();
+
+		idleIcon.SetActive (false);
 	}
 
 	void InitInventory () {
@@ -130,5 +134,11 @@ public class Player : MonoBehaviour {
 			if(uiResource.totalWidth > 0)
 				leftAnchor += (uiResource.totalWidth + inventoryPadding);
 		}
+	}
+
+	public IEnumerator ShowIdleUI() {
+		idleIcon.SetActive (true);
+		yield return new WaitForSeconds (0.5f);
+		idleIcon.SetActive (false);
 	}
 }
