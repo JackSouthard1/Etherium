@@ -26,7 +26,7 @@ public class MeleeWeapon : Weapon {
 			RaycastHit hit;
 			if (Physics.Raycast (new Vector3 (affectedPositions[i].x, 5f, affectedPositions[i].y), Vector3.down, out hit, 5f)) {
 				if (hit.collider.gameObject.layer == 8) {
-					endRay = hit.collider.transform.Find("Model").Find("Middle").position;
+					endRay = hit.collider.transform.Find("Model").Find("Character").Find("Core").position;
 					hitBodies.Add (hit.collider.gameObject.GetComponent<Body> ());
 
 					StartCoroutine (RenderAttack());

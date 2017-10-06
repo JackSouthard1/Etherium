@@ -57,7 +57,7 @@ MonoBehaviour:
   size: 6
   resourceCount: 9
   resourceTileCount: 3
-  enemyPrefab: {fileID: 1882779021027994, guid: fcfa6dbcf5a80476397530d8a39f4f70,
+  enemyPrefab: {fileID: 1005221541181882, guid: 415a1583845034f8c853c0a5f16dccb7,
     type: 2}
   enemies: []
   civilizedColor: {r: 0.49264705, g: 0.40346092, b: 0.30790442, a: 0}
