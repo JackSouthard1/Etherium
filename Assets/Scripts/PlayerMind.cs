@@ -10,12 +10,8 @@ public class PlayerMind : Mind {
 
 	const float minDistanceForMove = 5f;
 
-	void Awake () {
-		player = Player.instance;
-	}
-
 	protected override void MindStart () {
-		return;
+		player = Player.instance;
 	}
 
 	void Update () {
