@@ -268,7 +268,7 @@ MonoBehaviour:
     - color: {r: 0.2392157, g: 0.5568628, b: 0.8745099, a: 0}
     - color: {r: 0.2627451, g: 0.6156863, b: 0.9725491, a: 0}
     resourceIndexes: 02000000
-    enemyCount: 1
+    enemyCount: 0
   - layers:
     - color: {r: 0.8091374, g: 0.27205884, b: 1, a: 0}
     - color: {r: 0.7140256, g: 0.24005193, b: 0.88235295, a: 0}
