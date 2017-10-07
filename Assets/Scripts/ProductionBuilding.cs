@@ -22,7 +22,7 @@ public class ProductionBuilding : Building
 	//has to be awake because base class has Start
 	void Awake () {
 		turnsUntilNextResource = turnWaitPerResource;
-		tm = GameObject.FindObjectOfType<TerrainManager> ();
+		tm = TerrainManager.instance;
 
 		if (isRefinery) {
 			adjacentTiles = GetAdjacentTiles ();

@@ -4,6 +4,8 @@ using UnityEngine;
 using System.Linq;
 
 public class TerrainManager : MonoBehaviour {
+	public static TerrainManager instance;
+
 	[Header("Islands")]
 	public GameObject islandPrefab;
 	public int count;
@@ -57,9 +59,9 @@ public class TerrainManager : MonoBehaviour {
 	}
 
 	void Awake () {
+		instance = this;
 		crafting = GameObject.Find ("GameManager").GetComponent<Crafting> ();
 		GenerateIslands ();
-
 	}
 
 	void GenerateIslands () {

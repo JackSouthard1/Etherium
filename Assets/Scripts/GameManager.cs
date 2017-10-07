@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour {
+	public static GameManager instance;
+
 	public Body player;
 	public List<Body> enemies = new List<Body>();
 	private int enemiesMoving = 0;
@@ -11,11 +13,13 @@ public class GameManager : MonoBehaviour {
 	public bool transitioning = false;
 
 	void Awake () {
-		player = GameObject.Find ("Player").GetComponent<Body> ();
-		tm = GameObject.Find ("Terrain").GetComponent<TerrainManager> ();
+		instance = this;
+		tm = TerrainManager.instance;
 	}
 
 	void Start () {
+		player = Player.instance.gameObject.GetComponent<Body> ();
+
 		GameObject[] enemiesGOArray = GameObject.FindGameObjectsWithTag ("Enemy");
 		for (int i = 0; i < enemiesGOArray.Length; i++) {
 			enemies.Add (enemiesGOArray [i].GetComponent<Body> ());

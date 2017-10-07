@@ -20,10 +20,16 @@ public class Body : MonoBehaviour {
 	[HideInInspector]
 	public bool inAction = false;
 
+	public int actionsPerTurn = 1;
+	public int attacksPerTurn = 1;
+	int actionsLeft;
+	[HideInInspector]
+	public int attacksLeft;
+
 	[Space(10)]
 	public float health;
 	private float maxHealth;
-	public bool canHeal { get { return health < maxHealth; } }
+	public bool canHeal { get { return health < maxHealth && mind.myTurn; } }
 
 	[HideInInspector]
 	public Island location = null;
@@ -32,10 +38,6 @@ public class Body : MonoBehaviour {
 	public HealthBar healthBar;
 
 	void Awake () {
-		tm = GameObject.Find ("Terrain").GetComponent<TerrainManager> ();
-		gm = GameObject.Find ("GameManager").GetComponent<GameManager> ();
-		mr = GetComponent<MapReveal> ();
-
 		weapon = GetComponentInChildren<Weapon> ();
 		model = transform.Find ("Model");
 	
@@ -47,12 +49,18 @@ public class Body : MonoBehaviour {
 	}
 
 	void Start () {
+		tm = TerrainManager.instance;
+		gm = GameManager.instance;
+		mr = GetComponent<MapReveal> ();
+
 		maxHealth = health;
 		if (healthBar != null)
 			healthBar.UpdateBar (health, maxHealth);
 	}
 
 	public void TurnStart () {
+		actionsLeft = actionsPerTurn;
+		attacksLeft = attacksPerTurn;
 		mind.TurnStart ();
 	}
 
@@ -60,14 +68,9 @@ public class Body : MonoBehaviour {
 		if (player) {
 			gm.PlayerTurnEnd ();
 			mr.PlayerPositionChanged ();
-			playerScript.Eat ();
 		} else {
 			gm.EnemyTurnDone ();
 		}
-	}
-
-	void Idle () {
-		MoveToPos(transform.position, transform.rotation);
 	}
 
 	public void MoveToPos (Vector3 targetPos, Quaternion targetRot) {
@@ -83,6 +86,11 @@ public class Body : MonoBehaviour {
 		inAction = true;
 		StartCoroutine (RotateToDir (targetRot, moveTime));
 		weapon.Attack (direction, new Vector2 (transform.position.x, transform.position.z));
+		attacksLeft--;
+	}
+
+	public void Idle() {
+		StartCoroutine (IdleTurn ());
 	}
 
 	public void CompleteAction () {
@@ -91,9 +99,18 @@ public class Body : MonoBehaviour {
 			if (tm.GetResourceAtPosition (newTile) != null) {
 				playerScript.CollectResource (tm.GetResourceAtPosition (newTile));
 			}
+
+			playerScript.Eat ();
 		}
+
+		actionsLeft--;
 		inAction = false;
-		TurnEnd ();
+
+		if (actionsLeft > 0) {
+			mind.TurnStart ();
+		} else {
+			TurnEnd ();
+		}
 	}
 
 	public void TakeDamage(float damage) {
@@ -157,6 +174,16 @@ public class Body : MonoBehaviour {
 			yield return null;
 		}
 		model.rotation = targetRot;
+	}
+
+	IEnumerator IdleTurn() {
+		inAction = true;
+		actionsLeft = 0;
+		attacksLeft = 0;
+		
+		yield return new WaitForSeconds (0.5f);
+
+		CompleteAction ();
 	}
 
 //	[System.Serializable]

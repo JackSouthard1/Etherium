@@ -8,7 +8,7 @@ public abstract class Weapon : MonoBehaviour {
 	protected Body body;
 
 	void Start () {
-		tm = GameObject.Find ("Terrain").GetComponent<TerrainManager> ();
+		tm = TerrainManager.instance;
 		body = GetComponentInParent<Body> ();
 		ChildStart ();
 	}

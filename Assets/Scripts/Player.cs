@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Player : MonoBehaviour {
+	public static Player instance;
+
 	public Transform inventoryParent;
 	public int movesPerResource;
 
@@ -19,8 +21,12 @@ public class Player : MonoBehaviour {
 	const float healAmount = 1f;
 	const float inventoryPadding = 15f;
 
+	void Awake () {
+		instance = this;
+	}
+
 	void Start () {
-		tm = GameObject.Find ("Terrain").GetComponent<TerrainManager> ();
+		tm = TerrainManager.instance;
 		body = GetComponent<Body> ();
 
 		InitInventory ();

@@ -86,7 +86,7 @@ public class Crafting : MonoBehaviour {
 		Resource anchorResource = _resource;
 
 		if (tm == null) {
-			tm = GameObject.Find ("Terrain").GetComponent<TerrainManager> ();
+			tm = TerrainManager.instance;
 		}
 
 		TerrainManager.ResourceInfo.ResourceType tileType = tm.tiles[anchorResource.position].resourceType;

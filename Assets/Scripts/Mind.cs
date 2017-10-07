@@ -36,8 +36,8 @@ public abstract class Mind : MonoBehaviour {
 
 	void Start () {
 		body = GetComponentInParent<Body> ();
-		gm = GameObject.Find ("GameManager").GetComponent<GameManager> ();
-		tm = GameObject.FindObjectOfType<TerrainManager> ();
+		gm = GameManager.instance;
+		tm = TerrainManager.instance;
 
 		StartActionAttempt (Vector2.zero);
 		MindStart ();
@@ -73,7 +73,8 @@ public abstract class Mind : MonoBehaviour {
 
 	protected void Idle () {
 		myTurn = false;
-		body.TurnEnd ();
+
+		body.Idle ();
 	}
 
 	void StartActionAttempt (Vector2 direction) {
@@ -81,22 +82,8 @@ public abstract class Mind : MonoBehaviour {
 		Quaternion targetRot = Quaternion.Euler(new Vector3 (0f, Mathf.Atan2 (direction.x, direction.y) * Mathf.Rad2Deg, 0f));
 
 		// test to see if body is standing on tile
-		bool canAttack = false;
-		bool wantsToAttack = false;
-
-		if (isPlayer) {
-			if (EnemyAtPosition (newTile)) {
-				wantsToAttack = true;
-			}
-		} else {
-			if (PlayerAtPosition (newTile)) {
-				wantsToAttack = true;
-			}
-		}
-
-		if (tm.GetTileAtPosition (new Vector2 (transform.position.x, transform.position.z))) {
-			canAttack = true;
-		}
+		bool canAttack = (tm.GetTileAtPosition (new Vector2 (transform.position.x, transform.position.z)) && body.attacksLeft > 0);
+		bool wantsToAttack = (isPlayer) ? EnemyAtPosition(newTile) : PlayerAtPosition(newTile);
 
 		if (wantsToAttack && canAttack) {
 			body.AttackInDir (targetRot, direction);

@@ -54,8 +54,7 @@ public class Island : MonoBehaviour {
 	public Vector2 index;
 
 	void Awake () {
-		tm = GameObject.Find ("Terrain").GetComponent<TerrainManager> ();
-		gm = GameObject.Find ("GameManager").GetComponent<GameManager> ();
+		tm = TerrainManager.instance;
 	}
 
 	public void InitIsland() {
@@ -66,6 +65,11 @@ public class Island : MonoBehaviour {
 
 		GenerateTiles ();
 		SpawnEnemies ();
+	}
+
+	//has to be in start because GameManager instance hasn't been set yet
+	void Start () {
+		gm = GameManager.instance;
 	}
 
 	public void PlayerEnterIsland () {

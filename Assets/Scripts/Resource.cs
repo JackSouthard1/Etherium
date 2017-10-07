@@ -10,7 +10,6 @@ public class Resource {
 	public Island island;
 
 	private Crafting crafting;
-	private TerrainManager tm;
 
 	public void UpdatePosition () {
 		position = new Vector2 (resourceGO[0].transform.position.x, resourceGO[0].transform.position.z);
