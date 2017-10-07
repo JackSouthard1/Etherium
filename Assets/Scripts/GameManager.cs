@@ -12,9 +12,12 @@ public class GameManager : MonoBehaviour {
 
 	public bool transitioning = false;
 
+	private Animator cutsceneBars;
+
 	void Awake () {
 		instance = this;
 		tm = TerrainManager.instance;
+		cutsceneBars = GameObject.Find ("CutsceneBars").GetComponent<Animator> ();
 	}
 
 	void Start () {
@@ -69,10 +72,12 @@ public class GameManager : MonoBehaviour {
 
 	public void CivilizeStart () {
 		transitioning = true;
+		cutsceneBars.SetBool ("Civilizing", true);
 	}
 
 	public void CivilizeEnd () {
 		transitioning = false;
+		cutsceneBars.SetBool ("Civilizing", false);
 		PlayerTurnStart ();
 	}
 }
