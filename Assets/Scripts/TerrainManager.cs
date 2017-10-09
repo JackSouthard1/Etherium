@@ -114,7 +114,7 @@ public class TerrainManager : MonoBehaviour {
 	public Resource SpawnResource (Vector3 position, ResourceInfo info, Island island, bool initialSpawn = false, float startingHeight = 0f) {
 		Vector2 posV2 = new Vector2 (position.x, position.z);
 
-		if (island == null) {
+		if (island == null || GetBuildingAtPosition(posV2) != null) {
 			return null;
 		}
 
@@ -217,6 +217,57 @@ public class TerrainManager : MonoBehaviour {
 			return true;
 		} else {
 			return false;
+		}
+	}
+
+	public bool EnemyAtPosition (Vector2 position) {
+		RaycastHit hit;
+		if (Physics.Raycast (new Vector3 (position.x, 2f, position.y), Vector3.down, out hit, 2f)) {
+			if (hit.collider.gameObject.tag == "Enemy") {
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			return false;
+		}
+	}
+
+	public bool PlayerAtPosition (Vector2 position) {
+		Vector3 playerPosition = GameObject.Find("Player").transform.position;
+		if (new Vector2 (playerPosition.x, playerPosition.z) == position) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public bool UnstandableBuildingAtPosition (Vector2 position) {
+		RaycastHit hit;
+		if (Physics.Raycast (new Vector3 (position.x, 5f, position.y), Vector3.down, out hit, 5f)) {
+			if (hit.collider.gameObject.layer == 8 && hit.collider.gameObject.tag == "Building" && !hit.collider.gameObject.GetComponent<Building>().standable) {
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			return false;
+		}
+	}
+
+	public GameObject GetBuildingAtPosition (Vector2 position) {
+		RaycastHit[] allHits = Physics.RaycastAll (new Vector3 (position.x, 5f, position.y), Vector3.down, 5f);
+
+		if (allHits.Length != 0) {
+			foreach (RaycastHit hit in allHits) {
+				if (hit.collider.gameObject.tag == "Building") {
+					return hit.collider.gameObject;
+				}
+			}
+
+			return null;
+		} else {
+			return null;
 		}
 	}
 
