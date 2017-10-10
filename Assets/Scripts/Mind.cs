@@ -5,7 +5,7 @@ using UnityEngine;
 public abstract class Mind : MonoBehaviour {
 	public Body body;
 	protected GameManager gm;
-	private TerrainManager tm;
+	protected TerrainManager tm;
 	public bool myTurn = false;
 	public bool active = false;
 
@@ -73,6 +73,10 @@ public abstract class Mind : MonoBehaviour {
 
 	protected void Idle () {
 		myTurn = false;
+		Vector2 posV2 = new Vector2 (Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.z));
+		if (!tm.GetTileAtPosition (posV2)) {
+			tm.CreateBus (transform.position);
+		}
 
 		body.Idle ();
 	}
@@ -83,7 +87,7 @@ public abstract class Mind : MonoBehaviour {
 
 		// test to see if body is standing on tile
 		bool canAttack = (tm.GetTileAtPosition (new Vector2 (transform.position.x, transform.position.z)) && body.attacksLeft > 0);
-		bool wantsToAttack = (isPlayer) ? EnemyAtPosition(newTile) : PlayerAtPosition(newTile);
+		bool wantsToAttack = (isPlayer) ? tm.EnemyAtPosition(newTile) : tm.PlayerAtPosition(newTile);
 
 		if (wantsToAttack && canAttack) {
 			body.AttackInDir (targetRot, direction);
@@ -106,8 +110,8 @@ public abstract class Mind : MonoBehaviour {
 		} else {
 			float newTileHeight = tm.GetTileAtPosition (newTile).transform.position.y;
 
-			if (GetBuildingAtPosition (newTile)) {
-				GameObject building = GetBuildingAtPosition (newTile);
+			GameObject building = tm.GetBuildingAtPosition (newTile);
+			if (building != null) {
 				newTileHeight += building.GetComponent<Building> ().height;
 			}
 
@@ -121,53 +125,5 @@ public abstract class Mind : MonoBehaviour {
 		}
 
 		body.MoveToPos (targetPos, targetRot);
-	}
-
-	public bool EnemyAtPosition (Vector2 position) {
-		RaycastHit hit;
-		if (Physics.Raycast (new Vector3 (position.x, 2f, position.y), Vector3.down, out hit, 2f)) {
-			if (hit.collider.gameObject.tag == "Enemy") {
-				return true;
-			} else {
-				return false;
-			}
-		} else {
-			return false;
-		}
-	}
-
-	public bool PlayerAtPosition (Vector2 position) {
-		Vector3 playerPosition = GameObject.Find("Player").transform.position;
-		if (new Vector2 (playerPosition.x, playerPosition.z) == position) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	public bool UnstandableBuildingAtPosition (Vector2 position) {
-		RaycastHit hit;
-		if (Physics.Raycast (new Vector3 (position.x, 5f, position.y), Vector3.down, out hit, 5f)) {
-			if (hit.collider.gameObject.layer == 8 && hit.collider.gameObject.tag == "Building" && !hit.collider.gameObject.GetComponent<Building>().standable) {
-				return true;
-			} else {
-				return false;
-			}
-		} else {
-			return false;
-		}
-	}
-
-	public GameObject GetBuildingAtPosition (Vector2 position) {
-		RaycastHit hit;
-		if (Physics.Raycast (new Vector3 (position.x, 5f, position.y), Vector3.down, out hit, 5f)) {
-			if (hit.collider.gameObject.tag == "Building") {
-				return hit.collider.gameObject;
-			} else {
-				return null;
-			}
-		} else {
-			return null;
-		}
 	}
 }

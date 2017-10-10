@@ -54,7 +54,7 @@ public class MeleeWeapon : Weapon {
 
 	void AssignDamage () {
 		foreach (var body in hitBodies) {
-			body.TakeDamage (damage);
+			body.TakeDamage (info.damage);
 		}
 		hitBodies.Clear ();
 	}

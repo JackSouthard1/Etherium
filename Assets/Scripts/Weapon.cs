@@ -2,8 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class Weapon : MonoBehaviour {
+[System.Serializable]
+public class WeaponInfo {
 	public float damage;
+	public int range;
+}
+
+public abstract class Weapon : MonoBehaviour {
+	public WeaponInfo info;
 	protected TerrainManager tm;
 	protected Body body;
 

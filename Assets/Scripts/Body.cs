@@ -96,8 +96,8 @@ public class Body : MonoBehaviour {
 	public void CompleteAction () {
 		Vector2 newTile = new Vector2 (transform.position.x, transform.position.z);
 		if (player) {
-			if (tm.GetResourceAtPosition (newTile) != null) {
-				playerScript.CollectResource (tm.GetResourceAtPosition (newTile));
+			if (ResourcePickup.IsAtPosition(newTile)) {
+				playerScript.CollectResource (ResourcePickup.GetAtPosition(newTile));
 			}
 
 			playerScript.Eat ();
