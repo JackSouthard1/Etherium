@@ -61,18 +61,18 @@ public class Player : MonoBehaviour {
 		}
 	}
 
-	public void CollectResource (Resource resource) {
-		int stackCount = resource.resourceGO.Count;
+	public void CollectResource (ResourcePickup resource) {
+		int stackCount = resource.gameObjects.Count;
 			
-		resource.island.resources.Remove (resource);
+		resource.island.pickups.Remove (resource);
 	
-		tm.resources.Remove (resource.position);
+		tm.pickups.Remove (resource.position);
 		for (int i = 0; i < stackCount; i++) {
-			Destroy (resource.resourceGO [i]);
+			Destroy (resource.gameObjects [i]);
 		}
 
 		inventory [tm.ResourceTypeToIndex(resource.info.type)] += (float) stackCount;
-		List<Resource> affectedResources = new List<Resource> {resource};
+		List<ResourcePickup> affectedResources = new List<ResourcePickup> {resource};
 		tm.ConsumeResources (affectedResources);
 
 		UpdateInventoryUI ();

@@ -36,7 +36,7 @@ public class TerrainManager : MonoBehaviour {
 	public Dictionary<Vector2, Tile> tiles = new Dictionary<Vector2, Tile> ();
 
 	[HideInInspector]
-	public Dictionary<Vector2, Resource> resources = new Dictionary<Vector2, Resource> ();
+	public Dictionary<Vector2, Pickup> pickups = new Dictionary<Vector2, Pickup> ();
 
 	[HideInInspector]
 	public Dictionary<Vector2, float> pads = new Dictionary<Vector2, float> ();
@@ -111,23 +111,23 @@ public class TerrainManager : MonoBehaviour {
 		}
 	}
 
-	public Resource SpawnResource (Vector3 position, ResourceInfo info, Island island, bool initialSpawn = false, float startingHeight = 0f) {
+	public ResourcePickup SpawnResource (Vector3 position, ResourceInfo info, Island island, bool initialSpawn = false, float startingHeight = 0f) {
 		Vector2 posV2 = new Vector2 (position.x, position.z);
 
 		if (island == null || GetBuildingAtPosition(posV2) != null) {
 			return null;
 		}
 
-		if (resources.ContainsKey (posV2)) {
-			Resource curResource = resources [posV2];
+		if (ResourcePickup.IsAtPosition(posV2)) {
+			ResourcePickup curResource = ResourcePickup.GetAtPosition(posV2);
 			if (curResource.info.type == info.type) {
 				GameObject resourceGO = Instantiate (resourcePrefab, island.transform);
 				resourceGO.transform.position = position;
 				resourceGO.gameObject.GetComponentInChildren<SpriteRenderer> ().sprite = info.sprite;
 				resourceGO.gameObject.GetComponentInChildren<SpriteRenderer> ().color = info.color;
 
-				curResource.resourceGO.Add (resourceGO);
-				resourceGO.transform.Translate (Vector3.up * (stackHeight * (curResource.resourceGO.Count - 1) + startingHeight));
+				curResource.gameObjects.Add (resourceGO);
+				resourceGO.transform.Translate (Vector3.up * (stackHeight * (curResource.gameObjects.Count - 1) + startingHeight));
 
 				if (!initialSpawn) {
 					UpdateResources ();
@@ -139,12 +139,12 @@ public class TerrainManager : MonoBehaviour {
 		} else {
 			GameObject resourceGO = Instantiate (resourcePrefab, island.transform);
 			resourceGO.transform.position = position;
-			Resource resource = new Resource (info, resourceGO, island);
+			ResourcePickup resource = new ResourcePickup (info, resourceGO, island);
 
 			resourceGO.GetComponentInChildren<SpriteRenderer> ().sprite = info.sprite;
 			resourceGO.gameObject.GetComponentInChildren<SpriteRenderer> ().color = info.color;
-			resources.Add (posV2, resource);
-			island.resources.Add (resource);
+			pickups.Add (posV2, resource);
+			island.pickups.Add (resource);
 
 			resourceGO.transform.Translate (Vector3.up * startingHeight);
 			if (!initialSpawn) {
@@ -154,22 +154,52 @@ public class TerrainManager : MonoBehaviour {
 		}
 	}
 
-	public void ConsumeResources (List<Resource> consumedResources, List<int> amountsToConsume = null) {
+	public WeaponPickup SpawnWeapon (Vector3 position, Weapon info, Island island, float startingHeight = 0f) {
+		Vector2 posV2 = new Vector2 (position.x, position.z);
+
+		if (island == null || GetBuildingAtPosition(posV2) != null) {
+			return null;
+		}
+
+		return null;
+	}
+
+	GameObject SpawnPickup (Vector3 position, GameObject prefab, Island island, float startingHeight = 0f) {
+		return null;
+	}
+
+	public void ConsumeResources (List<ResourcePickup> consumedResources, List<int> amountsToConsume = null) {
+		List<Pickup> objectsToPickup = new List<Pickup> ();
+		foreach (ResourcePickup resource in consumedResources) {
+			objectsToPickup.Add (resource.ToPickup ());
+		}
+
+		PickupObjects (objectsToPickup, amountsToConsume);
+	}
+
+	public void PickupWeapon (WeaponPickup weapon) {
+		List<Pickup> objectsToPickup = new List<Pickup> { weapon.ToPickup() };
+
+		PickupObjects (objectsToPickup);
+	}
+
+	void PickupObjects (List<Pickup> pickupsToConsume, List<int> amountsToConsume = null) {
 		List<Vector2> keysToRemove = new List<Vector2> ();
 
-		for (int k = 0; k < consumedResources.Count; k++) {
-			int amountToConsume = (amountsToConsume != null) ? amountsToConsume [k] : consumedResources [k].resourceGO.Count;
-			bool consumesFullStack = amountToConsume == consumedResources [k].resourceGO.Count;
+		for (int k = 0; k < pickupsToConsume.Count; k++) {
+			int amountToConsume = (amountsToConsume != null) ? amountsToConsume [k] : pickupsToConsume [k].gameObjects.Count;
+			bool consumesFullStack = amountToConsume == pickupsToConsume [k].gameObjects.Count;
 
-			if (consumesFullStack)
-				consumedResources [k].island.resources.Remove (consumedResources [k]);
+			if (consumesFullStack) {
+				pickupsToConsume [k].island.pickups.Remove (pickupsToConsume [k]);
+			}
 
 			List<GameObject> destroying = new List<GameObject> ();
-			int max = (consumedResources [k].resourceGO.Count - 1);
-			int min = (consumedResources [k].resourceGO.Count - amountToConsume);
+			int max = (pickupsToConsume [k].gameObjects.Count - 1);
+			int min = (pickupsToConsume [k].gameObjects.Count - amountToConsume);
 			for (int i = max; i >= min; i--) {
-				destroying.Add (consumedResources[k].resourceGO [i]);
-				consumedResources [k].resourceGO.RemoveAt (i);
+				destroying.Add (pickupsToConsume[k].gameObjects [i]);
+				pickupsToConsume [k].gameObjects.RemoveAt (i);
 			}
 
 			for (int i = 0; i < destroying.Count; i++) {
@@ -177,20 +207,20 @@ public class TerrainManager : MonoBehaviour {
 			}
 
 			if(consumesFullStack)
-				keysToRemove.Add (consumedResources[k].position);
+				keysToRemove.Add (pickupsToConsume[k].position);
 		}
 
-		foreach (Vector2 resourceKey in resources.Keys.ToList()) {
-			if (keysToRemove.Contains (resourceKey)) {
-				resources.Remove (resourceKey);
+		foreach (Vector2 pickupKey in pickups.Keys.ToList()) {
+			if (keysToRemove.Contains (pickupKey)) {
+				pickups.Remove (pickupKey);
 			}
 		}
 	}
 
 	void UpdateResources () {
-		foreach (Vector2 key in resources.Keys.ToList()) {
-			if (resources.ContainsKey (key)) {
-				Resource resourceToTest = resources [key];
+		foreach (Vector2 key in pickups.Keys.ToList()) {
+			if (ResourcePickup.IsAtPosition(key)) {
+				ResourcePickup resourceToTest = pickups [key] as ResourcePickup;
 				crafting.TestForCrafting (resourceToTest);
 			}
 		}
@@ -204,19 +234,11 @@ public class TerrainManager : MonoBehaviour {
 		}
 	}
 
-	public Resource GetResourceAtPosition (Vector2 position) {
-		if (resources.ContainsKey (position)) {
-			return resources [position];
+	public Pickup GetPickupAtPosition (Vector2 position) {
+		if (pickups.ContainsKey (position)) {
+			return pickups [position];
 		} else {
 			return null;
-		}
-	}
-
-	public bool ResourceAtPosition (Vector2 position) {
-		if (resources.ContainsKey (position)) {
-			return true;
-		} else {
-			return false;
 		}
 	}
 

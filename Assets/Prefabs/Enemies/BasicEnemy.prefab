@@ -423,7 +423,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd1ef0589a667447d9556219de2d6e9c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 1
+  info:
+    damage: 1
+    range: 1
 --- !u!114 &114837745604539764
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -440,6 +442,9 @@ MonoBehaviour:
   tm: {fileID: 0}
   player: 0
   inAction: 0
+  actionsPerTurn: 1
+  attacksPerTurn: 1
+  attacksLeft: 0
   health: 1
   location: {fileID: 0}
   healthBar: {fileID: 0}

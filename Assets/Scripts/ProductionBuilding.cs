@@ -62,18 +62,18 @@ public class ProductionBuilding : Building
 
 	bool ConsumeAdjacentResources {
 		get {
-			List<Resource> resourcesToConsume = new List<Resource> ();
+			List<ResourcePickup> resourcesToConsume = new List<ResourcePickup> ();
 			List<int> amountsToConsume = new List<int> ();
 			int totalResourceCount = 0;
 
 			foreach (Vector2 adjacentTile in adjacentTiles) {
-				Resource adjacentResource = tm.GetResourceAtPosition (adjacentTile);
-				if (adjacentResource != null) {
+				if (ResourcePickup.IsAtPosition(adjacentTile)) {
+					ResourcePickup adjacentResource = ResourcePickup.GetAtPosition (adjacentTile);
 					if (adjacentResource.info.type == consumedType) {
 						resourcesToConsume.Add (adjacentResource);
-						amountsToConsume.Add (Mathf.Min(adjacentResource.resourceGO.Count, resourcesConsumed - totalResourceCount));
+						amountsToConsume.Add (Mathf.Min(adjacentResource.gameObjects.Count, resourcesConsumed - totalResourceCount));
 
-						totalResourceCount += adjacentResource.resourceGO.Count;
+						totalResourceCount += adjacentResource.gameObjects.Count;
 
 						if (totalResourceCount >= resourcesConsumed)
 							break;

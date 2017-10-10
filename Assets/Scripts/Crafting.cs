@@ -82,28 +82,28 @@ public class Crafting : MonoBehaviour {
 
 	}
 
-	public void TestForCrafting (Resource _resource) {
-		Resource anchorResource = _resource;
+	public void TestForCrafting (ResourcePickup _resource) {
+		ResourcePickup anchorResource = _resource;
 
 		if (tm == null) {
 			tm = TerrainManager.instance;
 		}
 
 		TerrainManager.ResourceInfo.ResourceType tileType = tm.tiles[anchorResource.position].resourceType;
-		List<Crafting.Recipe> possibleRecipes = GetPossibleRecipes (new Crafting.Stack(anchorResource.info.type, tileType, anchorResource.resourceGO.Count));
+		List<Crafting.Recipe> possibleRecipes = GetPossibleRecipes (new Crafting.Stack(anchorResource.info.type, tileType, anchorResource.gameObjects.Count));
 
 		bool hasRecipe = false;
 		Crafting.Recipe confirmedRecipe = new Crafting.Recipe ();;
-		List<Resource> affectedResources = new List<Resource> ();
+		List<ResourcePickup> affectedResources = new List<ResourcePickup> ();
 
 		foreach (var recipe in possibleRecipes) {
 			int correct = 0;
 			for (int y = 0; y < recipe.resources.GetLength(1); y++) {
 				for (int x = 0; x < recipe.resources.GetLength(0); x++) {
 					Vector2 posToCheck = new Vector2 (anchorResource.position.x + x, anchorResource.position.y + y);
-					if (tm.ResourceAtPosition(posToCheck)) {
-						Resource resourceAtPos = tm.GetResourceAtPosition (posToCheck);
-						if (resourceAtPos.info.type == recipe.resources [x, y].resourceType && resourceAtPos.resourceGO.Count == recipe.resources [x, y].count) {
+					if (ResourcePickup.IsAtPosition(posToCheck)) {
+						ResourcePickup resourceAtPos = ResourcePickup.GetAtPosition(posToCheck);
+						if (resourceAtPos.info.type == recipe.resources [x, y].resourceType && resourceAtPos.gameObjects.Count == recipe.resources [x, y].count) {
 							// check tile
 							TerrainManager.ResourceInfo.ResourceType curTileType = tm.tiles[posToCheck].resourceType;
 							if (curTileType == recipe.resources[x,y].tileType) {
@@ -124,7 +124,7 @@ public class Crafting : MonoBehaviour {
 		if (hasRecipe) {
 			// Craft
 			Crafting.BuildingInfo buildingInfo = buildings[confirmedRecipe.name];
-			Vector3 spawnPos = anchorResource.resourceGO[0].transform.position + new Vector3 (buildingInfo.anchorOffset.x, 0, buildingInfo.anchorOffset.y);
+			Vector3 spawnPos = anchorResource.gameObjects[0].transform.position + new Vector3 (buildingInfo.anchorOffset.x, 0, buildingInfo.anchorOffset.y);
 			tm.SpawnBuilding(spawnPos, buildingInfo.prefab, buildingInfo.mainColor, buildingInfo.secondaryColor, buildingInfo.alternateColor, anchorResource.island);
 
 			tm.ConsumeResources (affectedResources);
