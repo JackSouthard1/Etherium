@@ -5,7 +5,10 @@ using System.Linq;
 
 public class TerrainManager : MonoBehaviour {
 	public static TerrainManager instance;
+	[Header("Set Spawns")]
+	public List<SetSpawn> setSpawns;
 
+	[Space(10)]
 	[Header("Islands")]
 	public GameObject islandPrefab;
 	public int count;
@@ -23,6 +26,10 @@ public class TerrainManager : MonoBehaviour {
 	public ResourceInfo[] resourceInfos;
 	public GameObject resourcePrefab;
 	public float stackHeight;
+
+	[Space(10)]
+	[Header("Enemies")]
+	public GameObject[] enemyPrefabs;
 
 	[Space(10)]
 	[Header("Buses")]
@@ -309,6 +316,7 @@ public class TerrainManager : MonoBehaviour {
 		public Layer[] layers;
 		public int[] resourceIndexes;
 		public int enemyCount;
+		public int[] enemyIDs;
 	}
 
 	//TODO: make these static
@@ -335,5 +343,48 @@ public class TerrainManager : MonoBehaviour {
 
 		Debug.LogError ("Resource type " + resourceType.ToString () + " not found in list");
 		return new ResourceInfo();
+	}
+
+	[System.Serializable]
+	public struct SetSpawn {
+		public int teir;
+		public enum SpawnType {
+			Enemy,
+			Tile
+		};
+		public SpawnType type;
+		public int spawnID;
+	}
+
+	public List<SetSpawn> GetSetSpawns (int teir) {
+		List<SetSpawn> allSetSpawnsOfTeir = new List<SetSpawn> ();
+		List<SetSpawn> setSpawnsToUse = new List<SetSpawn> ();
+//		List<int> indexesToRemove = new List<int> ();
+
+		for (int i = 0; i < setSpawns.Count; i++) {
+			if (setSpawns[i].teir == teir) {
+				allSetSpawnsOfTeir.Add (setSpawns[i]);
+//				indexesToRemove.Add (i);
+			}
+		}
+
+		if (allSetSpawnsOfTeir.Count > 0) {
+			int islandsInTeir = Mathf.RoundToInt(teir + 1f);
+			int setSpawnNumberToGet = Mathf.CeilToInt((float)allSetSpawnsOfTeir.Count / (float)islandsInTeir);
+			if (allSetSpawnsOfTeir.Count < setSpawnNumberToGet) {
+				setSpawnNumberToGet = allSetSpawnsOfTeir.Count;
+			}
+
+			for (int i = 0; i < setSpawnNumberToGet; i++) {
+				setSpawnsToUse.Add (allSetSpawnsOfTeir [i]);
+				setSpawns.Remove (allSetSpawnsOfTeir [i]);
+			}
+//			indexesToRemove.RemoveRange (setSpawnNumberToGet, allSetSpawnsOfTeir.Count - 1);
+//
+//			foreach (var index in indexesToRemove) {
+//				setSpawns.RemoveAt(index);
+//			}
+		}
+		return setSpawnsToUse;
 	}
 }

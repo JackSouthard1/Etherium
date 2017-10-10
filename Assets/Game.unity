@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44824868, g: 0.49827576, b: 0.575583, a: 1}
+  m_IndirectSpecularColor: {r: 0.44824833, g: 0.49827534, b: 0.57558256, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -257,6 +257,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ddea26dca51804041bc0cfa749eebc94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  setSpawns:
+  - teir: 0
+    type: 1
+    spawnID: 0
+  - teir: 0
+    type: 1
+    spawnID: 2
+  - teir: 0
+    type: 1
+    spawnID: 2
   islandPrefab: {fileID: 1957064115911918, guid: 2445b5953a110497c9303ac250f66a2c,
     type: 2}
   count: 9
@@ -269,18 +279,21 @@ MonoBehaviour:
     - color: {r: 0.2627451, g: 0.6156863, b: 0.9725491, a: 0}
     resourceIndexes: 02000000
     enemyCount: 0
+    enemyIDs: 00000000
   - layers:
     - color: {r: 0.8091374, g: 0.27205884, b: 1, a: 0}
     - color: {r: 0.7140256, g: 0.24005193, b: 0.88235295, a: 0}
     - color: {r: 0.5872225, g: 0.2119377, b: 0.7205882, a: 0}
     resourceIndexes: 00000000
     enemyCount: 2
+    enemyIDs: 0000000001000000
   - layers:
     - color: {r: 0.199827, g: 0.9705882, b: 0.71802235, a: 0}
     - color: {r: 0.17225347, g: 0.86764705, b: 0.63744783, a: 0}
     - color: {r: 0.14889707, g: 0.75, b: 0.55302835, a: 0}
     resourceIndexes: 03000000
     enemyCount: 4
+    enemyIDs: 0000000001000000
   resourceInfos:
   - sprite: {fileID: 21300000, guid: d29fb7a7ea0cb4b23bef81c77fa3020e, type: 3}
     color: {r: 0.99264705, g: 0.94231, b: 0.26275954, a: 1}
@@ -297,6 +310,10 @@ MonoBehaviour:
   resourcePrefab: {fileID: 1957892413181948, guid: 09a9dca98a4b3443c88611ce76cd310d,
     type: 2}
   stackHeight: 0.05
+  enemyPrefabs:
+  - {fileID: 1005221541181882, guid: 415a1583845034f8c853c0a5f16dccb7, type: 2}
+  - {fileID: 1153471747871344, guid: 5ce2b4f77b6e3475bad0f5ad0f85a840, type: 2}
+  - {fileID: 1451555759239408, guid: e7c3dcfe352e548eebb1c7d92ebbf277, type: 2}
   busPrefab: {fileID: 1583097085892808, guid: 859b0483d012d49e885107ea349ae083, type: 2}
   lifeTime: 3
 --- !u!1 &588331887
@@ -1007,6 +1024,20 @@ Light:
   m_Lightmapping: 4
   m_AreaSize: {x: 1, y: 1}
   m_BounceIntensity: 1
+  m_FalloffTable:
+    m_Table[0]: 0
+    m_Table[1]: 0
+    m_Table[2]: 0
+    m_Table[3]: 0
+    m_Table[4]: 0
+    m_Table[5]: 0
+    m_Table[6]: 0
+    m_Table[7]: 0
+    m_Table[8]: 0
+    m_Table[9]: 0
+    m_Table[10]: 0
+    m_Table[11]: 0
+    m_Table[12]: 0
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
   m_ShadowRadius: 0
