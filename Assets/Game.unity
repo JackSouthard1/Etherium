@@ -4559,6 +4559,11 @@ Prefab:
       propertyPath: m_RootOrder
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 114934558527318390, guid: 358c1bfa6076b43bcbb2fb513cc28f17,
+        type: 2}
+      propertyPath: healthBar
+      value: 
+      objectReference: {fileID: 1398767756}
     - target: {fileID: 114721381455926392, guid: 358c1bfa6076b43bcbb2fb513cc28f17,
         type: 2}
       propertyPath: inventoryParent
@@ -4569,11 +4574,6 @@ Prefab:
       propertyPath: idleIcon
       value: 
       objectReference: {fileID: 1228009915}
-    - target: {fileID: 114934558527318390, guid: 358c1bfa6076b43bcbb2fb513cc28f17,
-        type: 2}
-      propertyPath: healthBar
-      value: 
-      objectReference: {fileID: 1398767756}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 358c1bfa6076b43bcbb2fb513cc28f17, type: 2}
   m_IsPrefabParent: 0

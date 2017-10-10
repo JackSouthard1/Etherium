@@ -20,7 +20,7 @@ public class Island : MonoBehaviour {
 	public int resourceTileCount;
 	private int resourcesPerTile;
 
-	public List<Resource> resources = new List<Resource>();
+	public List<Pickup> pickups = new List<Pickup>();
 
 	public List<Body> enemies = new List<Body>();
 
@@ -220,8 +220,8 @@ public class Island : MonoBehaviour {
 			}
 		}
 
-		foreach (Resource resouce in resources) {
-			tm.resources.Remove (resouce.position);
+		foreach (Pickup pickup in pickups) {
+			tm.pickups.Remove (pickup.position);
 		}
 	}
 
@@ -243,11 +243,11 @@ public class Island : MonoBehaviour {
 				}
 			}
 
-			foreach (var resource in resources) {
-				for (int i = 0; i < resource.resourceGO.Count; i++) {
-					float newHeight = ((resource.originalBaseHeight) * (1f - timeRatio)) + (tm.stackHeight * i);
-					Vector3 newPos = new Vector3 (resource.resourceGO [i].transform.position.x, newHeight, resource.resourceGO [i].transform.position.z);
-					resource.resourceGO[i].transform.position = newPos;
+			foreach (var pickup in pickups) {
+				for (int i = 0; i < pickup.gameObjects.Count; i++) {
+					float newHeight = ((pickup.originalBaseHeight) * (1f - timeRatio)) + (tm.stackHeight * i);
+					Vector3 newPos = new Vector3 (pickup.gameObjects [i].transform.position.x, newHeight, pickup.gameObjects [i].transform.position.z);
+					pickup.gameObjects[i].transform.position = newPos;
 				}
 			}
 
@@ -312,8 +312,8 @@ public class Island : MonoBehaviour {
 		}
 
 		transform.position = targetPos;
-		foreach (Resource resouce in resources) {
-			List<GameObject> resourceGOs = resouce.resourceGO;
+		foreach (Pickup pickup in pickups) {
+			List<GameObject> resourceGOs = pickup.gameObjects;
 
 			for (int k = 0; k < resourceGOs.Count; k++) {
 				float height = tm.stackHeight * k;
@@ -328,9 +328,9 @@ public class Island : MonoBehaviour {
 			}
 		}
 			
-		for (int i = 0; i < resources.Count; i++) {
-			resources[i].UpdatePosition();
-			tm.resources.Add (resources[i].position, resources [i]);
+		for (int i = 0; i < pickups.Count; i++) {
+			pickups[i].UpdatePosition();
+			tm.pickups.Add (pickups[i].position, pickups [i]);
 		}
 
 		GameObject.FindGameObjectWithTag ("Player").transform.parent = null;
