@@ -4574,6 +4574,11 @@ Prefab:
       propertyPath: idleIcon
       value: 
       objectReference: {fileID: 1228009915}
+    - target: {fileID: 114934558527318390, guid: 358c1bfa6076b43bcbb2fb513cc28f17,
+        type: 2}
+      propertyPath: actionsPerTurn
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 358c1bfa6076b43bcbb2fb513cc28f17, type: 2}
   m_IsPrefabParent: 0
