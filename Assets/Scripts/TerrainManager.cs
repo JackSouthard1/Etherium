@@ -25,6 +25,10 @@ public class TerrainManager : MonoBehaviour {
 	public float stackHeight;
 
 	[Space(10)]
+	[Header("Weapons")]
+	public GameObject weaponPrefab;
+
+	[Space(10)]
 	[Header("Buses")]
 	public GameObject busPrefab;
 	public int lifeTime;
@@ -114,7 +118,7 @@ public class TerrainManager : MonoBehaviour {
 	public ResourcePickup SpawnResource (Vector3 position, ResourceInfo info, Island island, bool initialSpawn = false, float startingHeight = 0f) {
 		Vector2 posV2 = new Vector2 (position.x, position.z);
 
-		if (island == null || GetBuildingAtPosition(posV2) != null) {
+		if (island == null || GetBuildingAtPosition(posV2) != null || WeaponPickup.IsAtPosition(posV2)) {
 			return null;
 		}
 
@@ -154,18 +158,21 @@ public class TerrainManager : MonoBehaviour {
 		}
 	}
 
-	public WeaponPickup SpawnWeapon (Vector3 position, Weapon info, Island island, float startingHeight = 0f) {
+	public WeaponPickup SpawnWeapon (Vector3 position, WeaponInfo info, Island island) {
 		Vector2 posV2 = new Vector2 (position.x, position.z);
 
-		if (island == null || GetBuildingAtPosition(posV2) != null) {
+		if (island == null || GetBuildingAtPosition(posV2) != null || GetPickupAtPosition(posV2) != null) {
 			return null;
 		}
 
-		return null;
-	}
+		GameObject weaponGO = Instantiate (weaponPrefab, island.transform);
+		weaponGO.transform.position = position;
+		WeaponPickup weapon = new WeaponPickup (info, weaponGO, island);
 
-	GameObject SpawnPickup (Vector3 position, GameObject prefab, Island island, float startingHeight = 0f) {
-		return null;
+		pickups.Add (posV2, weapon);
+		island.pickups.Add (weapon);
+		
+		return weapon;
 	}
 
 	public void ConsumeResources (List<ResourcePickup> consumedResources, List<int> amountsToConsume = null) {

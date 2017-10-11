@@ -13,7 +13,8 @@ public class Body : MonoBehaviour {
 	private Transform model;
 	private Mind mind;
 	private Player playerScript;
-	private Weapon weapon;
+	[HideInInspector]
+	public Weapon weapon;
 	private MapReveal mr;
 	[HideInInspector]
 	public bool player = false;
@@ -96,8 +97,10 @@ public class Body : MonoBehaviour {
 	public void CompleteAction () {
 		Vector2 newTile = new Vector2 (transform.position.x, transform.position.z);
 		if (player) {
-			if (ResourcePickup.IsAtPosition(newTile)) {
-				playerScript.CollectResource (ResourcePickup.GetAtPosition(newTile));
+			if (ResourcePickup.IsAtPosition (newTile)) {
+				playerScript.CollectResource (ResourcePickup.GetAtPosition (newTile));
+			} else if (WeaponPickup.IsAtPosition (newTile)) {
+				playerScript.SwitchWeapons (WeaponPickup.GetAtPosition (newTile));
 			}
 
 			playerScript.Eat ();

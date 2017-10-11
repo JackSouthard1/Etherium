@@ -98,6 +98,16 @@ public class Player : MonoBehaviour {
 		UpdateInventoryUI ();
 	}
 
+	public void SwitchWeapons (WeaponPickup newWeapon) {
+		WeaponInfo currentWeaponInfo = body.weapon.info;
+		if (newWeapon.info == currentWeaponInfo) {
+			return;
+		}
+
+		body.weapon.info = newWeapon.info;
+		tm.SpawnWeapon (transform.position, currentWeaponInfo, body.location);
+	}
+
 	public void Heal(float resourcesConsumed) {
 		int resourceIndex = tm.ResourceTypeToIndex (TerrainManager.ResourceInfo.ResourceType.Green);
 
