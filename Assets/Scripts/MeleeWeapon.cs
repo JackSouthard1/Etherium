@@ -16,11 +16,22 @@ public class MeleeWeapon : Weapon {
 		lr.positionCount = 2;
 	}
 
+	public override void UpdateWeapon () {
+		base.UpdateWeapon ();
+
+		if (info.ToIndex () != 0) {
+			attackAnimation = transform.GetChild(transform.childCount - 1).GetComponent<Animation> ();
+		} else {
+			attackAnimation = transform.parent.GetComponentInChildren<Animation> ();
+		}
+	}
+
 	public override void Attack (Vector2 direction, Vector2 anchor) {
 //		List<Body> enemies = new List<Body> ();
 		List<Vector2> affectedPositions = new List<Vector2> ();
-		affectedPositions.Add (anchor + direction);
-
+		for (int i = 1; i <= info.range; i++) {
+			affectedPositions.Add (anchor + (direction * i));
+		}
 
 		for (int i = 0; i < affectedPositions.Count; i++) {
 			RaycastHit hit;
@@ -30,6 +41,10 @@ public class MeleeWeapon : Weapon {
 					hitBodies.Add (hit.collider.gameObject.GetComponent<Body> ());
 
 					StartCoroutine (RenderAttack());
+
+					if (!info.passesThroughEnemies) {
+						return;
+					}
 				}
 			}
 		}

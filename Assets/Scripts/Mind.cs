@@ -83,18 +83,22 @@ public abstract class Mind : MonoBehaviour {
 
 	void StartActionAttempt (Vector2 direction) {
 		Vector2 newTile = new Vector2(transform.position.x + direction.x, transform.position.z + direction.y);
+		Vector2 posV2 = new Vector2 (Mathf.Round (transform.position.x), Mathf.Round (transform.position.z));
 		Quaternion targetRot = Quaternion.Euler(new Vector3 (0f, Mathf.Atan2 (direction.x, direction.y) * Mathf.Rad2Deg, 0f));
 
 		// test to see if body is standing on tile
 		bool canAttack = (tm.GetTileAtPosition (new Vector2 (transform.position.x, transform.position.z)) && body.attacksLeft > 0);
-		bool wantsToAttack = (isPlayer) ? tm.EnemyAtPosition(newTile) : tm.PlayerAtPosition(newTile);
+		bool wantsToAttack = (isPlayer) ? tm.EnemyInRange(posV2, direction, body.weapon.info.range) : tm.PlayerInRange(posV2, direction, body.weapon.info.range);
 
 		if (wantsToAttack && canAttack) {
 			body.AttackInDir (targetRot, direction);
 			return;
-		} else if (wantsToAttack && !canAttack) {
-			EmptyAction ();
-			return;
+		} else if (wantsToAttack) {
+			bool canMove = (isPlayer) ? tm.EnemyInRange(posV2, direction, 1) : tm.PlayerInRange(posV2, direction, 1);
+			if (canMove) {
+				EmptyAction ();
+				return;
+			}
 		}
 
 		Vector3 targetPos = new Vector3 (transform.position.x + direction.x, 0f, transform.position.z + direction.y);

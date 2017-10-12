@@ -41,8 +41,8 @@ public class EnemyMind : Mind {
 	}
 
 	protected override bool IsAvailableDirection (Vector2 direction) {
-		Vector2 position = new Vector2 (transform.position.x, transform.position.z) + direction;
+		Vector2 position = new Vector2 (transform.position.x, transform.position.z);
 
-		return !tm.UnstandableBuildingAtPosition (position) && !tm.EnemyAtPosition(position) && tm.GetTileAtPosition(position);
+		return !tm.UnstandableBuildingAtPosition (position) && !tm.EnemyInRange(position, direction, 1) && tm.GetTileAtPosition(position + direction);
 	}
 }

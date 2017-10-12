@@ -5,7 +5,10 @@ using System.Linq;
 
 public class TerrainManager : MonoBehaviour {
 	public static TerrainManager instance;
+	[Header("Set Spawns")]
+	public List<SetSpawn> setSpawns;
 
+	[Space(10)]
 	[Header("Islands")]
 	public GameObject islandPrefab;
 	public int count;
@@ -26,7 +29,10 @@ public class TerrainManager : MonoBehaviour {
 
 	[Space(10)]
 	[Header("Weapons")]
-	public GameObject weaponPrefab;
+	public List<WeaponInfo> weaponInfos = new List<WeaponInfo>();
+
+	[Header("Enemies")]
+	public GameObject[] enemyPrefabs;
 
 	[Space(10)]
 	[Header("Buses")]
@@ -66,6 +72,10 @@ public class TerrainManager : MonoBehaviour {
 		instance = this;
 		crafting = GameObject.Find ("GameManager").GetComponent<Crafting> ();
 		GenerateIslands ();
+
+		//TEMP
+		SpawnWeapon (Vector3.right, weaponInfos[1], islands [0]);
+		SpawnWeapon (Vector3.forward, weaponInfos[2], islands [0]);
 	}
 
 	void GenerateIslands () {
@@ -165,7 +175,13 @@ public class TerrainManager : MonoBehaviour {
 			return null;
 		}
 
-		GameObject weaponGO = Instantiate (weaponPrefab, island.transform);
+		if (!weaponInfos.Contains (info)) {
+			Debug.LogError ("Weapon info not found in list");
+			return null;
+		}
+		
+		int weaponIndex = weaponInfos.IndexOf (info);
+		GameObject weaponGO = Instantiate (weaponInfos[weaponIndex].pickupPrefab, island.transform);
 		weaponGO.transform.position = position;
 		WeaponPickup weapon = new WeaponPickup (info, weaponGO, island);
 
@@ -249,26 +265,39 @@ public class TerrainManager : MonoBehaviour {
 		}
 	}
 
-	public bool EnemyAtPosition (Vector2 position) {
-		RaycastHit hit;
-		if (Physics.Raycast (new Vector3 (position.x, 2f, position.y), Vector3.down, out hit, 2f)) {
-			if (hit.collider.gameObject.tag == "Enemy") {
-				return true;
-			} else {
-				return false;
-			}
-		} else {
-			return false;
+	public bool EnemyInRange (Vector2 origin, Vector2 direction, int range) {
+		List<Vector2> positionsToTest = new List<Vector2> ();
+		for (int i = 1; i <= range; i++) {
+			positionsToTest.Add (origin + (direction * i));
 		}
+
+		for (int i = 0; i < positionsToTest.Count; i++) {
+			RaycastHit hit;
+			if (Physics.Raycast (new Vector3 (positionsToTest[i].x, 2f, positionsToTest[i].y), Vector3.down, out hit, 2f)) {
+				if (hit.collider.gameObject.tag == "Enemy") {
+					return true;
+				}
+			}
+		}
+		
+		return false;
 	}
 
-	public bool PlayerAtPosition (Vector2 position) {
+	public bool PlayerInRange (Vector2 origin, Vector2 direction, int range) {
 		Vector3 playerPosition = GameObject.Find("Player").transform.position;
-		if (new Vector2 (playerPosition.x, playerPosition.z) == position) {
-			return true;
-		} else {
-			return false;
+
+		List<Vector2> positionsToTest = new List<Vector2> ();
+		for (int i = 1; i <= range; i++) {
+			positionsToTest.Add (origin + (direction * i));
 		}
+
+		for (int i = 0; i < positionsToTest.Count; i++) {
+			if (new Vector2 (playerPosition.x, playerPosition.z) == positionsToTest[i]) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	public bool UnstandableBuildingAtPosition (Vector2 position) {
@@ -389,6 +418,7 @@ public class TerrainManager : MonoBehaviour {
 		public Layer[] layers;
 		public int[] resourceIndexes;
 		public int enemyCount;
+		public int[] enemyIDs;
 	}
 
 	//TODO: make these static
@@ -415,5 +445,48 @@ public class TerrainManager : MonoBehaviour {
 
 		Debug.LogError ("Resource type " + resourceType.ToString () + " not found in list");
 		return new ResourceInfo();
+	}
+
+	[System.Serializable]
+	public struct SetSpawn {
+		public int teir;
+		public enum SpawnType {
+			Enemy,
+			Tile
+		};
+		public SpawnType type;
+		public int spawnID;
+	}
+
+	public List<SetSpawn> GetSetSpawns (int teir) {
+		List<SetSpawn> allSetSpawnsOfTeir = new List<SetSpawn> ();
+		List<SetSpawn> setSpawnsToUse = new List<SetSpawn> ();
+//		List<int> indexesToRemove = new List<int> ();
+
+		for (int i = 0; i < setSpawns.Count; i++) {
+			if (setSpawns[i].teir == teir) {
+				allSetSpawnsOfTeir.Add (setSpawns[i]);
+//				indexesToRemove.Add (i);
+			}
+		}
+
+		if (allSetSpawnsOfTeir.Count > 0) {
+			int islandsInTeir = Mathf.RoundToInt(teir + 1f);
+			int setSpawnNumberToGet = Mathf.CeilToInt((float)allSetSpawnsOfTeir.Count / (float)islandsInTeir);
+			if (allSetSpawnsOfTeir.Count < setSpawnNumberToGet) {
+				setSpawnNumberToGet = allSetSpawnsOfTeir.Count;
+			}
+
+			for (int i = 0; i < setSpawnNumberToGet; i++) {
+				setSpawnsToUse.Add (allSetSpawnsOfTeir [i]);
+				setSpawns.Remove (allSetSpawnsOfTeir [i]);
+			}
+//			indexesToRemove.RemoveRange (setSpawnNumberToGet, allSetSpawnsOfTeir.Count - 1);
+//
+//			foreach (var index in indexesToRemove) {
+//				setSpawns.RemoveAt(index);
+//			}
+		}
+		return setSpawnsToUse;
 	}
 }

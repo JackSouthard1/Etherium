@@ -100,7 +100,7 @@ public class Body : MonoBehaviour {
 			if (ResourcePickup.IsAtPosition (newTile)) {
 				playerScript.CollectResource (ResourcePickup.GetAtPosition (newTile));
 			} else if (WeaponPickup.IsAtPosition (newTile)) {
-				playerScript.SwitchWeapons (WeaponPickup.GetAtPosition (newTile));
+				playerScript.PickupWeapon (WeaponPickup.GetAtPosition (newTile));
 			}
 
 			playerScript.Eat ();

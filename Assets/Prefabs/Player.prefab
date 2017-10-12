@@ -425,9 +425,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd1ef0589a667447d9556219de2d6e9c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  info:
-    damage: 1
-    range: 1
+  infoIndex: 0
 --- !u!114 &114721381455926392
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -475,6 +473,8 @@ MonoBehaviour:
   tm: {fileID: 0}
   player: 0
   inAction: 0
+  weapon: {fileID: 0}
+  weaponParent: {fileID: 4216073541544176}
   actionsPerTurn: 1
   attacksPerTurn: 1
   attacksLeft: 0

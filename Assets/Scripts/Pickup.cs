@@ -68,7 +68,7 @@ public class WeaponPickup : Pickup {
 	}
 
 	public static bool IsAtPosition(Vector2 position) {
-		return IsPickupAtPosition (position, typeof(ResourcePickup));
+		return IsPickupAtPosition (position, typeof(WeaponPickup));
 	}
 
 	public static WeaponPickup GetAtPosition(Vector2 position) {

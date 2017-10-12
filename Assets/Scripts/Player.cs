@@ -98,14 +98,21 @@ public class Player : MonoBehaviour {
 		UpdateInventoryUI ();
 	}
 
-	public void SwitchWeapons (WeaponPickup newWeapon) {
+	public void PickupWeapon (WeaponPickup newWeapon) {
+		tm.PickupWeapon (newWeapon);
+
+		SwitchWeapons (newWeapon.info.ToIndex ());
+	}
+
+	public void SwitchWeapons (int weaponIndex) {
 		WeaponInfo currentWeaponInfo = body.weapon.info;
-		if (newWeapon.info == currentWeaponInfo) {
-			return;
+
+		if (currentWeaponInfo.ToIndex() != 0) {
+			tm.SpawnWeapon (transform.position, currentWeaponInfo, body.location);
 		}
 
-		body.weapon.info = newWeapon.info;
-		tm.SpawnWeapon (transform.position, currentWeaponInfo, body.location);
+		body.weapon.info = WeaponInfo.GetInfoFromIndex(weaponIndex);
+		body.weapon.UpdateWeapon ();
 	}
 
 	public void Heal(float resourcesConsumed) {

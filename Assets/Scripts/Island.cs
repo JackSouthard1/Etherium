@@ -47,6 +47,9 @@ public class Island : MonoBehaviour {
 	[HideInInspector]
 	public List<Vector2> usedTilePositions = new List<Vector2>();
 
+	[HideInInspector]
+	public List<TerrainManager.SetSpawn> setSpawns;
+
 	public List<int> usedTiles = new List<int>();
 	public TerrainManager.Tile[] tiles;
 	private TerrainManager tm;
@@ -62,6 +65,8 @@ public class Island : MonoBehaviour {
 		teirInfo = tm.teirs [teir];
 
 		resourcesPerTile = Mathf.CeilToInt (resourceCount / resourceTileCount);
+
+		setSpawns = tm.GetSetSpawns (teir);
 
 		GenerateTiles ();
 		SpawnEnemies ();
@@ -114,14 +119,28 @@ public class Island : MonoBehaviour {
 				tileIndex++;
 			}
 		}
-
+			
 		// resource tiles
+		List<int> tileSpawnIDs = new List<int> ();
+		foreach (var setSpawn in setSpawns) {
+			if (setSpawn.type == TerrainManager.SetSpawn.SpawnType.Tile) {
+				tileSpawnIDs.Add (setSpawn.spawnID);
+			}
+		}
+		int tilesLeft = resourceTileCount - tileSpawnIDs.Count;
+		for (int i = 0; i < tilesLeft; i++) {
+			tileSpawnIDs.Add(teirInfo.resourceIndexes[Random.Range(0, teirInfo.resourceIndexes.Length)]);
+//			print ("Index: " + i + ", ID: " + tileSpawnIDs [i]);
+		}
+
 		List<int> resourceTileSpawnIndexs = new List<int> ();
 
-		for (int i = 0; i < resourceTileCount; i++) {
+		for (int i = 0; i < tileSpawnIDs.Count; i++) {
 			resourceTileSpawnIndexs.Add (GetAvaiableTileIndex (false));
 		}
+
 		int index = 0;
+		int resourceSpawnListIndex = 0;
 		for (int z = 0; z < size; z++) {
 			for (int x = 0; x < size; x++) {
 				if (!voidTileIndexes.Contains (index)) {
@@ -136,7 +155,8 @@ public class Island : MonoBehaviour {
 					TerrainManager.ResourceInfo.ResourceType resourceInfoType;
 					Color tileColor;
 					if (resourceTileSpawnIndexs.Contains (index)) {
-						int resourceIndex = teirInfo.resourceIndexes [Random.Range (0, teirInfo.resourceIndexes.Length)];
+						int resourceIndex = tileSpawnIDs [resourceSpawnListIndex];
+						resourceSpawnListIndex++;
 						TerrainManager.ResourceInfo resourceInfo = tm.resourceInfos [resourceIndex];
 						resourceInfoType = resourceInfo.type;
 						tileColor = resourceInfo.color;
@@ -162,15 +182,27 @@ public class Island : MonoBehaviour {
 	}
 
 	void SpawnEnemies () {
-		List<int> spawnIndexs = new List<int> ();
-
-		for (int f = 0; f < teirInfo.enemyCount; f++) {
-			spawnIndexs.Add (GetAvaiableTileIndex (true));
+		List<int> spawnIDs = new List<int> ();
+		foreach (var setSpawn in setSpawns) {
+			if (setSpawn.type == TerrainManager.SetSpawn.SpawnType.Enemy) {
+				spawnIDs.Add (setSpawn.spawnID);
+			}
+		}
+		int enemiesLeft = teirInfo.enemyCount - spawnIDs.Count;
+		for (int i = 0; i < enemiesLeft; i++) {
+			spawnIDs.Add(teirInfo.enemyIDs[Random.Range(0, teirInfo.enemyIDs.Length)]);
 		}
 
-		for (int i = 0; i < spawnIndexs.Count; i++) {
+		List<int> spawnTileIndexs = new List<int> ();
+
+		for (int f = 0; f < spawnIDs.Count; f++) {
+			spawnTileIndexs.Add (GetAvaiableTileIndex (true));
+		}
+
+		for (int i = 0; i < spawnIDs.Count; i++) {
+			GameObject enemyPrefab = tm.enemyPrefabs [spawnIDs [i]];
 			GameObject enemy = (GameObject)Instantiate(enemyPrefab, transform);
-			enemy.transform.position = tiles[spawnIndexs[i]].tile.transform.position;
+			enemy.transform.position = tiles[spawnTileIndexs[i]].tile.transform.position;
 			enemies.Add (enemy.GetComponent<Body>());
 		}
 	}
