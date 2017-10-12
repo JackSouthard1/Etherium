@@ -215,7 +215,7 @@ MonoBehaviour:
 MonoBehaviour:
   m_PrefabParentObject: {fileID: 114721381455926392, guid: 358c1bfa6076b43bcbb2fb513cc28f17,
     type: 2}
-  m_PrefabInternal: {fileID: 1379938133}
+  m_PrefabInternal: {fileID: 776030314}
   m_Script: {fileID: 11500000, guid: fbee093b7b7c34df5a7bae549e134442, type: 3}
 --- !u!1 &163399778
 GameObject:
@@ -3662,6 +3662,9 @@ MonoBehaviour:
     pickupPrefab: {fileID: 1904551253670318, guid: 85093563476454b9b97c3d916e0af1a0,
       type: 2}
     weaponPrefab: {fileID: 0}
+    shotsPerAttack: 1
+    rateOfFirePerAttack: 0.5
+    initialDelay: 0.25
   - weaponName: Gatling Gun
     damage: 2
     range: 2
@@ -3670,6 +3673,9 @@ MonoBehaviour:
       type: 2}
     weaponPrefab: {fileID: 1682559729392678, guid: a31d1aac33a29475e9ba2eadaabf300c,
       type: 2}
+    shotsPerAttack: 3
+    rateOfFirePerAttack: 0.1
+    initialDelay: 0.25
   - weaponName: Sniper
     damage: 1
     range: 5
@@ -3678,6 +3684,9 @@ MonoBehaviour:
       type: 2}
     weaponPrefab: {fileID: 1587931086702330, guid: 5d7c4437c848444a18baae5e1556a5cd,
       type: 2}
+    shotsPerAttack: 1
+    rateOfFirePerAttack: 0.5
+    initialDelay: 0.65
   enemyPrefabs:
   - {fileID: 1005221541181882, guid: 415a1583845034f8c853c0a5f16dccb7, type: 2}
   - {fileID: 1153471747871344, guid: 5ce2b4f77b6e3475bad0f5ad0f85a840, type: 2}
@@ -4004,6 +4013,63 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 703918419}
+--- !u!1001 &776030314
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4901016896370218, guid: 358c1bfa6076b43bcbb2fb513cc28f17, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4901016896370218, guid: 358c1bfa6076b43bcbb2fb513cc28f17, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4901016896370218, guid: 358c1bfa6076b43bcbb2fb513cc28f17, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4901016896370218, guid: 358c1bfa6076b43bcbb2fb513cc28f17, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4901016896370218, guid: 358c1bfa6076b43bcbb2fb513cc28f17, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4901016896370218, guid: 358c1bfa6076b43bcbb2fb513cc28f17, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4901016896370218, guid: 358c1bfa6076b43bcbb2fb513cc28f17, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4901016896370218, guid: 358c1bfa6076b43bcbb2fb513cc28f17, type: 2}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114934558527318390, guid: 358c1bfa6076b43bcbb2fb513cc28f17,
+        type: 2}
+      propertyPath: healthBar
+      value: 
+      objectReference: {fileID: 1398767756}
+    - target: {fileID: 114721381455926392, guid: 358c1bfa6076b43bcbb2fb513cc28f17,
+        type: 2}
+      propertyPath: inventoryParent
+      value: 
+      objectReference: {fileID: 2083233573}
+    - target: {fileID: 114721381455926392, guid: 358c1bfa6076b43bcbb2fb513cc28f17,
+        type: 2}
+      propertyPath: idleIcon
+      value: 
+      objectReference: {fileID: 1228009915}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: 358c1bfa6076b43bcbb2fb513cc28f17, type: 2}
+  m_IsPrefabParent: 0
 --- !u!1 &879586853
 GameObject:
   m_ObjectHideFlags: 0
@@ -4733,68 +4799,6 @@ MonoBehaviour:
         m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
---- !u!1001 &1379938133
-Prefab:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 4901016896370218, guid: 358c1bfa6076b43bcbb2fb513cc28f17, type: 2}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4901016896370218, guid: 358c1bfa6076b43bcbb2fb513cc28f17, type: 2}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4901016896370218, guid: 358c1bfa6076b43bcbb2fb513cc28f17, type: 2}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4901016896370218, guid: 358c1bfa6076b43bcbb2fb513cc28f17, type: 2}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4901016896370218, guid: 358c1bfa6076b43bcbb2fb513cc28f17, type: 2}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4901016896370218, guid: 358c1bfa6076b43bcbb2fb513cc28f17, type: 2}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4901016896370218, guid: 358c1bfa6076b43bcbb2fb513cc28f17, type: 2}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4901016896370218, guid: 358c1bfa6076b43bcbb2fb513cc28f17, type: 2}
-      propertyPath: m_RootOrder
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114934558527318390, guid: 358c1bfa6076b43bcbb2fb513cc28f17,
-        type: 2}
-      propertyPath: healthBar
-      value: 
-      objectReference: {fileID: 1398767756}
-    - target: {fileID: 114721381455926392, guid: 358c1bfa6076b43bcbb2fb513cc28f17,
-        type: 2}
-      propertyPath: inventoryParent
-      value: 
-      objectReference: {fileID: 2083233573}
-    - target: {fileID: 114721381455926392, guid: 358c1bfa6076b43bcbb2fb513cc28f17,
-        type: 2}
-      propertyPath: idleIcon
-      value: 
-      objectReference: {fileID: 1228009915}
-    - target: {fileID: 114934558527318390, guid: 358c1bfa6076b43bcbb2fb513cc28f17,
-        type: 2}
-      propertyPath: actionsPerTurn
-      value: 1
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: 358c1bfa6076b43bcbb2fb513cc28f17, type: 2}
-  m_IsPrefabParent: 0
 --- !u!1 &1398767753
 GameObject:
   m_ObjectHideFlags: 0
@@ -4991,7 +4995,7 @@ Animator:
 Transform:
   m_PrefabParentObject: {fileID: 4482653796362934, guid: 358c1bfa6076b43bcbb2fb513cc28f17,
     type: 2}
-  m_PrefabInternal: {fileID: 1379938133}
+  m_PrefabInternal: {fileID: 776030314}
 --- !u!1 &2083233572
 GameObject:
   m_ObjectHideFlags: 0

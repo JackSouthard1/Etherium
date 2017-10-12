@@ -420,12 +420,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1401732438864630}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd1ef0589a667447d9556219de2d6e9c, type: 3}
+  m_Script: {fileID: 11500000, guid: 89bed7dfc876945f29a76b0f34c72f5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  info:
-    damage: 1
-    range: 1
+  infoIndex: 0
 --- !u!114 &114813799875423710
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -440,6 +438,7 @@ MonoBehaviour:
   dropType: 3
   dropCount: 2
   tm: {fileID: 0}
+  weapon: {fileID: 0}
   player: 0
   inAction: 0
   actionsPerTurn: 2

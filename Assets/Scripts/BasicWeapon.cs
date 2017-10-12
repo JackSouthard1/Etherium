@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MeleeWeapon : Weapon {
+public class BasicWeapon : Weapon {
 	Vector3 endRay;
 	LineRenderer lr;
 	Animation attackAnimation;
@@ -52,17 +52,21 @@ public class MeleeWeapon : Weapon {
 
 	IEnumerator RenderAttack () {
 		attackAnimation.Play ();
-		yield return new WaitForSeconds (0.25f);
+		yield return new WaitForSeconds (info.initialDelay);
 
-		lr.enabled = true;
-		lr.SetPosition (0, transform.position);
-		lr.SetPosition (1, endRay);
+		for (int i = 0; i < info.shotsPerAttack; i++) {
+			lr.enabled = true;
+			lr.SetPosition (0, transform.position);
+			lr.SetPosition (1, endRay);
+			yield return new WaitForSeconds (0.05f);
+			lr.enabled = false;
 
-
-		yield return new WaitForSeconds (0.05f);
-
+			if (info.shotsPerAttack > 1) {
+				yield return new WaitForSeconds (info.rateOfFirePerAttack);
+			}
+		}
+		
 		AssignDamage ();
-		lr.enabled = false;
 
 		body.CompleteAction ();
 	}

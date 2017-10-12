@@ -422,7 +422,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1124096939255332}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd1ef0589a667447d9556219de2d6e9c, type: 3}
+  m_Script: {fileID: 11500000, guid: 89bed7dfc876945f29a76b0f34c72f5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   infoIndex: 0
@@ -471,10 +471,9 @@ MonoBehaviour:
   dropType: 0
   dropCount: 0
   tm: {fileID: 0}
+  weapon: {fileID: 0}
   player: 0
   inAction: 0
-  weapon: {fileID: 0}
-  weaponParent: {fileID: 4216073541544176}
   actionsPerTurn: 1
   attacksPerTurn: 1
   attacksLeft: 0

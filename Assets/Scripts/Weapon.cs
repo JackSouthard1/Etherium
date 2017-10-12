@@ -12,6 +12,11 @@ public class WeaponInfo {
 	public GameObject pickupPrefab;
 	public GameObject weaponPrefab;
 
+	[Header("Animation")]
+	public int shotsPerAttack = 1;
+	public float rateOfFirePerAttack = 0.5f;
+	public float initialDelay = 0.25f;
+
 	public static WeaponInfo GetInfoFromIndex(int index) {
 		if (index < TerrainManager.instance.weaponInfos.Count && index >= 0) {
 			return TerrainManager.instance.weaponInfos [index];
