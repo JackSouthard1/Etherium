@@ -16,9 +16,8 @@ public class Island : MonoBehaviour {
 
 	[Space(10)]
 	[Header("Resouces")]
-	public int resourceCount;
 	public int resourceTileCount;
-	private int resourcesPerTile;
+	public int resourcesPerTile;
 
 	public List<Pickup> pickups = new List<Pickup>();
 
@@ -63,8 +62,6 @@ public class Island : MonoBehaviour {
 	public void InitIsland() {
 		teir = Mathf.Clamp(Mathf.RoundToInt(index.x + index.y), 0, tm.teirs.Length - 1);
 		teirInfo = tm.teirs [teir];
-
-		resourcesPerTile = Mathf.CeilToInt (resourceCount / resourceTileCount);
 
 		setSpawns = tm.GetSetSpawns (teir);
 
