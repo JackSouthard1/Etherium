@@ -108,7 +108,14 @@ public class Player : MonoBehaviour {
 		WeaponInfo currentWeaponInfo = body.weapon.info;
 
 		if (currentWeaponInfo.ToIndex() != 0) {
-			tm.SpawnWeapon (transform.position, currentWeaponInfo, body.location);
+			Vector2 posV2 = new Vector2 (Mathf.RoundToInt (transform.position.x), Mathf.RoundToInt (transform.position.z));
+			if (tm.PadAtPosition (posV2) != null) {
+				return;
+			}
+
+			if (tm.SpawnWeapon (transform.position, currentWeaponInfo, body.location) == null) {
+				return;
+			}
 		}
 
 		body.weapon.info = WeaponInfo.GetInfoFromIndex(weaponIndex);
