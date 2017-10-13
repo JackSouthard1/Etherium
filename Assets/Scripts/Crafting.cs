@@ -3,8 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Crafting : MonoBehaviour {
+	public static Crafting instance;
+
 	[Header("Crafting")]
 	public List<BuildingInfo> buildingInfos;
+	public List<WeaponInfo> weaponInfos;
+
 
 	[System.Serializable]
 	public class EditorRecipe {
@@ -18,29 +22,36 @@ public class Crafting : MonoBehaviour {
 
 	private TerrainManager tm;
 
-	[HideInInspector]
-	public Dictionary<string, BuildingInfo> buildings = new Dictionary<string, BuildingInfo>();
-	[HideInInspector]
-	public List<Recipe> recipes = new List<Recipe> ();
-	[HideInInspector]
-	public List<Stack> anchors = new List<Stack>();
+	Dictionary<string, BuildingInfo> buildings = new Dictionary<string, BuildingInfo>();
+	Dictionary<string, WeaponInfo> weapons = new Dictionary<string, WeaponInfo>();
+
+	List<Recipe> recipes = new List<Recipe> ();
+	List<Stack> anchors = new List<Stack>();
+
+	void Awake () {
+		instance = this;
+	}
 
 	void Start () {
-		GenerateDictionary ();
-		// *** buildings ***
-
 		GenerateRecipes ();
-
-		// *** weapons ***
 	}
 
 	public struct Recipe {
+		public enum RecipeType
+		{
+			Building = 0,
+			Weapon = 1,
+			Augment = 2
+		}
+
 		public string name;
 		public Stack[,] resources;
+		public RecipeType type;
 
-		public Recipe (string _name, Stack[,] _resources) {
+		public Recipe (string _name, Stack[,] _resources, RecipeType _type) {
 			name = _name;
 			resources = _resources;
+			type = _type;
 		}
 	}
 
@@ -61,27 +72,16 @@ public class Crafting : MonoBehaviour {
 		List<Recipe> possibleRecipes = new List<Recipe> ();
 
 		if (anchors.Contains (stack)) {
-
-			List<Stack> matchingAnchors = anchors.FindAll (DoesAnchorsContainStack);
-
-			foreach (var anchor in matchingAnchors) {
-				int index = matchingAnchors.IndexOf (anchor);
-				possibleRecipes.Add (recipes[index]);
+			for (int i = 0; i < anchors.Count; i++) {
+				if (anchors[i].Equals(stack)) {
+					possibleRecipes.Add (recipes [i]);
+				}
 			}
 		}
 
 		return possibleRecipes;
 	}
-
-	private bool DoesAnchorsContainStack (Stack stack) {
-		if (anchors.Contains(stack)) {
-			return true;
-		} else {
-			return false;
-		}
-
-	}
-
+		
 	public void TestForCrafting (ResourcePickup _resource) {
 		ResourcePickup anchorResource = _resource;
 
@@ -103,12 +103,14 @@ public class Crafting : MonoBehaviour {
 					Vector2 posToCheck = new Vector2 (anchorResource.position.x + x, anchorResource.position.y + y);
 					if (ResourcePickup.IsAtPosition(posToCheck)) {
 						ResourcePickup resourceAtPos = ResourcePickup.GetAtPosition(posToCheck);
-						if (resourceAtPos.info.type == recipe.resources [x, y].resourceType && resourceAtPos.gameObjects.Count == recipe.resources [x, y].count) {
-							// check tile
-							TerrainManager.ResourceInfo.ResourceType curTileType = tm.tiles[posToCheck].resourceType;
-							if (curTileType == recipe.resources[x,y].tileType) {
-								affectedResources.Add (resourceAtPos);
-								correct++;
+						if (resourceAtPos.island.buildable) {
+							if (resourceAtPos.info.type == recipe.resources [x, y].resourceType && resourceAtPos.gameObjects.Count == recipe.resources [x, y].count) {
+								// check tile
+								TerrainManager.ResourceInfo.ResourceType curTileType = tm.tiles [posToCheck].resourceType;
+								if (curTileType == recipe.resources [x, y].tileType) {
+									affectedResources.Add (resourceAtPos);
+									correct++;
+								}
 							}
 						}
 					}
@@ -118,39 +120,55 @@ public class Crafting : MonoBehaviour {
 			if (correct >= recipe.resources.Length) {
 				hasRecipe = true;
 				confirmedRecipe = recipe;
+				break;
 			}
 		}
 
 		if (hasRecipe) {
 			// Craft
-			Crafting.BuildingInfo buildingInfo = buildings[confirmedRecipe.name];
-			Vector3 spawnPos = anchorResource.gameObjects[0].transform.position + new Vector3 (buildingInfo.anchorOffset.x, 0, buildingInfo.anchorOffset.y);
-			tm.SpawnBuilding(spawnPos, buildingInfo.prefab, buildingInfo.mainColor, buildingInfo.secondaryColor, buildingInfo.alternateColor, anchorResource.island);
-
-			tm.ConsumeResources (affectedResources);
-		}
-	}
-
-	void GenerateDictionary () {
-		foreach (BuildingInfo buildingInfo in buildingInfos) {
-			buildings.Add (buildingInfo.name, buildingInfo);
+			switch(confirmedRecipe.type) {
+				case Recipe.RecipeType.Building:
+					BuildingInfo buildingInfo = buildings [confirmedRecipe.name];
+					Vector3 buildingSpawnPos = anchorResource.gameObjects [0].transform.position + new Vector3 (buildingInfo.anchorOffset.x, 0, buildingInfo.anchorOffset.y);
+					tm.ConsumeResources (affectedResources);
+					tm.SpawnBuilding (buildingSpawnPos, buildingInfo.prefab, buildingInfo.mainColor, buildingInfo.secondaryColor, buildingInfo.alternateColor, anchorResource.island);
+					break;
+				case Recipe.RecipeType.Weapon:
+					WeaponInfo weaponInfo = weapons [confirmedRecipe.name];
+					Vector3 weaponSpawnPos = anchorResource.gameObjects [0].transform.position + new Vector3 (weaponInfo.anchorOffset.x, 0, weaponInfo.anchorOffset.y);
+					tm.ConsumeResources (affectedResources);	
+					tm.SpawnWeapon(weaponSpawnPos, weaponInfo, anchorResource.island);
+					break;
+				case Recipe.RecipeType.Augment:
+					break;
+			}
 		}
 	}
 
 	void GenerateRecipes () {
 		foreach (BuildingInfo buildingInfo in buildingInfos) {
-			EditorRecipe editorRecipe = buildingInfo.recipe;
-
-			Stack[,] recipe = new Stack[editorRecipe.rows[0].columns.Count,editorRecipe.rows.Count];
-			for (int y = 0; y < editorRecipe.rows.Count; y++) {
-				for (int x = 0; x < editorRecipe.rows [y].columns.Count; x++) {
-					recipe [x, y] = editorRecipe.rows [y].columns [x];
-				}
-			}
-
-			recipes.Add (new Recipe (buildingInfo.name, recipe));
-			anchors.Add (recipe [0, 0]);
+			AddRecipe (buildingInfo.name, buildingInfo.recipe, Recipe.RecipeType.Building);
+			buildings.Add (buildingInfo.name, buildingInfo);
 		}
+		foreach (WeaponInfo weaponInfo in weaponInfos) {
+			if (weaponInfo.ToIndex () == 0)
+				continue;
+			
+			AddRecipe (weaponInfo.weaponName, weaponInfo.recipe, Recipe.RecipeType.Weapon);
+			weapons.Add (weaponInfo.weaponName, weaponInfo);
+		}
+	}
+
+	void AddRecipe (string name, EditorRecipe editorRecipe, Recipe.RecipeType type) {
+		Stack[,] recipe = new Stack[editorRecipe.rows[0].columns.Count,editorRecipe.rows.Count];
+		for (int y = 0; y < editorRecipe.rows.Count; y++) {
+			for (int x = 0; x < editorRecipe.rows [y].columns.Count; x++) {
+				recipe [x, y] = editorRecipe.rows [y].columns [x];
+			}
+		}
+
+		recipes.Add (new Recipe (name, recipe, type));
+		anchors.Add (recipe [0, 0]);
 	}
 
 	[System.Serializable]

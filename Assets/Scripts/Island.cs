@@ -27,7 +27,7 @@ public class Island : MonoBehaviour {
 
 	public List<Body> enemies = new List<Body>();
 
-	private bool buildable = false;
+	public bool buildable = false;
 
 	[Space(10)]
 	[Header("Civilizing")]

@@ -3654,39 +3654,6 @@ MonoBehaviour:
   resourcePrefab: {fileID: 1957892413181948, guid: 09a9dca98a4b3443c88611ce76cd310d,
     type: 2}
   stackHeight: 0.05
-  weaponInfos:
-  - weaponName: Default
-    damage: 1
-    range: 1
-    passesThroughEnemies: 0
-    pickupPrefab: {fileID: 1904551253670318, guid: 85093563476454b9b97c3d916e0af1a0,
-      type: 2}
-    weaponPrefab: {fileID: 0}
-    shotsPerAttack: 1
-    rateOfFirePerAttack: 0.5
-    initialDelay: 0.25
-  - weaponName: Gatling Gun
-    damage: 2
-    range: 2
-    passesThroughEnemies: 0
-    pickupPrefab: {fileID: 1904551253670318, guid: 85093563476454b9b97c3d916e0af1a0,
-      type: 2}
-    weaponPrefab: {fileID: 1682559729392678, guid: a31d1aac33a29475e9ba2eadaabf300c,
-      type: 2}
-    shotsPerAttack: 3
-    rateOfFirePerAttack: 0.1
-    initialDelay: 0.25
-  - weaponName: Sniper
-    damage: 1
-    range: 5
-    passesThroughEnemies: 0
-    pickupPrefab: {fileID: 1904551253670318, guid: 85093563476454b9b97c3d916e0af1a0,
-      type: 2}
-    weaponPrefab: {fileID: 1587931086702330, guid: 5d7c4437c848444a18baae5e1556a5cd,
-      type: 2}
-    shotsPerAttack: 1
-    rateOfFirePerAttack: 0.5
-    initialDelay: 0.65
   enemyPrefabs:
   - {fileID: 1005221541181882, guid: 415a1583845034f8c853c0a5f16dccb7, type: 2}
   - {fileID: 1153471747871344, guid: 5ce2b4f77b6e3475bad0f5ad0f85a840, type: 2}
@@ -4236,7 +4203,61 @@ MonoBehaviour:
           tileType: 1
           count: 2
     anchorOffset: {x: 1, y: 0}
-  anchors: []
+  weaponInfos:
+  - weaponName: Default
+    damage: 1
+    range: 1
+    passesThroughEnemies: 0
+    pickupPrefab: {fileID: 0}
+    weaponPrefab: {fileID: 0}
+    shotsPerAttack: 1
+    rateOfFirePerAttack: 0.5
+    initialDelay: 0.25
+    recipe:
+      rows: []
+    anchorOffset: {x: 0, y: 0}
+  - weaponName: Gatling Gun
+    damage: 2
+    range: 2
+    passesThroughEnemies: 0
+    pickupPrefab: {fileID: 1904551253670318, guid: 85093563476454b9b97c3d916e0af1a0,
+      type: 2}
+    weaponPrefab: {fileID: 1682559729392678, guid: a31d1aac33a29475e9ba2eadaabf300c,
+      type: 2}
+    shotsPerAttack: 3
+    rateOfFirePerAttack: 0.1
+    initialDelay: 0.25
+    recipe:
+      rows:
+      - columns:
+        - resourceType: 3
+          tileType: 0
+          count: 1
+        - resourceType: 3
+          tileType: 0
+          count: 1
+    anchorOffset: {x: 0, y: 0}
+  - weaponName: Sniper
+    damage: 1
+    range: 5
+    passesThroughEnemies: 0
+    pickupPrefab: {fileID: 1904551253670318, guid: 85093563476454b9b97c3d916e0af1a0,
+      type: 2}
+    weaponPrefab: {fileID: 1587931086702330, guid: 5d7c4437c848444a18baae5e1556a5cd,
+      type: 2}
+    shotsPerAttack: 1
+    rateOfFirePerAttack: 0.5
+    initialDelay: 0.65
+    recipe:
+      rows:
+      - columns:
+        - resourceType: 4
+          tileType: 0
+          count: 1
+        - resourceType: 4
+          tileType: 0
+          count: 1
+    anchorOffset: {x: 0, y: 0}
 --- !u!1 &928946558
 GameObject:
   m_ObjectHideFlags: 0

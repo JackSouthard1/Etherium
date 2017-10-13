@@ -27,10 +27,6 @@ public class TerrainManager : MonoBehaviour {
 	public GameObject resourcePrefab;
 	public float stackHeight;
 
-	[Space(10)]
-	[Header("Weapons")]
-	public List<WeaponInfo> weaponInfos = new List<WeaponInfo>();
-
 	[Header("Enemies")]
 	public GameObject[] enemyPrefabs;
 
@@ -72,10 +68,6 @@ public class TerrainManager : MonoBehaviour {
 		instance = this;
 		crafting = GameObject.Find ("GameManager").GetComponent<Crafting> ();
 		GenerateIslands ();
-
-		//TEMP
-		SpawnWeapon (Vector3.right, weaponInfos[1], islands [0]);
-		SpawnWeapon (Vector3.forward, weaponInfos[2], islands [0]);
 	}
 
 	void GenerateIslands () {
@@ -175,13 +167,12 @@ public class TerrainManager : MonoBehaviour {
 			return null;
 		}
 
-		if (!weaponInfos.Contains (info)) {
+		if (!Crafting.instance.weaponInfos.Contains (info)) {
 			Debug.LogError ("Weapon info not found in list");
 			return null;
 		}
 		
-		int weaponIndex = weaponInfos.IndexOf (info);
-		GameObject weaponGO = Instantiate (weaponInfos[weaponIndex].pickupPrefab, island.transform);
+		GameObject weaponGO = Instantiate (info.pickupPrefab, island.transform);
 		weaponGO.transform.position = position;
 		WeaponPickup weapon = new WeaponPickup (info, weaponGO, island);
 

@@ -18,16 +18,19 @@ public class WeaponInfo {
 	public float initialDelay = 0.25f;
 
 	public static WeaponInfo GetInfoFromIndex(int index) {
-		if (index < TerrainManager.instance.weaponInfos.Count && index >= 0) {
-			return TerrainManager.instance.weaponInfos [index];
+		if (index < Crafting.instance.weaponInfos.Count && index >= 0) {
+			return Crafting.instance.weaponInfos [index];
 		} else {
 			return null;
 		}
 	}
 
 	public int ToIndex() {
-		return TerrainManager.instance.weaponInfos.IndexOf (this);
+		return Crafting.instance.weaponInfos.IndexOf (this);
 	}
+
+	public Crafting.EditorRecipe recipe;
+	public Vector2 anchorOffset;
 }
 
 public abstract class Weapon : MonoBehaviour {
