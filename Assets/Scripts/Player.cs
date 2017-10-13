@@ -8,6 +8,8 @@ public class Player : MonoBehaviour {
 	public Transform inventoryParent;
 	public int movesPerResource;
 
+	public int maxInventorySize;
+
 	public GameObject idleIcon;
 
 	Body body;
@@ -63,19 +65,38 @@ public class Player : MonoBehaviour {
 
 	public void CollectResource (ResourcePickup resource) {
 		int stackCount = resource.gameObjects.Count;
+		int countToPickUp = stackCount;
+
+		float carriedResourceCount = GetCarriedResourceCount ();
+		if (carriedResourceCount + stackCount > maxInventorySize) {
+			int remainingSpace = Mathf.FloorToInt(maxInventorySize - carriedResourceCount);
+			if (remainingSpace <= 0) {
+				return;
+			} else {
+				countToPickUp = remainingSpace;
+			}
+		}
 			
-		resource.island.pickups.Remove (resource);
-	
-		tm.pickups.Remove (resource.position);
-		for (int i = 0; i < stackCount; i++) {
-			Destroy (resource.gameObjects [i]);
+		if (countToPickUp >= stackCount) {
+			resource.island.pickups.Remove (resource);
+			tm.pickups.Remove (resource.position);
 		}
 
-		inventory [tm.ResourceTypeToIndex(resource.info.type)] += (float) stackCount;
+		inventory [tm.ResourceTypeToIndex(resource.info.type)] += (float) countToPickUp;
 		List<ResourcePickup> affectedResources = new List<ResourcePickup> {resource};
-		tm.ConsumeResources (affectedResources);
+		List<int> countsToPickUp = new List<int> { countToPickUp };
+		tm.ConsumeResources (affectedResources, countsToPickUp);
 
 		UpdateInventoryUI ();
+	}
+
+	float GetCarriedResourceCount() {
+		float count = 0f;
+		foreach (float resourceCount in inventory) {
+			count += resourceCount;
+		}
+
+		return count;
 	}
 
 	public void DropResource (TerrainManager.ResourceInfo resourceInfo) {

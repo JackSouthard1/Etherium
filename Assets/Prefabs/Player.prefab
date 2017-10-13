@@ -439,6 +439,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inventoryParent: {fileID: 0}
   movesPerResource: 10
+  maxInventorySize: 10
   idleIcon: {fileID: 0}
   uiResourcePrefab: {fileID: 1231923437215244, guid: 176c95135f840468098990ee7c8d1fa1,
     type: 2}
