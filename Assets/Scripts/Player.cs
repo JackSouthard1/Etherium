@@ -107,7 +107,7 @@ public class Player : MonoBehaviour {
 			return;
 		}
 
-		Vector2 posV2 = new Vector2 (Mathf.RoundToInt (transform.position.x), Mathf.RoundToInt (transform.position.z));
+		Vector2 posV2 = TerrainManager.PosToV2 (transform.position);
 		if (tm.PadAtPosition (posV2) != null) {
 			return;
 		}
@@ -130,7 +130,7 @@ public class Player : MonoBehaviour {
 		WeaponInfo currentWeaponInfo = body.weapon.info;
 
 		if (currentWeaponInfo.ToIndex() != 0) {
-			Vector2 posV2 = new Vector2 (Mathf.RoundToInt (transform.position.x), Mathf.RoundToInt (transform.position.z));
+			Vector2 posV2 = TerrainManager.PosToV2 (transform.position);
 			if (tm.PadAtPosition (posV2) != null) {
 				return;
 			}
@@ -154,7 +154,7 @@ public class Player : MonoBehaviour {
 		AugmentInfo currentAugmentInfo = body.augment;
 
 		if (currentAugmentInfo.ToIndex() != 0) {
-			Vector2 posV2 = new Vector2 (Mathf.RoundToInt (transform.position.x), Mathf.RoundToInt (transform.position.z));
+			Vector2 posV2 = TerrainManager.PosToV2 (transform.position);
 			if (tm.PadAtPosition (posV2) != null) {
 				return;
 			}

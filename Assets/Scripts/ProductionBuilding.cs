@@ -90,13 +90,13 @@ public class ProductionBuilding : Building
 	}
 
 	List<Vector2> GetAdjacentTiles() {
-		Vector2 curPosV2 = new Vector2 (Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.z));
+		Vector2 curPosV2 = TerrainManager.PosToV2 (transform.position);
 		List<Vector2> adjacentTiles = new List<Vector2> ();
 
-		adjacentTiles.Add (curPosV2 + new Vector2(1f, 0f));
-		adjacentTiles.Add (curPosV2 + new Vector2(-1f, 0f));
-		adjacentTiles.Add (curPosV2 + new Vector2(0f, 1f));
-		adjacentTiles.Add (curPosV2 + new Vector2(0f, -1f));
+		adjacentTiles.Add (curPosV2 + Vector2.right);
+		adjacentTiles.Add (curPosV2 + Vector2.left);
+		adjacentTiles.Add (curPosV2 + Vector2.up);
+		adjacentTiles.Add (curPosV2 + Vector2.down);
 
 		return adjacentTiles;
 	}

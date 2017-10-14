@@ -92,7 +92,7 @@ public class Body : MonoBehaviour {
 	public void AttackInDir (Quaternion targetRot, Vector2 direction) {
 		inAction = true;
 		StartCoroutine (RotateToDir (targetRot, moveTime));
-		weapon.Attack (direction, new Vector2 (transform.position.x, transform.position.z));
+		weapon.Attack (direction, TerrainManager.PosToV2(transform.position));
 		attacksLeft--;
 	}
 
@@ -101,7 +101,7 @@ public class Body : MonoBehaviour {
 	}
 
 	public void CompleteAction () {
-		Vector2 newTile = new Vector2 (transform.position.x, transform.position.z);
+		Vector2 newTile = TerrainManager.PosToV2(transform.position);
 		if (player) {
 			if (ResourcePickup.IsAtPosition (newTile)) {
 				playerScript.CollectResource (ResourcePickup.GetAtPosition (newTile));

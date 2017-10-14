@@ -112,13 +112,13 @@ public class TerrainManager : MonoBehaviour {
 
 		Transform pad = building.transform.Find ("Pad");
 		if(pad != null) {
-			Vector2 pos2D = new Vector2 (Mathf.RoundToInt(pad.position.x), Mathf.RoundToInt(pad.position.z));
+			Vector2 pos2D = PosToV2(pad.position);
 			pads.Add(pos2D, pad.position.y);
 		}
 	}
 
 	public ResourcePickup SpawnResource (Vector3 position, ResourceInfo info, Island island, bool initialSpawn = false, float startingHeight = 0f) {
-		Vector2 posV2 = new Vector2 (position.x, position.z);
+		Vector2 posV2 = PosToV2 (position);
 
 		if (island == null || GetBuildingAtPosition(posV2) != null || WeaponPickup.IsAtPosition(posV2)) {
 			return null;
@@ -161,7 +161,7 @@ public class TerrainManager : MonoBehaviour {
 	}
 
 	public WeaponPickup SpawnWeapon (Vector3 position, WeaponInfo info, Island island) {
-		Vector2 posV2 = new Vector2 (position.x, position.z);
+		Vector2 posV2 = PosToV2(position);
 
 		if (island == null || GetBuildingAtPosition(posV2) != null || GetPickupAtPosition(posV2) != null) {
 			return null;
@@ -183,7 +183,7 @@ public class TerrainManager : MonoBehaviour {
 	}
 
 	public AugmentPickup SpawnAugment (Vector3 position, AugmentInfo info, Island island) {
-		Vector2 posV2 = new Vector2 (position.x, position.z);
+		Vector2 posV2 = PosToV2(position);
 
 		if (island == null || GetBuildingAtPosition(posV2) != null || GetPickupAtPosition(posV2) != null) {
 			return null;
@@ -311,7 +311,7 @@ public class TerrainManager : MonoBehaviour {
 		}
 
 		for (int i = 0; i < positionsToTest.Count; i++) {
-			if (new Vector2 (playerPosition.x, playerPosition.z) == positionsToTest[i]) {
+			if (PosToV2(playerPosition) == positionsToTest[i]) {
 				return true;
 			}
 		}
@@ -464,6 +464,10 @@ public class TerrainManager : MonoBehaviour {
 
 		Debug.LogError ("Resource type " + resourceType.ToString () + " not found in list");
 		return new ResourceInfo();
+	}
+
+	public static Vector2 PosToV2 (Vector3 position) {
+		return new Vector2 (Mathf.Round(position.x), Mathf.Round(position.z));
 	}
 
 	[System.Serializable]

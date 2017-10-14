@@ -211,13 +211,13 @@ public class Island : MonoBehaviour {
 		startPos = transform.position;
 		targetPos = (transform.position / tm.spacing) * size;
 		Transform player = GameObject.FindGameObjectWithTag ("Player").transform;
-		player.parent = tm.GetTileAtPosition(new Vector2(Mathf.RoundToInt(player.position.x), Mathf.RoundToInt(player.position.z))).transform;
+		player.parent = tm.GetTileAtPosition(TerrainManager.PosToV2(player.position)).transform;
 		player.Find ("Model").localPosition = Vector3.zero;
 
 		for (int i = 0; i < tiles.Length; i++) {
 			if (!voidTileIndexes.Contains (i)) {
 				GameObject tile = tiles [i].tile;
-				tm.tiles.Remove (new Vector2 (tile.transform.position.x, tile.transform.position.z));
+				tm.tiles.Remove (TerrainManager.PosToV2(tile.transform.position));
 			}
 		}
 
@@ -325,7 +325,7 @@ public class Island : MonoBehaviour {
 		for (int i = 0; i < tiles.Length; i++) {
 			if (!voidTileIndexes.Contains (i)) {
 				tiles [i].tile.transform.position = new Vector3 (Mathf.RoundToInt (tiles [i].tile.transform.position.x), 0f, Mathf.RoundToInt (tiles [i].tile.transform.position.z));
-				tm.tiles.Add (new Vector2 (tiles [i].tile.transform.position.x, tiles [i].tile.transform.position.z), tiles [i]);
+				tm.tiles.Add (TerrainManager.PosToV2(tiles[i].tile.transform.position), tiles [i]);
 			}
 		}
 			

@@ -10,7 +10,7 @@ public class EnemyMind : Mind {
 	}
 
 	Vector2 CalculateAction (List<Vector2> avaiableDirections) {
-		Vector2 rawDiff = new Vector2(target.position.x, target.position.z) - new Vector2(transform.position.x, transform.position.z);
+		Vector2 rawDiff = TerrainManager.PosToV2(target.position) - TerrainManager.PosToV2(transform.position);
 
 		Vector2 bestDirection = Vector2.zero;
 		float smallestDistance = Mathf.Infinity;
@@ -41,7 +41,7 @@ public class EnemyMind : Mind {
 	}
 
 	protected override bool IsAvailableDirection (Vector2 direction) {
-		Vector2 position = new Vector2 (transform.position.x, transform.position.z);
+		Vector2 position = TerrainManager.PosToV2 (transform.position);
 
 		return !tm.UnstandableBuildingAtPosition (position) && !tm.EnemyInRange(position, direction, 1) && tm.GetTileAtPosition(position + direction);
 	}

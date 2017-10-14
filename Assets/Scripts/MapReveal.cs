@@ -41,7 +41,7 @@ public class MapReveal : MonoBehaviour {
 		List<Vector2> coords = new List<Vector2> ();
 
 		Vector3 playerPos = player.transform.position;
-		Vector2 centerCoord = new Vector2 (Mathf.RoundToInt(playerPos.x + offset.x), Mathf.RoundToInt(playerPos.z + offset.z));
+		Vector2 centerCoord = TerrainManager.PosToV2(playerPos + offset);
 		Vector2 bottomLeft = new Vector2 (centerCoord.x - Mathf.RoundToInt(detectionRange / 2f), centerCoord.y - Mathf.RoundToInt(detectionRange / 2f));
 
 		for (int y = 0; y < detectionRange; y++) {

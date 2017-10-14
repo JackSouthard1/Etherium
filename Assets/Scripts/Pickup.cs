@@ -9,7 +9,7 @@ public class Pickup {
 	public Island island;
 
 	public void UpdatePosition () {
-		position = new Vector2 (gameObjects[0].transform.position.x, gameObjects[0].transform.position.z);
+		position = TerrainManager.PosToV2(gameObjects[0].transform.position);
 		originalBaseHeight = gameObjects [0].transform.position.y;
 	}
 
