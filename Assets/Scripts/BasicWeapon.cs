@@ -68,6 +68,8 @@ public class BasicWeapon : Weapon {
 		
 		AssignDamage ();
 
+		yield return new WaitForEndOfFrame ();
+
 		body.CompleteAction ();
 	}
 
