@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 33394844506076132}
   - component: {fileID: 23541376562622728}
   m_Layer: 0
-  m_Name: TempWeapon
+  m_Name: TempPickup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

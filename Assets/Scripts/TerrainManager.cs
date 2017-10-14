@@ -182,6 +182,28 @@ public class TerrainManager : MonoBehaviour {
 		return weapon;
 	}
 
+	public AugmentPickup SpawnAugment (Vector3 position, AugmentInfo info, Island island) {
+		Vector2 posV2 = new Vector2 (position.x, position.z);
+
+		if (island == null || GetBuildingAtPosition(posV2) != null || GetPickupAtPosition(posV2) != null) {
+			return null;
+		}
+
+		if (!Crafting.instance.augmentInfos.Contains (info)) {
+			Debug.LogError ("Augment info not found in list");
+			return null;
+		}
+
+		GameObject augmentGO = Instantiate (info.pickupPrefab, island.transform);
+		augmentGO.transform.position = position;
+		AugmentPickup augment = new AugmentPickup (info, augmentGO, island);
+
+		pickups.Add (posV2, augment);
+		island.pickups.Add (augment);
+
+		return augment;
+	}
+
 	public void ConsumeResources (List<ResourcePickup> consumedResources, List<int> amountsToConsume = null) {
 		List<Pickup> objectsToPickup = new List<Pickup> ();
 		foreach (ResourcePickup resource in consumedResources) {
@@ -193,6 +215,12 @@ public class TerrainManager : MonoBehaviour {
 
 	public void PickupWeapon (WeaponPickup weapon) {
 		List<Pickup> objectsToPickup = new List<Pickup> { weapon.ToPickup() };
+
+		PickupObjects (objectsToPickup);
+	}
+
+	public void PickupAugment (AugmentPickup augment) {
+		List<Pickup> objectsToPickup = new List<Pickup> { augment.ToPickup() };
 
 		PickupObjects (objectsToPickup);
 	}

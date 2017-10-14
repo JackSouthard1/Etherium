@@ -62,6 +62,21 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &1774650278345728
+GameObject:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4742868711859378}
+  m_Layer: 0
+  m_Name: Augment
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!1 &1782683896650674
 GameObject:
   m_ObjectHideFlags: 1
@@ -168,6 +183,7 @@ Transform:
   m_Children:
   - {fileID: 4823454449968076}
   - {fileID: 4793887692941276}
+  - {fileID: 4742868711859378}
   m_Father: {fileID: 4412364908990304}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -225,6 +241,19 @@ Transform:
   m_Father: {fileID: 4823454449968076}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
+--- !u!4 &4742868711859378
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1774650278345728}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4080795740963738}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4793887692941276
 Transform:
   m_ObjectHideFlags: 1
@@ -447,6 +476,7 @@ MonoBehaviour:
   health: 1
   location: {fileID: 0}
   healthBar: {fileID: 0}
+  augmentParent: {fileID: 0}
 --- !u!120 &120284570514892640
 LineRenderer:
   m_ObjectHideFlags: 1

@@ -8,7 +8,7 @@ public class Crafting : MonoBehaviour {
 	[Header("Crafting")]
 	public List<BuildingInfo> buildingInfos;
 	public List<WeaponInfo> weaponInfos;
-
+	public List<AugmentInfo> augmentInfos;
 
 	[System.Serializable]
 	public class EditorRecipe {
@@ -24,6 +24,7 @@ public class Crafting : MonoBehaviour {
 
 	Dictionary<string, BuildingInfo> buildings = new Dictionary<string, BuildingInfo>();
 	Dictionary<string, WeaponInfo> weapons = new Dictionary<string, WeaponInfo>();
+	Dictionary<string, AugmentInfo> augments = new Dictionary<string, AugmentInfo> ();
 
 	List<Recipe> recipes = new List<Recipe> ();
 	List<Stack> anchors = new List<Stack>();
@@ -101,7 +102,7 @@ public class Crafting : MonoBehaviour {
 			for (int y = 0; y < recipe.resources.GetLength(1); y++) {
 				for (int x = 0; x < recipe.resources.GetLength(0); x++) {
 					Vector2 posToCheck = new Vector2 (anchorResource.position.x + x, anchorResource.position.y + y);
-					if (ResourcePickup.IsAtPosition(posToCheck)) {
+					if (ResourcePickup.IsAtPosition(posToCheck) && tm.PadAtPosition(posToCheck) == null) {
 						ResourcePickup resourceAtPos = ResourcePickup.GetAtPosition(posToCheck);
 						if (resourceAtPos.island.buildable) {
 							if (resourceAtPos.info.type == recipe.resources [x, y].resourceType && resourceAtPos.gameObjects.Count == recipe.resources [x, y].count) {
@@ -140,6 +141,10 @@ public class Crafting : MonoBehaviour {
 					tm.SpawnWeapon(weaponSpawnPos, weaponInfo, anchorResource.island);
 					break;
 				case Recipe.RecipeType.Augment:
+					AugmentInfo augmentInfo = augments [confirmedRecipe.name];
+					Vector3 augmentSpawnPos = anchorResource.gameObjects [0].transform.position + new Vector3 (augmentInfo.anchorOffset.x, 0, augmentInfo.anchorOffset.y);
+					tm.ConsumeResources (affectedResources);
+					tm.SpawnAugment (augmentSpawnPos, augmentInfo, anchorResource.island);
 					break;
 			}
 		}
@@ -156,6 +161,10 @@ public class Crafting : MonoBehaviour {
 			
 			AddRecipe (weaponInfo.weaponName, weaponInfo.recipe, Recipe.RecipeType.Weapon);
 			weapons.Add (weaponInfo.weaponName, weaponInfo);
+		}
+		foreach (AugmentInfo augmentInfo in augmentInfos) {
+			AddRecipe (augmentInfo.augmentName, augmentInfo.recipe, Recipe.RecipeType.Augment);
+			augments.Add (augmentInfo.augmentName, augmentInfo);
 		}
 	}
 

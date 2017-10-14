@@ -8,7 +8,8 @@ public class Player : MonoBehaviour {
 	public Transform inventoryParent;
 	public int movesPerResource;
 
-	public int maxInventorySize;
+	public int defaultInventorySize;
+	int curInventorySize { get { return defaultInventorySize + body.augment.extraInventorySpace;} }
 
 	public GameObject idleIcon;
 
@@ -68,8 +69,8 @@ public class Player : MonoBehaviour {
 		int countToPickUp = stackCount;
 
 		float carriedResourceCount = GetCarriedResourceCount ();
-		if (carriedResourceCount + stackCount > maxInventorySize) {
-			int remainingSpace = Mathf.FloorToInt(maxInventorySize - carriedResourceCount);
+		if (carriedResourceCount + stackCount > curInventorySize) {
+			int remainingSpace = Mathf.FloorToInt(curInventorySize - carriedResourceCount);
 			if (remainingSpace <= 0) {
 				return;
 			} else {
@@ -141,6 +142,33 @@ public class Player : MonoBehaviour {
 
 		body.weapon.info = WeaponInfo.GetInfoFromIndex(weaponIndex);
 		body.weapon.UpdateWeapon ();
+	}
+
+	public void PickupAugment (AugmentPickup newAugment) {
+		tm.PickupAugment (newAugment);
+
+		SwitchAugments (newAugment.info.ToIndex());
+	}
+
+	public void SwitchAugments (int augmentIndex) {
+		AugmentInfo currentAugmentInfo = body.augment;
+
+		if (Crafting.instance.augmentInfos.Contains(currentAugmentInfo)) {
+			Vector2 posV2 = new Vector2 (Mathf.RoundToInt (transform.position.x), Mathf.RoundToInt (transform.position.z));
+			if (tm.PadAtPosition (posV2) != null) {
+				return;
+			}
+
+			if (tm.SpawnAugment (transform.position, currentAugmentInfo, body.location) == null) {
+				return;
+			}
+		}
+
+		if (augmentIndex == -1) {
+			body.UpdateAugment (AugmentInfo.None);
+		} else {
+			body.UpdateAugment (AugmentInfo.GetInfoFromIndex(augmentIndex));
+		}
 	}
 
 	public void Heal(float resourcesConsumed) {

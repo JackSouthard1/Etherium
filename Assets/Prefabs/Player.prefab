@@ -112,6 +112,21 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &1647069032428368
+GameObject:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4363687781380418}
+  m_Layer: 0
+  m_Name: Augment
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!1 &1842425741282882
 GameObject:
   m_ObjectHideFlags: 1
@@ -184,6 +199,19 @@ Transform:
   m_Father: {fileID: 4482653796362934}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &4363687781380418
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1647069032428368}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4482653796362934}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4466589254384712
 Transform:
   m_ObjectHideFlags: 1
@@ -212,6 +240,7 @@ Transform:
   m_Children:
   - {fileID: 4466589254384712}
   - {fileID: 4216073541544176}
+  - {fileID: 4363687781380418}
   m_Father: {fileID: 4901016896370218}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -439,7 +468,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inventoryParent: {fileID: 0}
   movesPerResource: 10
-  maxInventorySize: 10
+  defaultInventorySize: 10
   idleIcon: {fileID: 0}
   uiResourcePrefab: {fileID: 1231923437215244, guid: 176c95135f840468098990ee7c8d1fa1,
     type: 2}
@@ -481,6 +510,15 @@ MonoBehaviour:
   health: 3
   location: {fileID: 0}
   healthBar: {fileID: 0}
+  augmentParent: {fileID: 4363687781380418}
+  augment:
+    augmentName: 
+    extraInventorySpace: 0
+    pickupPrefab: {fileID: 0}
+    augmentPrefab: {fileID: 0}
+    recipe:
+      rows: []
+    anchorOffset: {x: 0, y: 0}
 --- !u!120 &120202066359972710
 LineRenderer:
   m_ObjectHideFlags: 1

@@ -38,6 +38,10 @@ public class Body : MonoBehaviour {
 	private float moveTime = 0.2f;
 	public HealthBar healthBar;
 
+	public Transform augmentParent;
+	[HideInInspector]
+	public AugmentInfo augment;
+
 	void Awake () {
 		weapon = GetComponentInChildren<Weapon> ();
 		model = transform.Find ("Model");
@@ -101,6 +105,8 @@ public class Body : MonoBehaviour {
 				playerScript.CollectResource (ResourcePickup.GetAtPosition (newTile));
 			} else if (WeaponPickup.IsAtPosition (newTile)) {
 				playerScript.PickupWeapon (WeaponPickup.GetAtPosition (newTile));
+			} else if (AugmentPickup.IsAtPosition (newTile)) {
+				playerScript.PickupAugment (AugmentPickup.GetAtPosition (newTile));
 			}
 
 			playerScript.Eat ();
@@ -187,6 +193,18 @@ public class Body : MonoBehaviour {
 		yield return new WaitForSeconds (0.5f);
 
 		CompleteAction ();
+	}
+
+	public void UpdateAugment(AugmentInfo newAugment) {
+		if(augmentParent.childCount > 0) {
+			Destroy(augmentParent.GetChild(0).gameObject);
+		}
+		
+		augment = newAugment;
+
+		if(newAugment.augmentPrefab != null) {
+			Instantiate (newAugment.augmentPrefab, augmentParent);
+		}
 	}
 
 //	[System.Serializable]
