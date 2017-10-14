@@ -78,17 +78,12 @@ public class WeaponPickup : Pickup {
 
 //where to put this?
 [System.Serializable]
-public class AugmentInfo
-{
-	public string augmentName;
+public class AugmentInfo : Crafting.Craftable {
 	//TODO: is this really the best system for specifying what each augment does?
 	public int extraInventorySpace;
 
 	public GameObject pickupPrefab;
 	public GameObject augmentPrefab;
-
-	public Crafting.EditorRecipe recipe;
-	public Vector2 anchorOffset;
 
 	public static AugmentInfo GetInfoFromIndex(int index) {
 		if (index < Crafting.instance.augmentInfos.Count && index >= 0) {
@@ -100,17 +95,6 @@ public class AugmentInfo
 
 	public int ToIndex() {
 		return Crafting.instance.augmentInfos.IndexOf (this);
-	}
-
-	public static AugmentInfo None {
-		get {
-			AugmentInfo emptyInfo = new AugmentInfo ();
-			emptyInfo.augmentName = "Empty";
-			emptyInfo.extraInventorySpace = 0;
-			emptyInfo.pickupPrefab = null;
-			emptyInfo.augmentPrefab = null;
-			return emptyInfo;
-		}
 	}
 }
 

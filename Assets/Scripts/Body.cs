@@ -61,6 +61,8 @@ public class Body : MonoBehaviour {
 		maxHealth = health;
 		if (healthBar != null)
 			healthBar.UpdateBar (health, maxHealth);
+
+		augment = AugmentInfo.GetInfoFromIndex (0);
 	}
 
 	public void TurnStart () {

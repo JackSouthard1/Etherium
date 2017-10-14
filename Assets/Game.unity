@@ -3864,7 +3864,7 @@ MonoBehaviour:
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: -1
+          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -4284,10 +4284,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   buildingInfos:
   - name: BasicFarm
-    prefab: {fileID: 1731185760413756, guid: c3874527b6b064014abec4efad740b2c, type: 2}
-    mainColor: {r: 0.1583045, g: 0.89705884, b: 0.2551069, a: 0}
-    secondaryColor: {r: 0.43382353, g: 0.43382353, b: 0.43382353, a: 0}
-    alternateColor: {r: 0, g: 0, b: 0, a: 0}
     recipe:
       rows:
       - columns:
@@ -4295,11 +4291,11 @@ MonoBehaviour:
           tileType: 2
           count: 2
     anchorOffset: {x: 0, y: 0}
+    prefab: {fileID: 1731185760413756, guid: c3874527b6b064014abec4efad740b2c, type: 2}
+    mainColor: {r: 0.1583045, g: 0.89705884, b: 0.2551069, a: 0}
+    secondaryColor: {r: 0.43382353, g: 0.43382353, b: 0.43382353, a: 0}
+    alternateColor: {r: 0, g: 0, b: 0, a: 0}
   - name: Extractor
-    prefab: {fileID: 1322542648624708, guid: 601b061a752f84fea8504c08e3a15486, type: 2}
-    mainColor: {r: 0.24313727, g: 0.9686275, b: 1, a: 0}
-    secondaryColor: {r: 0.9096647, g: 0.24410684, b: 0.9485294, a: 0}
-    alternateColor: {r: 0.86666673, g: 0.6509804, b: 0.18431373, a: 0}
     recipe:
       rows:
       - columns:
@@ -4310,11 +4306,11 @@ MonoBehaviour:
           tileType: 1
           count: 3
     anchorOffset: {x: 1, y: 0}
-  - name: Refinery
-    prefab: {fileID: 1322542648624708, guid: 1bcde767246bc404180734be2c2fe021, type: 2}
+    prefab: {fileID: 1322542648624708, guid: 601b061a752f84fea8504c08e3a15486, type: 2}
     mainColor: {r: 0.24313727, g: 0.9686275, b: 1, a: 0}
     secondaryColor: {r: 0.9096647, g: 0.24410684, b: 0.9485294, a: 0}
     alternateColor: {r: 0.86666673, g: 0.6509804, b: 0.18431373, a: 0}
+  - name: Refinery
     recipe:
       rows:
       - columns:
@@ -4325,8 +4321,15 @@ MonoBehaviour:
           tileType: 1
           count: 2
     anchorOffset: {x: 1, y: 0}
+    prefab: {fileID: 1322542648624708, guid: 1bcde767246bc404180734be2c2fe021, type: 2}
+    mainColor: {r: 0.24313727, g: 0.9686275, b: 1, a: 0}
+    secondaryColor: {r: 0.9096647, g: 0.24410684, b: 0.9485294, a: 0}
+    alternateColor: {r: 0.86666673, g: 0.6509804, b: 0.18431373, a: 0}
   weaponInfos:
-  - weaponName: Default
+  - name: Default
+    recipe:
+      rows: []
+    anchorOffset: {x: 0, y: 0}
     damage: 1
     range: 1
     passesThroughEnemies: 0
@@ -4335,10 +4338,17 @@ MonoBehaviour:
     shotsPerAttack: 1
     rateOfFirePerAttack: 0.5
     initialDelay: 0.25
+  - name: Gatling Gun
     recipe:
-      rows: []
+      rows:
+      - columns:
+        - resourceType: 3
+          tileType: 0
+          count: 1
+        - resourceType: 3
+          tileType: 0
+          count: 1
     anchorOffset: {x: 0, y: 0}
-  - weaponName: Gatling Gun
     damage: 2
     range: 2
     passesThroughEnemies: 0
@@ -4349,17 +4359,17 @@ MonoBehaviour:
     shotsPerAttack: 3
     rateOfFirePerAttack: 0.1
     initialDelay: 0.25
+  - name: Sniper
     recipe:
       rows:
       - columns:
-        - resourceType: 3
+        - resourceType: 4
           tileType: 0
           count: 1
-        - resourceType: 3
+        - resourceType: 4
           tileType: 0
           count: 1
     anchorOffset: {x: 0, y: 0}
-  - weaponName: Sniper
     damage: 1
     range: 5
     passesThroughEnemies: 0
@@ -4370,34 +4380,31 @@ MonoBehaviour:
     shotsPerAttack: 1
     rateOfFirePerAttack: 0.5
     initialDelay: 0.65
+  augmentInfos:
+  - name: Default
+    recipe:
+      rows: []
+    anchorOffset: {x: 0, y: 0}
+    extraInventorySpace: 0
+    pickupPrefab: {fileID: 0}
+    augmentPrefab: {fileID: 0}
+  - name: Backpack
     recipe:
       rows:
       - columns:
-        - resourceType: 4
+        - resourceType: 1
           tileType: 0
-          count: 1
-        - resourceType: 4
+          count: 2
+      - columns:
+        - resourceType: 1
           tileType: 0
-          count: 1
+          count: 2
     anchorOffset: {x: 0, y: 0}
-  augmentInfos:
-  - augmentName: Backpack
     extraInventorySpace: 5
     pickupPrefab: {fileID: 1904551253670318, guid: 85093563476454b9b97c3d916e0af1a0,
       type: 2}
     augmentPrefab: {fileID: 1512133876029398, guid: fb1b1507a7cda406fb81abbe8ff8a38f,
       type: 2}
-    recipe:
-      rows:
-      - columns:
-        - resourceType: 1
-          tileType: 0
-          count: 2
-      - columns:
-        - resourceType: 1
-          tileType: 0
-          count: 2
-    anchorOffset: {x: 0, y: 0}
 --- !u!1 &928946558
 GameObject:
   m_ObjectHideFlags: 0

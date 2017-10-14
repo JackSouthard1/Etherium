@@ -22,9 +22,7 @@ public class Crafting : MonoBehaviour {
 
 	private TerrainManager tm;
 
-	Dictionary<string, BuildingInfo> buildings = new Dictionary<string, BuildingInfo>();
-	Dictionary<string, WeaponInfo> weapons = new Dictionary<string, WeaponInfo>();
-	Dictionary<string, AugmentInfo> augments = new Dictionary<string, AugmentInfo> ();
+	Dictionary<string, Craftable> craftableInfos = new Dictionary<string, Craftable>();
 
 	List<Recipe> recipes = new List<Recipe> ();
 	List<Stack> anchors = new List<Stack>();
@@ -127,24 +125,22 @@ public class Crafting : MonoBehaviour {
 
 		if (hasRecipe) {
 			// Craft
+			Craftable craftableInfo = craftableInfos[confirmedRecipe.name];
+			Vector3 spawnPos = anchorResource.gameObjects[0].transform.position + new Vector3(craftableInfo.anchorOffset.x, 0, craftableInfo.anchorOffset.y);
+			tm.ConsumeResources (affectedResources);
+
 			switch(confirmedRecipe.type) {
 				case Recipe.RecipeType.Building:
-					BuildingInfo buildingInfo = buildings [confirmedRecipe.name];
-					Vector3 buildingSpawnPos = anchorResource.gameObjects [0].transform.position + new Vector3 (buildingInfo.anchorOffset.x, 0, buildingInfo.anchorOffset.y);
-					tm.ConsumeResources (affectedResources);
-					tm.SpawnBuilding (buildingSpawnPos, buildingInfo.prefab, buildingInfo.mainColor, buildingInfo.secondaryColor, buildingInfo.alternateColor, anchorResource.island);
+					BuildingInfo buildingInfo = craftableInfo as BuildingInfo;
+					tm.SpawnBuilding (spawnPos, buildingInfo.prefab, buildingInfo.mainColor, buildingInfo.secondaryColor, buildingInfo.alternateColor, anchorResource.island);
 					break;
 				case Recipe.RecipeType.Weapon:
-					WeaponInfo weaponInfo = weapons [confirmedRecipe.name];
-					Vector3 weaponSpawnPos = anchorResource.gameObjects [0].transform.position + new Vector3 (weaponInfo.anchorOffset.x, 0, weaponInfo.anchorOffset.y);
-					tm.ConsumeResources (affectedResources);	
-					tm.SpawnWeapon(weaponSpawnPos, weaponInfo, anchorResource.island);
+					WeaponInfo weaponInfo = craftableInfo as WeaponInfo;
+					tm.SpawnWeapon(spawnPos, weaponInfo, anchorResource.island);
 					break;
 				case Recipe.RecipeType.Augment:
-					AugmentInfo augmentInfo = augments [confirmedRecipe.name];
-					Vector3 augmentSpawnPos = anchorResource.gameObjects [0].transform.position + new Vector3 (augmentInfo.anchorOffset.x, 0, augmentInfo.anchorOffset.y);
-					tm.ConsumeResources (affectedResources);
-					tm.SpawnAugment (augmentSpawnPos, augmentInfo, anchorResource.island);
+					AugmentInfo augmentInfo = craftableInfo as AugmentInfo;
+					tm.SpawnAugment (spawnPos, augmentInfo, anchorResource.island);
 					break;
 			}
 		}
@@ -153,18 +149,21 @@ public class Crafting : MonoBehaviour {
 	void GenerateRecipes () {
 		foreach (BuildingInfo buildingInfo in buildingInfos) {
 			AddRecipe (buildingInfo.name, buildingInfo.recipe, Recipe.RecipeType.Building);
-			buildings.Add (buildingInfo.name, buildingInfo);
+			craftableInfos.Add (buildingInfo.name, buildingInfo);
 		}
 		foreach (WeaponInfo weaponInfo in weaponInfos) {
 			if (weaponInfo.ToIndex () == 0)
 				continue;
 			
-			AddRecipe (weaponInfo.weaponName, weaponInfo.recipe, Recipe.RecipeType.Weapon);
-			weapons.Add (weaponInfo.weaponName, weaponInfo);
+			AddRecipe (weaponInfo.name, weaponInfo.recipe, Recipe.RecipeType.Weapon);
+			craftableInfos.Add (weaponInfo.name, weaponInfo);
 		}
 		foreach (AugmentInfo augmentInfo in augmentInfos) {
-			AddRecipe (augmentInfo.augmentName, augmentInfo.recipe, Recipe.RecipeType.Augment);
-			augments.Add (augmentInfo.augmentName, augmentInfo);
+			if (augmentInfo.ToIndex () == 0)
+				continue;
+			
+			AddRecipe (augmentInfo.name, augmentInfo.recipe, Recipe.RecipeType.Augment);
+			craftableInfos.Add (augmentInfo.name, augmentInfo);
 		}
 	}
 
@@ -180,15 +179,17 @@ public class Crafting : MonoBehaviour {
 		anchors.Add (recipe [0, 0]);
 	}
 
-	[System.Serializable]
-	public struct BuildingInfo {
+	public class Craftable {
 		public string name;
+		public EditorRecipe recipe;
+		public Vector2 anchorOffset;
+	}
+
+	[System.Serializable]
+	public class BuildingInfo : Craftable {
 		public GameObject prefab;
 		public Color mainColor;
 		public Color secondaryColor;
 		public Color alternateColor;
-
-		public EditorRecipe recipe;
-		public Vector2 anchorOffset;
 	}
 }

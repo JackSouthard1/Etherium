@@ -153,7 +153,7 @@ public class Player : MonoBehaviour {
 	public void SwitchAugments (int augmentIndex) {
 		AugmentInfo currentAugmentInfo = body.augment;
 
-		if (Crafting.instance.augmentInfos.Contains(currentAugmentInfo)) {
+		if (currentAugmentInfo.ToIndex() != 0) {
 			Vector2 posV2 = new Vector2 (Mathf.RoundToInt (transform.position.x), Mathf.RoundToInt (transform.position.z));
 			if (tm.PadAtPosition (posV2) != null) {
 				return;
@@ -164,11 +164,7 @@ public class Player : MonoBehaviour {
 			}
 		}
 
-		if (augmentIndex == -1) {
-			body.UpdateAugment (AugmentInfo.None);
-		} else {
-			body.UpdateAugment (AugmentInfo.GetInfoFromIndex(augmentIndex));
-		}
+		body.UpdateAugment (AugmentInfo.GetInfoFromIndex(augmentIndex));
 	}
 
 	public void Heal(float resourcesConsumed) {

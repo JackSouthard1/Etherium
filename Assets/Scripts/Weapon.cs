@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class WeaponInfo {
-	public string weaponName;
+public class WeaponInfo : Crafting.Craftable{
 	public float damage;
 	public int range;
 	public bool passesThroughEnemies;
@@ -28,9 +27,6 @@ public class WeaponInfo {
 	public int ToIndex() {
 		return Crafting.instance.weaponInfos.IndexOf (this);
 	}
-
-	public Crafting.EditorRecipe recipe;
-	public Vector2 anchorOffset;
 }
 
 public abstract class Weapon : MonoBehaviour {
