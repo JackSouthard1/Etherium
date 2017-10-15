@@ -78,7 +78,7 @@ public class WeaponPickup : Pickup {
 
 //where to put this?
 [System.Serializable]
-public class AugmentInfo : Crafting.Craftable {
+public class AugmentInfo : Craftable {
 	//TODO: is this really the best system for specifying what each augment does?
 	public int extraInventorySpace;
 

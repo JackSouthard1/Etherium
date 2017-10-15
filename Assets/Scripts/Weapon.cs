@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class WeaponInfo : Crafting.Craftable{
+public class WeaponInfo : Craftable{
 	public float damage;
 	public int range;
 	public bool passesThroughEnemies;

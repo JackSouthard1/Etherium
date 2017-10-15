@@ -47,7 +47,7 @@ GameObject:
   m_IsActive: 1
 --- !u!1 &1291015143222232
 GameObject:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 5
@@ -201,7 +201,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4751414203536306}
-  - {fileID: 4905096402049694}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -244,6 +243,7 @@ Transform:
   - {fileID: 4934363268531696}
   - {fileID: 4327011599313502}
   - {fileID: 4917762134309802}
+  - {fileID: 4905096402049694}
   m_Father: {fileID: 4366554312861188}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -254,11 +254,11 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1291015143222232}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -1, y: 0.01, z: 0}
-  m_LocalScale: {x: 0.08, y: 1, z: 0.08}
+  m_LocalPosition: {x: -4, y: 0.04, z: 0}
+  m_LocalScale: {x: 0.32, y: 4, z: 0.32}
   m_Children: []
-  m_Father: {fileID: 4366554312861188}
-  m_RootOrder: 1
+  m_Father: {fileID: 4751414203536306}
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4917762134309802
 Transform:
@@ -395,7 +395,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: ca636e691a1b34d24b52c16def781d41, type: 2}
+  - {fileID: 2100000, guid: 2799d1f7d6c1c40e29bb9dce49f12947, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -558,14 +558,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68a5fd1afb37c463ab168a61a721e90c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  info:
+    name: 
+    recipe:
+      rows: []
+    anchorOffset: {x: 0, y: 0}
+    prefab: {fileID: 0}
+    mainColor: {r: 0, g: 0, b: 0, a: 0}
+    secondaryColor: {r: 0, g: 0, b: 0, a: 0}
+    alternateColor: {r: 0, g: 0, b: 0, a: 0}
   standable: 0
   height: 0
   island: {fileID: 0}
   pad: {fileID: 0}
   supply: 50
-  isActive: 1
+  state: 0
+  anim: {fileID: 0}
   resourceType: 4
   turnWaitPerResource: 5
   isRefinery: 1
   consumedType: 1
   resourcesConsumed: 3
+  productionAnimationTime: 0

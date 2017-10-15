@@ -93,22 +93,25 @@ public class TerrainManager : MonoBehaviour {
 		}
 	}
 
-	public void SpawnBuilding (Vector3 position, GameObject prefab, Color mainColor, Color secondaryColor, Color alternateColor, Island island) {
+	public Building SpawnBuilding (Vector3 position, GameObject prefab, BuildingInfo info, Island island) {
 		GameObject building = (GameObject)Instantiate (prefab, position, Quaternion.identity, transform);
-		MeshRenderer[] mrs = building.transform.Find("Model").GetComponentsInChildren<MeshRenderer> ();
-		for (int i = 0; i < mrs.Length; i++) {
-			if (mrs [i].gameObject.name.Contains ("(P)")) {
-				mrs [i].material.color = mainColor;
-			} else if (mrs [i].gameObject.name.Contains ("(S)")) {
-				mrs [i].material.color = secondaryColor;
-			} else if (mrs [i].gameObject.name.Contains ("(A)")) {
-				mrs [i].material.color = alternateColor;
-			}
-		}
 
 		Building buildingScript = building.GetComponent<Building> ();
-		buildingScript.Init (island);
-		buildings.Add (buildingScript);
+		buildingScript.Init (info, island);
+		buildingScript.CreateBlueprint ();
+
+		return buildingScript;
+	}
+
+	public void BuildBuilding (Building building) {
+		List<ResourcePickup> resourcesToConsume = new List<ResourcePickup> ();
+		foreach (Vector2 pos in building.coveredTiles) {
+			resourcesToConsume.Add(ResourcePickup.GetAtPosition(pos));
+		}
+		ConsumeResources (resourcesToConsume);
+
+		building.Build ();
+		buildings.Add (building);
 
 		Transform pad = building.transform.Find ("Pad");
 		if(pad != null) {
@@ -211,6 +214,7 @@ public class TerrainManager : MonoBehaviour {
 		}
 
 		PickupObjects (objectsToPickup, amountsToConsume);
+		crafting.TestForBlueprints ();
 	}
 
 	public void PickupWeapon (WeaponPickup weapon) {
@@ -260,12 +264,7 @@ public class TerrainManager : MonoBehaviour {
 	}
 
 	void UpdateResources () {
-		foreach (Vector2 key in pickups.Keys.ToList()) {
-			if (ResourcePickup.IsAtPosition(key)) {
-				ResourcePickup resourceToTest = pickups [key] as ResourcePickup;
-				crafting.TestForCrafting (resourceToTest);
-			}
-		}
+		crafting.TestForCrafting ();
 	}
 
 	public GameObject GetTileAtPosition (Vector2 position) {
@@ -322,14 +321,15 @@ public class TerrainManager : MonoBehaviour {
 	public bool UnstandableBuildingAtPosition (Vector2 position) {
 		RaycastHit hit;
 		if (Physics.Raycast (new Vector3 (position.x, 5f, position.y), Vector3.down, out hit, 5f)) {
-			if (hit.collider.gameObject.layer == 8 && hit.collider.gameObject.tag == "Building" && !hit.collider.gameObject.GetComponent<Building>().standable) {
-				return true;
-			} else {
-				return false;
+			if (hit.collider.gameObject.layer == 8 && hit.collider.gameObject.tag == "Building") {
+				Building building = hit.collider.gameObject.GetComponent<Building>();
+				if (!building.standable && building.state != Building.BuildingState.Blueprint) {
+					return true;
+				}
 			}
-		} else {
-			return false;
 		}
+
+		return false;
 	}
 
 	public GameObject GetBuildingAtPosition (Vector2 position) {

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Crafting : MonoBehaviour {
@@ -23,12 +24,17 @@ public class Crafting : MonoBehaviour {
 	private TerrainManager tm;
 
 	Dictionary<string, Craftable> craftableInfos = new Dictionary<string, Craftable>();
+	Dictionary<ResourcePickup, Building> blueprints = new Dictionary<ResourcePickup, Building>();
 
 	List<Recipe> recipes = new List<Recipe> ();
 	List<Stack> anchors = new List<Stack>();
 
+	Camera gameCam;
+
 	void Awake () {
 		instance = this;
+		tm = TerrainManager.instance;
+		gameCam = Camera.main;
 	}
 
 	void Start () {
@@ -81,18 +87,59 @@ public class Crafting : MonoBehaviour {
 		return possibleRecipes;
 	}
 		
-	public void TestForCrafting (ResourcePickup _resource) {
-		ResourcePickup anchorResource = _resource;
+	public void TestForCrafting () {
+		foreach (Vector2 key in tm.pickups.Keys.ToList()) {
+			if (ResourcePickup.IsAtPosition(key)) {
+				ResourcePickup resourceToTest = tm.pickups [key] as ResourcePickup;
+				Vector3 spawnPos;
+				Craftable craftableInfo = GetCraftableForResource (resourceToTest, out spawnPos);
 
-		if (tm == null) {
-			tm = TerrainManager.instance;
+				if (craftableInfo is BuildingInfo) {
+					BuildingInfo buildingInfo = craftableInfo as BuildingInfo;
+
+					if (!blueprints.ContainsKey (resourceToTest)) {
+						Building newBuilding = tm.SpawnBuilding (spawnPos, buildingInfo.prefab, buildingInfo, resourceToTest.island);
+						blueprints.Add (resourceToTest, newBuilding);
+					}
+				} else if (craftableInfo is WeaponInfo) {
+					WeaponInfo weaponInfo = craftableInfo as WeaponInfo;
+					tm.SpawnWeapon (spawnPos, weaponInfo, resourceToTest.island);
+				} else if (craftableInfo is AugmentInfo) {
+					AugmentInfo augmentInfo = craftableInfo as AugmentInfo;
+					tm.SpawnAugment (spawnPos, augmentInfo, resourceToTest.island);
+				}
+			}
+		}
+	}
+
+	public void TestForBlueprints () {
+		List<ResourcePickup> blueprintKeysToRemove = blueprints.Keys.ToList ();
+
+		foreach (Vector2 key in tm.pickups.Keys.ToList()) {
+			if (ResourcePickup.IsAtPosition(key)) {
+				ResourcePickup resourceToTest = tm.pickups [key] as ResourcePickup;
+
+				Vector3 spawnPos;
+				Craftable craftableInfo = GetCraftableForResource (resourceToTest, out spawnPos);
+
+				if (craftableInfo is BuildingInfo) {
+					blueprintKeysToRemove.Remove (resourceToTest);
+				}
+			}
 		}
 
+		foreach (ResourcePickup key in blueprintKeysToRemove) {
+			Destroy(blueprints[key].gameObject);
+			blueprints.Remove (key);
+		}
+	}
+
+	Craftable GetCraftableForResource(ResourcePickup anchorResource, out Vector3 spawnPos) {
 		TerrainManager.ResourceInfo.ResourceType tileType = tm.tiles[anchorResource.position].resourceType;
-		List<Crafting.Recipe> possibleRecipes = GetPossibleRecipes (new Crafting.Stack(anchorResource.info.type, tileType, anchorResource.gameObjects.Count));
+		List<Crafting.Recipe> possibleRecipes = GetPossibleRecipes (new Stack (anchorResource.info.type, tileType, anchorResource.gameObjects.Count));
 
 		bool hasRecipe = false;
-		Crafting.Recipe confirmedRecipe = new Crafting.Recipe ();;
+		Crafting.Recipe confirmedRecipe = new Crafting.Recipe ();
 		List<ResourcePickup> affectedResources = new List<ResourcePickup> ();
 
 		foreach (var recipe in possibleRecipes) {
@@ -124,25 +171,18 @@ public class Crafting : MonoBehaviour {
 		}
 
 		if (hasRecipe) {
-			// Craft
-			Craftable craftableInfo = craftableInfos[confirmedRecipe.name];
-			Vector3 spawnPos = anchorResource.gameObjects[0].transform.position + new Vector3(craftableInfo.anchorOffset.x, 0, craftableInfo.anchorOffset.y);
-			tm.ConsumeResources (affectedResources);
+			Craftable craftableInfo = craftableInfos [confirmedRecipe.name];
+			spawnPos = anchorResource.gameObjects[0].transform.position + new Vector3(craftableInfo.anchorOffset.x, 0, craftableInfo.anchorOffset.y);
 
-			switch(confirmedRecipe.type) {
-				case Recipe.RecipeType.Building:
-					BuildingInfo buildingInfo = craftableInfo as BuildingInfo;
-					tm.SpawnBuilding (spawnPos, buildingInfo.prefab, buildingInfo.mainColor, buildingInfo.secondaryColor, buildingInfo.alternateColor, anchorResource.island);
-					break;
-				case Recipe.RecipeType.Weapon:
-					WeaponInfo weaponInfo = craftableInfo as WeaponInfo;
-					tm.SpawnWeapon(spawnPos, weaponInfo, anchorResource.island);
-					break;
-				case Recipe.RecipeType.Augment:
-					AugmentInfo augmentInfo = craftableInfo as AugmentInfo;
-					tm.SpawnAugment (spawnPos, augmentInfo, anchorResource.island);
-					break;
+			if (confirmedRecipe.type != Recipe.RecipeType.Building) {
+				tm.ConsumeResources (affectedResources);
 			}
+
+			return craftableInfo;
+			
+		} else {
+			spawnPos = Vector3.zero;
+			return null;
 		}
 	}
 
@@ -179,17 +219,44 @@ public class Crafting : MonoBehaviour {
 		anchors.Add (recipe [0, 0]);
 	}
 
-	public class Craftable {
-		public string name;
-		public EditorRecipe recipe;
-		public Vector2 anchorOffset;
+	void Update () {
+		if (blueprints.Count > 0 && Input.GetMouseButton(0)) {
+			CheckForBuild ();
+		}
 	}
 
-	[System.Serializable]
-	public class BuildingInfo : Craftable {
-		public GameObject prefab;
-		public Color mainColor;
-		public Color secondaryColor;
-		public Color alternateColor;
+	void CheckForBuild () {
+		Vector2 touchPos;
+		if (Input.touchCount == 1) {
+			touchPos = Input.GetTouch (0).position;
+		} else {
+			touchPos = Input.mousePosition;
+		}
+
+		RaycastHit hitInfo;
+		Physics.Raycast (gameCam.ScreenPointToRay (touchPos), out hitInfo, 20f);
+		if (hitInfo.collider != null) {
+			Building building = hitInfo.collider.gameObject.GetComponent<Building> ();
+			if (building != null) {
+				if (building.state == Building.BuildingState.Blueprint && !building.IsPlayerInBuilding) {
+					blueprints.Remove (ResourcePickup.GetAtPosition(building.coveredTiles [0]));
+					tm.BuildBuilding (building);
+				}
+			}
+		}
 	}
+}
+
+public class Craftable {
+	public string name;
+	public Crafting.EditorRecipe recipe;
+	public Vector2 anchorOffset;
+}
+
+[System.Serializable]
+public class BuildingInfo : Craftable {
+	public GameObject prefab;
+	public Color mainColor;
+	public Color secondaryColor;
+	public Color alternateColor;
 }

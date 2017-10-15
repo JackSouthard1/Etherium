@@ -116,7 +116,10 @@ public abstract class Mind : MonoBehaviour {
 
 			GameObject building = tm.GetBuildingAtPosition (newTile);
 			if (building != null) {
-				newTileHeight += building.GetComponent<Building> ().height;
+				Building buildingScript = building.GetComponent<Building> ();
+				if (buildingScript.state != Building.BuildingState.Blueprint) {
+					newTileHeight += buildingScript.height;
+				}
 			}
 
 			targetPos += new Vector3 (0f, newTileHeight, 0f);
