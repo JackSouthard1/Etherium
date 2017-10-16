@@ -21,7 +21,13 @@ public class Crafting : MonoBehaviour {
 		public List<Crafting.Stack> columns = new List<Crafting.Stack>();
 	}
 
-	private TerrainManager tm;
+	[Header("Building")]
+	public GameObject buildBar;
+	public float buildTime = 1.5f;
+	private float timeToStopBuilding;
+	private bool startedBuild = false;
+	Building currentBuilding;
+	Transform barUI;
 
 	Dictionary<string, Craftable> craftableInfos = new Dictionary<string, Craftable>();
 	Dictionary<ResourcePickup, Building> blueprints = new Dictionary<ResourcePickup, Building>();
@@ -30,15 +36,18 @@ public class Crafting : MonoBehaviour {
 	List<Stack> anchors = new List<Stack>();
 
 	Camera gameCam;
+	TerrainManager tm;
 
 	void Awake () {
 		instance = this;
 		tm = TerrainManager.instance;
 		gameCam = Camera.main;
+		barUI = buildBar.transform.Find ("Canvas").Find ("Bar");
 	}
 
 	void Start () {
 		GenerateRecipes ();
+		buildBar.SetActive (false);
 	}
 
 	public struct Recipe {
@@ -220,12 +229,16 @@ public class Crafting : MonoBehaviour {
 	}
 
 	void Update () {
-		if (blueprints.Count > 0 && Input.GetMouseButton(0)) {
-			CheckForBuild ();
+		if (blueprints.Count > 0 && Input.GetMouseButtonDown(0) && Input.touchCount < 2) {
+			CheckForBuildStart ();
+		}
+
+		if (startedBuild) {
+			CheckForBuildEnd ();
 		}
 	}
 
-	void CheckForBuild () {
+	void CheckForBuildStart () {
 		Vector2 touchPos;
 		if (Input.touchCount == 1) {
 			touchPos = Input.GetTouch (0).position;
@@ -239,11 +252,30 @@ public class Crafting : MonoBehaviour {
 			Building building = hitInfo.collider.gameObject.GetComponent<Building> ();
 			if (building != null) {
 				if (building.state == Building.BuildingState.Blueprint && !building.IsPlayerInBuilding) {
-					blueprints.Remove (ResourcePickup.GetAtPosition(building.coveredTiles [0]));
-					tm.BuildBuilding (building);
+					timeToStopBuilding = Time.time + buildTime;
+					startedBuild = true;
+					currentBuilding = building;
+					buildBar.transform.position = currentBuilding.gameObject.transform.position - new Vector3(currentBuilding.info.anchorOffset.x, 0, currentBuilding.info.anchorOffset.y);
+					buildBar.gameObject.SetActive (true);
+					barUI.transform.localScale = new Vector3 (0, 1, 1);
 				}
 			}
 		}
+	}
+
+	void CheckForBuildEnd () {
+		if (Time.time > timeToStopBuilding) {
+			blueprints.Remove (ResourcePickup.GetAtPosition (currentBuilding.coveredTiles [0]));
+			tm.BuildBuilding (currentBuilding);
+		} else if (!Input.GetMouseButtonUp (0)) {
+			float timeLeft = timeToStopBuilding - Time.time;
+			barUI.transform.localScale = new Vector3 (1 - (timeLeft / buildTime), 1, 1);
+			return;
+		}
+
+		startedBuild = false;
+		currentBuilding = null;
+		buildBar.gameObject.SetActive (false);
 	}
 }
 

@@ -29,7 +29,8 @@ public class Building : MonoBehaviour {
 
 	[HideInInspector]
 	public List<Vector2> coveredTiles = new List<Vector2>();
-	BuildingInfo info;
+	[HideInInspector]
+	public BuildingInfo info { get; private set; }
 
 	//has to be in Start because subclasses use Awake
 	void Start () {
