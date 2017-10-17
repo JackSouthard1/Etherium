@@ -301,6 +301,12 @@ public class TerrainManager : MonoBehaviour {
 		}
 	}
 
+	public void ClearTileAtPosition (Vector2 position) {
+		tiles [position].ClearResourceType();
+		print (tiles [position].resourceType);
+		GetTileAtPosition (position).GetComponent<Renderer> ().material.color = islands [0].civilizedColor;
+	}
+
 	public bool EnemyInRange (Vector2 origin, Vector2 direction, int range) {
 		List<Vector2> positionsToTest = new List<Vector2> ();
 		for (int i = 1; i <= range; i++) {
@@ -404,7 +410,7 @@ public class TerrainManager : MonoBehaviour {
 		public ResourceType type;
 	}
 
-	public struct Tile {
+	public class Tile {
 		public GameObject tile;
 		public ResourceInfo.ResourceType resourceType;
 		public Island island;
@@ -417,6 +423,10 @@ public class TerrainManager : MonoBehaviour {
 			island = _island;
 			originalColor = _originalColor;
 			originalY = _originalY;
+		}
+
+		public void ClearResourceType() {
+			resourceType = ResourceInfo.ResourceType.None;
 		}
 	}
 
