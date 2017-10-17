@@ -8,7 +8,8 @@ public class Building : MonoBehaviour {
 	{
 		Blueprint = 0,
 		Active = 1,
-		Inactive = 2
+		Inactive = 2,
+		Destroyed = 3
 	}
 
 	public bool standable = false;
@@ -21,6 +22,7 @@ public class Building : MonoBehaviour {
 	public int supply;
 
 	public BuildingState state;
+	public bool isPhysical { get { return state != BuildingState.Blueprint && state != BuildingState.Destroyed; } }
 
 	public Animator anim;
 
@@ -84,9 +86,30 @@ public class Building : MonoBehaviour {
 
 	public virtual void TurnEnd() {
 		if (supply <= 0) {
-			state = BuildingState.Inactive;
-			SetAnimTrigger ("Deactivate");
+			Deactivate ();
 		}
+	}
+
+	void Deactivate() {
+		state = BuildingState.Inactive;
+		SetAnimTrigger ("Deactivate");
+
+		MeshRenderer[] mrs = transform.Find("Model").GetComponentsInChildren<MeshRenderer> ();
+		foreach (MeshRenderer rend in mrs) {
+			if (rend.gameObject.name.Contains ("(P)")) {
+				rend.material.color = new Color (info.mainColor.r / 2f, info.mainColor.g / 2f, info.mainColor.b / 2f);
+			} else if (rend.gameObject.name.Contains ("(S)")) {
+				rend.material.color = new Color (info.secondaryColor.r / 2f, info.secondaryColor.g / 2f, info.secondaryColor.b / 2f);
+			} else if (rend.gameObject.name.Contains ("(A)")) {
+				rend.material.color = new Color (info.alternateColor.r / 2f, info.alternateColor.g / 2f, info.alternateColor.b / 2f);
+			} else if (rend.gameObject.name == "Pad") {
+				rend.material.color = new Color (padColor.r / 2f, padColor.g / 2f, padColor.b / 2f);
+			}
+			StandardShaderHelper.ChangeRenderMode(rend.material, StandardShaderHelper.BlendMode.Opaque);
+		}
+
+		//temp
+		gameObject.GetComponentInChildren<Animation> ().Stop ();
 	}
 
 	public void SetAnimTrigger(string triggerName) {

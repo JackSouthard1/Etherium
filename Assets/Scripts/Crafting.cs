@@ -229,7 +229,7 @@ public class Crafting : MonoBehaviour {
 	}
 
 	void Update () {
-		if (blueprints.Count > 0 && Input.GetMouseButtonDown(0) && Input.touchCount < 2) {
+		if (Input.GetMouseButtonDown(0) && Input.touchCount < 2) {
 			CheckForBuildStart ();
 		}
 
@@ -251,7 +251,7 @@ public class Crafting : MonoBehaviour {
 		if (hitInfo.collider != null) {
 			Building building = hitInfo.collider.gameObject.GetComponent<Building> ();
 			if (building != null) {
-				if (building.state == Building.BuildingState.Blueprint && !building.IsPlayerInBuilding) {
+				if (building.state != Building.BuildingState.Active && !building.IsPlayerInBuilding) {
 					timeToStopBuilding = Time.time + buildTime;
 					startedBuild = true;
 					currentBuilding = building;
@@ -265,8 +265,12 @@ public class Crafting : MonoBehaviour {
 
 	void CheckForBuildEnd () {
 		if (Time.time > timeToStopBuilding) {
-			blueprints.Remove (ResourcePickup.GetAtPosition (currentBuilding.coveredTiles [0]));
-			tm.BuildBuilding (currentBuilding);
+			if (currentBuilding.state == Building.BuildingState.Blueprint) {
+				blueprints.Remove (ResourcePickup.GetAtPosition (currentBuilding.coveredTiles [0]));
+				tm.BuildBuilding (currentBuilding);
+			} else if (currentBuilding.state == Building.BuildingState.Inactive) {
+				tm.BreakDownBuilding (currentBuilding);
+			}
 		} else if (!Input.GetMouseButtonUp (0)) {
 			float timeLeft = timeToStopBuilding - Time.time;
 			barUI.transform.localScale = new Vector3 (1 - (timeLeft / buildTime), 1, 1);
