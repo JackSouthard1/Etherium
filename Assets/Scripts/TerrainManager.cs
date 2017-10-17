@@ -129,6 +129,24 @@ public class TerrainManager : MonoBehaviour {
 		}
 	}
 
+	public void BreakDownBuilding (Building building) {
+		building.state = Building.BuildingState.Destroyed;
+
+		Crafting.EditorRecipe recipe = building.info.recipe;
+		Vector2 anchorPos = TerrainManager.PosToV2 (building.gameObject.transform.position) - building.info.anchorOffset;
+		for (int y = 0; y < recipe.rows.Count; y++) {
+			for (int x = 0; x < recipe.rows[y].columns.Count; x++) {
+				TerrainManager.ResourceInfo resourceInfo = TerrainManager.instance.ResourceTypeToInfo (recipe.rows [y].columns [x].resourceType);
+
+				for (int i = 0; i < recipe.rows [y].columns [x].count; i++) {
+					TerrainManager.instance.SpawnResource (new Vector3 (anchorPos.x + x, 0, anchorPos.y + y), resourceInfo, building.island);
+				}
+			}
+		}
+
+		Destroy (building.gameObject);
+	}
+
 	public ResourcePickup SpawnResource (Vector3 position, ResourceInfo info, Island island, bool initialSpawn = false, float startingHeight = 0f) {
 		Vector2 posV2 = PosToV2 (position);
 
@@ -332,7 +350,7 @@ public class TerrainManager : MonoBehaviour {
 		if (Physics.Raycast (new Vector3 (position.x, 5f, position.y), Vector3.down, out hit, 5f)) {
 			if (hit.collider.gameObject.layer == 8 && hit.collider.gameObject.tag == "Building") {
 				Building building = hit.collider.gameObject.GetComponent<Building>();
-				if (!building.standable && building.state != Building.BuildingState.Blueprint) {
+				if (!building.standable && building.isPhysical) {
 					return true;
 				}
 			}
@@ -347,14 +365,14 @@ public class TerrainManager : MonoBehaviour {
 		if (allHits.Length != 0) {
 			foreach (RaycastHit hit in allHits) {
 				if (hit.collider.gameObject.tag == "Building") {
-					return hit.collider.gameObject;
+					if (hit.collider.gameObject.GetComponent<Building> ().isPhysical) {
+						return hit.collider.gameObject;
+					}
 				}
 			}
-
-			return null;
-		} else {
-			return null;
 		}
+
+		return null;
 	}
 
 	public float? PadAtPosition (Vector2 position) {
