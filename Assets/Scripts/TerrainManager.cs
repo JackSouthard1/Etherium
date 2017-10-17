@@ -13,6 +13,7 @@ public class TerrainManager : MonoBehaviour {
 	public GameObject islandPrefab;
 	public int count;
 	public int spacing;
+	public int size;
 
 	[HideInInspector]
 	public Island[] islands;
@@ -76,7 +77,15 @@ public class TerrainManager : MonoBehaviour {
 		int index = 0;
 		for (int z = 0; z < countSqrt; z++) {
 			for (int x = 0; x < countSqrt; x++) {
+				List<Vector2> tilePositions = new List<Vector2> ();
+
+				for (int _y = 0; _y < size; _y++) {
+					for (int _x = 0; _x < size; _x++) {
+						tilePositions.Add(new Vector2(_x, _y));
+					}
+				}
 				Vector3 pos = new Vector3 (x * spacing, 0f, z * spacing);
+				Vector3 targetPos = new Vector3 (x * size, 0f, z * size);
 
 				GameObject island = (GameObject)Instantiate (islandPrefab, transform);
 				island.transform.position = pos;
@@ -85,9 +94,9 @@ public class TerrainManager : MonoBehaviour {
 				Island islandScript = island.GetComponent<Island> ();
 				islandScript.index = new Vector2(x, z);
 				islands [index] = islandScript;
-				islandScript.InitIsland ();
-				
 
+				islandScript.InitIsland (tilePositions, targetPos);
+				
 				index++;
 			}
 		}

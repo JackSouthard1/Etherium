@@ -12,7 +12,6 @@ public class Island : MonoBehaviour {
 	public GameObject tilePrefab;
 	public Layer[] layers;
 	public float heightPerLayer = 0.7f;
-	public int size;
 
 	[Space(10)]
 	[Header("Resouces")]
@@ -21,10 +20,9 @@ public class Island : MonoBehaviour {
 
 	public List<Pickup> pickups = new List<Pickup>();
 
-	[Space(10)]
-	[Header("Enemies")]
-	public GameObject enemyPrefab;
+	private GameObject enemyPrefab;
 
+	[HideInInspector]
 	public List<Body> enemies = new List<Body>();
 
 	public bool buildable = false;
@@ -59,21 +57,21 @@ public class Island : MonoBehaviour {
 		tm = TerrainManager.instance;
 	}
 
-	public void InitIsland() {
+	void Start () {
+		gm = GameManager.instance;
+	}
+
+	public void InitIsland(List<Vector2> tilePositions, Vector3 civilizedPosition) {
+		targetPos = civilizedPosition;
 		teir = Mathf.Clamp(Mathf.RoundToInt(index.x + index.y), 0, tm.teirs.Length - 1);
 		teirInfo = tm.teirs [teir];
 
 		setSpawns = tm.GetSetSpawns (teir);
 
-		GenerateTiles ();
+		GenerateTiles (tilePositions);
 		SpawnEnemies ();
 	}
-
-	//has to be in start because GameManager instance hasn't been set yet
-	void Start () {
-		gm = GameManager.instance;
-	}
-
+		
 	public void PlayerEnterIsland () {
 		for (int i = 0; i < enemies.Count; i++) {
 			enemies [i].GetComponentInChildren<Mind> ().active = true;
@@ -98,23 +96,13 @@ public class Island : MonoBehaviour {
 		}
 	}
 
-	void GenerateTiles () {
-		tiles = new TerrainManager.Tile[size * size];
+	void GenerateTiles (List<Vector2> tilePositions) {
+		tiles = new TerrainManager.Tile[tilePositions.Count];
 
 		// void tiles
 		voidTileIndexes = new List<int> ();
 		for (int i = 0; i < voidCount; i++) {
-			voidTileIndexes.Add (GetAvaiableTileIndex(true));
-		}
-
-		int tileIndex = 0;
-		for (int z = 0; z < size; z++) {
-			for (int x = 0; x < size; x++) {
-				if (voidTileIndexes.Contains (tileIndex)) {
-					usedTilePositions.Add (new Vector2(x, z));
-				}
-				tileIndex++;
-			}
+			voidTileIndexes.Add (GetAvaiableTileIndex (true));
 		}
 			
 		// resource tiles
@@ -138,43 +126,39 @@ public class Island : MonoBehaviour {
 
 		int index = 0;
 		int resourceSpawnListIndex = 0;
-		for (int z = 0; z < size; z++) {
-			for (int x = 0; x < size; x++) {
-				if (!voidTileIndexes.Contains (index)) {
-					int layer = Random.Range (0, teirInfo.layers.Length);
-					float y = layer * heightPerLayer;
-					Vector3 position = new Vector3 (x, y, z);
+		foreach (Vector2 tile in tilePositions) {
+			if (!voidTileIndexes.Contains (index)) {
+				int layer = Random.Range (0, teirInfo.layers.Length);
+				float y = layer * heightPerLayer;
+				Vector3 position = new Vector3 (tile.x, y, tile.y);
+				GameObject tileGO = (GameObject)Instantiate (tilePrefab, transform);
+				tileGO.transform.localPosition = position;
+				tileGO.name = "Tile (" + tile.x + "," + tile.y + ")";
 
-					GameObject tile = (GameObject)Instantiate (tilePrefab, transform);
-					tile.transform.localPosition = position;
-					tile.name = "Tile (" + x + "," + z + ")";
+				TerrainManager.ResourceInfo.ResourceType resourceInfoType;
+				Color tileColor;
+				if (resourceTileSpawnIndexs.Contains (index)) {
+					int resourceIndex = tileSpawnIDs [resourceSpawnListIndex];
+					resourceSpawnListIndex++;
+					TerrainManager.ResourceInfo resourceInfo = tm.resourceInfos [resourceIndex];
+					resourceInfoType = resourceInfo.type;
+					tileColor = resourceInfo.color;
 
-					TerrainManager.ResourceInfo.ResourceType resourceInfoType;
-					Color tileColor;
-					if (resourceTileSpawnIndexs.Contains (index)) {
-						int resourceIndex = tileSpawnIDs [resourceSpawnListIndex];
-						resourceSpawnListIndex++;
-						TerrainManager.ResourceInfo resourceInfo = tm.resourceInfos [resourceIndex];
-						resourceInfoType = resourceInfo.type;
-						tileColor = resourceInfo.color;
-
-						for (int i = 0; i < resourcesPerTile; i++) {
-							tm.SpawnResource(position: transform.TransformPoint(position), info: resourceInfo, island: GetComponent<Island>(), initialSpawn: true);
-						}
-					} else {
-						resourceInfoType = TerrainManager.ResourceInfo.ResourceType.None;
-						tileColor = teirInfo.layers [layer].color;
+					for (int i = 0; i < resourcesPerTile; i++) {
+						tm.SpawnResource(position: transform.TransformPoint(position), info: resourceInfo, island: GetComponent<Island>(), initialSpawn: true);
 					}
-
-					TerrainManager.Tile tileInfo = new TerrainManager.Tile (tile, resourceInfoType, GetComponent<Island> (), tileColor, y);
-					tile.GetComponent<MeshRenderer> ().material.color = tileColor;
-
-					tiles [index] = tileInfo;
-					tm.tiles.Add (new Vector2 (x + transform.position.x, z + transform.position.z), tileInfo);
+				} else {
+					resourceInfoType = TerrainManager.ResourceInfo.ResourceType.None;
+					tileColor = teirInfo.layers [layer].color;
 				}
 
-				index++;
+				TerrainManager.Tile tileInfo = new TerrainManager.Tile (tileGO, resourceInfoType, GetComponent<Island> (), tileColor, y);
+				tileGO.GetComponent<MeshRenderer> ().material.color = tileColor;
+				tiles [index] = tileInfo;
+				tm.tiles.Add (new Vector2 (tile.x + transform.position.x, tile.y + transform.position.z), tileInfo);
 			}
+
+			index++;
 		}
 	}
 
@@ -209,7 +193,6 @@ public class Island : MonoBehaviour {
 		civStartTime = Time.time;
 		civilizing = true;
 		startPos = transform.position;
-		targetPos = (transform.position / tm.spacing) * size;
 		Transform player = GameObject.FindGameObjectWithTag ("Player").transform;
 		player.parent = tm.GetTileAtPosition(TerrainManager.PosToV2(player.position)).transform;
 		player.Find ("Model").localPosition = Vector3.zero;
@@ -259,6 +242,9 @@ public class Island : MonoBehaviour {
 	}
 
 	private int GetAvaiableTileIndex (bool canBeNextToUsedTile) {
+		canBeNextToUsedTile = true;
+
+		int size = 1;
 		int random = Random.Range (0, tiles.Length - 1);
 		int playerTileIndex = 0; // hack?
 
