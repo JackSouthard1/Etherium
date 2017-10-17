@@ -91,7 +91,7 @@ public class Island : MonoBehaviour {
 	public void TestEnemyCount () {
 		if (!buildable) {
 			if (enemies.Count <= 0) {
-//				StartCivilizing ();
+				StartCivilizing ();
 			}
 		}
 	}
