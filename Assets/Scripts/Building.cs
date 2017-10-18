@@ -108,6 +108,10 @@ public class Building : MonoBehaviour {
 			StandardShaderHelper.ChangeRenderMode(rend.material, StandardShaderHelper.BlendMode.Opaque);
 		}
 
+		foreach (Vector2 pos in coveredTiles) {
+			TerrainManager.instance.ClearTileAtPosition (pos);
+		}
+
 		//temp
 		gameObject.GetComponentInChildren<Animation> ().Stop ();
 	}
