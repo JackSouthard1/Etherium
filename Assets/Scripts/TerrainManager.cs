@@ -12,14 +12,15 @@ public class TerrainManager : MonoBehaviour {
 	[Header("Islands")]
 	public GameObject islandPrefab;
 	public int count;
-	public int spacing;
-	public int size;
+	public float spacing;
+	public int mapSize;
 
 	[HideInInspector]
 	public Island[] islands;
 
 	[Space(10)]
 	[Header("Teirs")]
+	public float teirDstIntervals;
 	public Teir[] teirs;
 
 	[Space(10)]
@@ -72,33 +73,29 @@ public class TerrainManager : MonoBehaviour {
 	}
 
 	void GenerateIslands () {
-		int countSqrt = (int)Mathf.Sqrt (count);
+//		count = Mathf.RoundToInt ((mapSize * mapSize) / islandSize);
 		islands = new Island[count];
-		int index = 0;
-		for (int z = 0; z < countSqrt; z++) {
-			for (int x = 0; x < countSqrt; x++) {
-				List<Vector2> tilePositions = new List<Vector2> ();
+		List<TileGroup> tileGroups = GetTileGroups ();
+		for (int i = 0; i < tileGroups.Count; i++) {
+			List<Vector2> tilePositions = tileGroups[i].tilePositions;
 
-				for (int _y = 0; _y < size; _y++) {
-					for (int _x = 0; _x < size; _x++) {
-						tilePositions.Add(new Vector2(_x, _y));
-					}
-				}
-				Vector3 pos = new Vector3 (x * spacing, 0f, z * spacing);
-				Vector3 targetPos = new Vector3 (x * size, 0f, z * size);
+			Vector3 pos = new Vector3 (tileGroups[i].tilePositions[0].x * spacing, 0f, tileGroups[i].tilePositions[0].y * spacing);
+			Vector3 targetPos = new Vector3 (tileGroups[i].tilePositions[0].x, 0f, tileGroups[i].tilePositions[0].y);
 
-				GameObject island = (GameObject)Instantiate (islandPrefab, transform);
-				island.transform.position = pos;
-				island.name = "Island (" + x + "," + z + ")";
-
-				Island islandScript = island.GetComponent<Island> ();
-				islandScript.index = new Vector2(x, z);
-				islands [index] = islandScript;
-
-				islandScript.InitIsland (tilePositions, targetPos);
-				
-				index++;
+			List<Vector2> centeredTilePositions = new List<Vector2> ();
+			foreach (Vector2 position in tilePositions) {
+				centeredTilePositions.Add (position - new Vector2(targetPos.x, targetPos.z));
 			}
+
+			GameObject island = (GameObject)Instantiate (islandPrefab, transform);
+			island.transform.position = pos;
+			island.name = "Island";
+
+			Island islandScript = island.GetComponent<Island> ();
+			islandScript.diffuculty = 0f; // TODO calculate
+			islands [i] = islandScript;
+
+			islandScript.InitIsland (centeredTilePositions, targetPos);
 		}
 	}
 
@@ -531,12 +528,139 @@ public class TerrainManager : MonoBehaviour {
 				setSpawnsToUse.Add (allSetSpawnsOfTeir [i]);
 				setSpawns.Remove (allSetSpawnsOfTeir [i]);
 			}
-//			indexesToRemove.RemoveRange (setSpawnNumberToGet, allSetSpawnsOfTeir.Count - 1);
-//
-//			foreach (var index in indexesToRemove) {
-//				setSpawns.RemoveAt(index);
-//			}
 		}
 		return setSpawnsToUse;
 	}
+
+	List<TileGroup> tileGroups = new List<TileGroup> ();
+	TileInfo[,] allTiles;
+
+	private List<TileGroup> GetTileGroups () {
+
+		// Make array of all tiles on map (assumign square map)
+		allTiles = new TileInfo[mapSize, mapSize];
+
+		for (int y = 0; y < mapSize; y++) {
+			for (int x = 0; x < mapSize; x++) {
+				allTiles [x, y] = new TileInfo (-1, new Vector2 (x, y));
+			}
+		}
+
+		// Assign Group Anchors
+		List<Vector2> groupAnchorPositions = new List<Vector2> ();
+		int index = 0;
+		int countSqr = Mathf.CeilToInt(Mathf.Sqrt((float)count));
+		float _spacing = Mathf.RoundToInt (mapSize / countSqr);
+		for (int y = 0; y < countSqr; y++) {
+			for (int x = 0; x < countSqr; x++) {
+				Vector2 position = new Vector2 (Mathf.RoundToInt(x * _spacing), Mathf.RoundToInt(y * _spacing));
+				groupAnchorPositions.Add (position);
+
+				index++; 
+			}
+		}
+
+		// turn group anchors into tileGroups
+		for (int i = 0; i < groupAnchorPositions.Count; i++) {
+			List<Vector2> _posList = new List<Vector2> ();
+			List<Vector2> _unassignedList = new List<Vector2> ();
+			_unassignedList.Add (groupAnchorPositions [i]);
+
+			tileGroups.Add (new TileGroup (i, 1, _posList, _unassignedList));
+			allTiles [(int)groupAnchorPositions [i].x, (int)groupAnchorPositions [i].y].islandIndex = -1;
+		}
+
+		int placedTiles = 0;
+			
+		while (placedTiles < (mapSize * mapSize)) {
+			for (int _i = 0; _i < tileGroups.Count; _i++) {
+				if (tileGroups [_i].unassignedTilePositions.Count > 0) {
+					int expansionIndex = Random.Range (0, tileGroups [_i].unassignedTilePositions.Count);
+					Vector2 tilePosition = tileGroups [_i].unassignedTilePositions [expansionIndex];
+
+					List<TileInfo> borderingTiles = GetBorderingTileGroups (tilePosition);
+
+					tileGroups [_i].unassignedTilePositions.Remove (tilePosition);
+
+					allTiles [(int)tilePosition.x, (int)tilePosition.y].islandIndex = _i;
+					tileGroups [_i].tilePositions.Add (tilePosition);
+					tileGroups [_i].tileCount++;
+					placedTiles++;
+
+					for (int r = 0; r < tileGroups.Count; r++) {
+//					print ("R: " + r + ", I: " + i);
+						if (r != _i) {
+							while (tileGroups [r].unassignedTilePositions.Contains (tilePosition)) {
+//								print ("Overlapping Tile: " + tileGroups [r].islandIndex);
+								tileGroups [r].unassignedTilePositions.Remove (tilePosition);
+							}
+						}
+					}
+
+					string str = "Pos: " + tilePosition + ", Index: " + _i + ", Bordering Tiles: ";
+					for (int i = 0; i < borderingTiles.Count; i++) {
+						if (borderingTiles [i].islandIndex == -1) {
+							if (!tileGroups [_i].unassignedTilePositions.Contains (borderingTiles [i].position)) {
+								tileGroups [_i].unassignedTilePositions.Add (borderingTiles [i].position);
+								str += "Index: " + borderingTiles [i].islandIndex + ", Pos: " + borderingTiles [i].position + " | ";
+							}
+						}
+						
+					}
+					str += " Total Unassigned: " + tileGroups [_i].unassignedTilePositions.Count;
+//					print (str);
+				}
+			}
+		}
+//		string groupString = "";
+//
+//		foreach (var tileGroup in tileGroups) {
+//			groupString += " | Tile Group (" + tileGroup.islandIndex + "): ";
+//			foreach (var tile in tileGroup.tilePositions) {
+//				groupString += "(" + tile.x + ", " + tile.y + ")";
+//			}
+//				
+//		}
+//		print (groupString);
+		return tileGroups;
+	}
+
+	private List<TileInfo> GetBorderingTileGroups (Vector2 index) {
+		List<TileInfo> borderingTileGroups = new List<TileInfo> ();
+		List<Vector2> allDirections = new List<Vector2> () { Vector2.right, Vector2.up, Vector2.left, Vector2.down };
+		foreach (Vector2 direction in allDirections) {
+			Vector2 posToCheck = index + direction;
+			if (posToCheck.x >= 0 && posToCheck.x <= (mapSize - 1) && posToCheck.y >= 0 && posToCheck.y <= (mapSize - 1)) {
+//				print (posToCheck);
+				borderingTileGroups.Add (allTiles [(int)posToCheck.x, (int)posToCheck.y]);
+			}
+		}
+
+		return borderingTileGroups;
+	}
+
+	public struct TileInfo {
+		public int islandIndex;
+		public Vector2 position;
+
+		public TileInfo (int _islandIndex, Vector2 _tilePosition) {
+			islandIndex = _islandIndex;
+			position = _tilePosition;
+		}
+	}
+
+	public struct TileGroup {
+		public int islandIndex;
+		public int tileCount;
+		public List<Vector2> tilePositions;
+		public List<Vector2> unassignedTilePositions;
+
+		public TileGroup (int _islandIndex, int _tileCount, List<Vector2> _tilePositions, List<Vector2> _unassignedTilePositions) {
+			islandIndex = _islandIndex;
+			tileCount = _tileCount;
+			tilePositions = _tilePositions;
+			unassignedTilePositions = _unassignedTilePositions;
+		}
+	}
+
 }

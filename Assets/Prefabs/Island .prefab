@@ -60,9 +60,9 @@ MonoBehaviour:
   buildable: 0
   civilizedColor: {r: 0.49264705, g: 0.40346092, b: 0.30790442, a: 0}
   timeToCivilize: 2
-  voidCount: 3
+  voidCount: 0
   voidTileIndexes: 
   usedTilePositions: []
   setSpawns: []
   usedTiles: 
-  index: {x: 0, y: 0}
+  diffuculty: 0

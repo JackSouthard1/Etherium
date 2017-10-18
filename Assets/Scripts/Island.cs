@@ -51,7 +51,7 @@ public class Island : MonoBehaviour {
 	public TerrainManager.Tile[] tiles;
 	private TerrainManager tm;
 	private GameManager gm;
-	public Vector2 index;
+	public float diffuculty;
 
 	void Awake () {
 		tm = TerrainManager.instance;
@@ -63,7 +63,8 @@ public class Island : MonoBehaviour {
 
 	public void InitIsland(List<Vector2> tilePositions, Vector3 civilizedPosition) {
 		targetPos = civilizedPosition;
-		teir = Mathf.Clamp(Mathf.RoundToInt(index.x + index.y), 0, tm.teirs.Length - 1);
+//		teir = Mathf.Clamp(Mathf.RoundToInt(diffuculty.x + diffuculty.y), 0, tm.teirs.Length - 1);
+		teir = Mathf.Clamp(Mathf.FloorToInt(transform.position.magnitude / tm.teirDstIntervals), 0, tm.teirs.Length - 1);
 		teirInfo = tm.teirs [teir];
 
 		setSpawns = tm.GetSetSpawns (teir);

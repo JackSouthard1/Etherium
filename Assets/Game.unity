@@ -3699,19 +3699,20 @@ MonoBehaviour:
   setSpawns:
   - teir: 0
     type: 1
+    spawnID: 2
+  - teir: 0
+    type: 1
+    spawnID: 2
+  - teir: 0
+    type: 1
     spawnID: 0
-  - teir: 0
-    type: 1
-    spawnID: 2
-  - teir: 0
-    type: 1
-    spawnID: 2
   islandPrefab: {fileID: 1957064115911918, guid: 2445b5953a110497c9303ac250f66a2c,
     type: 2}
   count: 9
-  spacing: 12
-  size: 5
+  spacing: 2
+  mapSize: 15
   islands: []
+  teirDstIntervals: 10
   teirs:
   - layers:
     - color: {r: 0.18431373, g: 0.46274513, b: 0.7372549, a: 0}
