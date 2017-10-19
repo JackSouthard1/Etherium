@@ -117,8 +117,10 @@ public class TerrainManager : MonoBehaviour {
 
 	public void BuildBuilding (Building building) {
 		List<ResourcePickup> resourcesToConsume = new List<ResourcePickup> ();
+		float baseHeight = GetTileAtPosition(building.coveredTiles[0]).transform.position.y;
 		foreach (Vector2 pos in building.coveredTiles) {
 			resourcesToConsume.Add(ResourcePickup.GetAtPosition(pos));
+			GetTileAtPosition (pos).transform.position = new Vector3 (pos.x, baseHeight, pos.y);
 		}
 		ConsumeResources (resourcesToConsume);
 
