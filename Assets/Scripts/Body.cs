@@ -36,6 +36,7 @@ public class Body : MonoBehaviour {
 	public Island location = null;
 
 	private float moveTime = 0.2f;
+	[HideInInspector]
 	public HealthBar healthBar;
 
 	public Transform augmentParent;
@@ -49,14 +50,14 @@ public class Body : MonoBehaviour {
 		mind = GetComponentInChildren<Mind> ();
 		if (mind.GetType () == typeof(PlayerMind)) {
 			player = true;
-			playerScript = GetComponent<Player> ();
+			playerScript = Player.instance;
 		}
 	}
 
 	void Start () {
 		tm = TerrainManager.instance;
 		gm = GameManager.instance;
-		mr = GetComponent<MapReveal> ();
+		mr = GameObject.FindObjectOfType<MapReveal> ();
 
 		maxHealth = health;
 		if (healthBar != null)

@@ -34,7 +34,7 @@ public abstract class Mind : MonoBehaviour {
 
 	bool isPlayer { get { return (this is PlayerMind); } }
 
-	void Start () {
+	public void Init() {
 		body = GetComponentInParent<Body> ();
 		gm = GameManager.instance;
 		tm = TerrainManager.instance;

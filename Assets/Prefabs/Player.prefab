@@ -54,8 +54,6 @@ GameObject:
   - component: {fileID: 4901016896370218}
   - component: {fileID: 114934558527318390}
   - component: {fileID: 65318643157715144}
-  - component: {fileID: 114721381455926392}
-  - component: {fileID: 114827831313707106}
   m_Layer: 8
   m_Name: Player
   m_TagString: Player
@@ -455,38 +453,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   infoIndex: 0
---- !u!114 &114721381455926392
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1247508249105760}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fbee093b7b7c34df5a7bae549e134442, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  inventoryParent: {fileID: 0}
-  movesPerResource: 10
-  defaultInventorySize: 10
-  idleIcon: {fileID: 0}
-  uiResourcePrefab: {fileID: 1231923437215244, guid: 176c95135f840468098990ee7c8d1fa1,
-    type: 2}
---- !u!114 &114827831313707106
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1247508249105760}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9dacc4093c1e84898a51a53aa54fe14b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  offset: {x: -1.54, y: 5, z: -1.54}
-  detectionRange: 30
-  revealTile: {fileID: 1377789561812212, guid: 500c438f357f04fe7966e84cb62e1097, type: 2}
-  scale: 0.1
 --- !u!114 &114934558527318390
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -512,13 +478,13 @@ MonoBehaviour:
   healthBar: {fileID: 0}
   augmentParent: {fileID: 4363687781380418}
   augment:
-    augmentName: 
-    extraInventorySpace: 0
-    pickupPrefab: {fileID: 0}
-    augmentPrefab: {fileID: 0}
+    name: 
     recipe:
       rows: []
     anchorOffset: {x: 0, y: 0}
+    extraInventorySpace: 0
+    pickupPrefab: {fileID: 0}
+    augmentPrefab: {fileID: 0}
 --- !u!120 &120202066359972710
 LineRenderer:
   m_ObjectHideFlags: 1

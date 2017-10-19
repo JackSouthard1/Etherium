@@ -12,7 +12,9 @@ public class Player : MonoBehaviour {
 	int curInventorySize { get { return defaultInventorySize + body.augment.extraInventorySpace;} }
 
 	public GameObject idleIcon;
+	public HealthBar playerHealthBar;
 
+	Transform playerTransform;
 	Body body;
 	TerrainManager tm;
 
@@ -30,11 +32,16 @@ public class Player : MonoBehaviour {
 
 	void Start () {
 		tm = TerrainManager.instance;
-		body = GetComponent<Body> ();
-
-		InitInventory ();
 
 		idleIcon.SetActive (false);
+	}
+
+	public void Init() {
+		playerTransform = GameObject.Find ("Player").transform;
+		body = playerTransform.GetComponent<Body> ();
+		body.healthBar = playerHealthBar;
+
+		InitInventory ();
 	}
 
 	void InitInventory () {
@@ -107,12 +114,12 @@ public class Player : MonoBehaviour {
 			return;
 		}
 
-		Vector2 posV2 = TerrainManager.PosToV2 (transform.position);
+		Vector2 posV2 = TerrainManager.PosToV2 (playerTransform.position);
 		if (tm.PadAtPosition (posV2) != null) {
 			return;
 		}
 
-		if (tm.SpawnResource (transform.position, resourceInfo, body.location) == null) {
+		if (tm.SpawnResource (playerTransform.position, resourceInfo, body.location) == null) {
 			return;
 		}
 		
@@ -130,12 +137,12 @@ public class Player : MonoBehaviour {
 		WeaponInfo currentWeaponInfo = body.weapon.info;
 
 		if (currentWeaponInfo.ToIndex() != 0) {
-			Vector2 posV2 = TerrainManager.PosToV2 (transform.position);
+			Vector2 posV2 = TerrainManager.PosToV2 (playerTransform.position);
 			if (tm.PadAtPosition (posV2) != null) {
 				return;
 			}
 
-			if (tm.SpawnWeapon (transform.position, currentWeaponInfo, body.location) == null) {
+			if (tm.SpawnWeapon (playerTransform.position, currentWeaponInfo, body.location) == null) {
 				return;
 			}
 		}
@@ -154,12 +161,12 @@ public class Player : MonoBehaviour {
 		AugmentInfo currentAugmentInfo = body.augment;
 
 		if (currentAugmentInfo.ToIndex() != 0) {
-			Vector2 posV2 = TerrainManager.PosToV2 (transform.position);
+			Vector2 posV2 = TerrainManager.PosToV2 (playerTransform.position);
 			if (tm.PadAtPosition (posV2) != null) {
 				return;
 			}
 
-			if (tm.SpawnAugment (transform.position, currentAugmentInfo, body.location) == null) {
+			if (tm.SpawnAugment (playerTransform.position, currentAugmentInfo, body.location) == null) {
 				return;
 			}
 		}

@@ -5,6 +5,8 @@ using System.Linq;
 
 public class TerrainManager : MonoBehaviour {
 	public static TerrainManager instance;
+	public GameObject playerPrefab;
+
 	[Header("Set Spawns")]
 	public List<SetSpawn> setSpawns;
 
@@ -69,10 +71,9 @@ public class TerrainManager : MonoBehaviour {
 	void Awake () {
 		instance = this;
 		crafting = GameObject.Find ("GameManager").GetComponent<Crafting> ();
-		GenerateIslands ();
 	}
 
-	void GenerateIslands () {
+	public void GenerateIslands () {
 //		count = Mathf.RoundToInt ((mapSize * mapSize) / islandSize);
 		islands = new Island[count];
 		List<TileGroup> tileGroups = GetTileGroups ();
@@ -126,6 +127,11 @@ public class TerrainManager : MonoBehaviour {
 
 			islandScript.InitIsland (centeredTilePositions, targetPos);
 		}
+	}
+
+	public void SpawnPlayer() {
+		GameObject newPlayer = (GameObject) Instantiate (playerPrefab);
+		newPlayer.name = "Player";
 	}
 
 	public Building SpawnBuilding (Vector3 position, GameObject prefab, BuildingInfo info, Island island) {
@@ -420,8 +426,14 @@ public class TerrainManager : MonoBehaviour {
 		buses.Add (new Bus (lifeTime, bus, GetComponent<TerrainManager>()));
 	}
 
-	protected void DestroyBus (Bus bus) {
+	protected void RemoveBus (Bus bus) {
 		buses.Remove (bus);
+	}
+
+	public void DestroyAllBuses() {
+		for (int i = 0; i < buses.Count; i++) {
+			buses [i].DestroyBus ();
+		}
 	}
 
 	[System.Serializable]
@@ -477,20 +489,28 @@ public class TerrainManager : MonoBehaviour {
 			this.lifeTime = lifeTime;
 			busTile = bus;
 			this.tm = tm;
-			turnsLeft = lifeTime;
+			turnsLeft = (lifeTime + 1);
 			goalSize = new Vector3(0.1f, 1f, 0.1f);
 		}
 
 		public void TurnEnd () {
-			if (turnsLeft < 0) {
+			if (turnsLeft <= 0) {
 				return;
 			}
+
+			turnsLeft -= 1;
 
 			float timeRatio = (float)turnsLeft / (float)lifeTime;
 			goalSize = new Vector3 (0.1f * timeRatio, 1f, 0.1f * timeRatio);
 
-			turnsLeft -= 1;
+			if (!isResizing) {
+				tm.StartCoroutine(ResizeBus ());
+			}
+		}
 
+		public void DestroyBus () {
+			turnsLeft = 0;
+			goalSize = new Vector3 (0f, 1f, 0f);
 			if (!isResizing) {
 				tm.StartCoroutine(ResizeBus ());
 			}
@@ -505,9 +525,9 @@ public class TerrainManager : MonoBehaviour {
 
 			busTile.transform.localScale = goalSize;
 
-			if (turnsLeft < 0) {
+			if (turnsLeft <= 0) {
 				Destroy (busTile);
-				tm.DestroyBus (this);
+				tm.RemoveBus (this);
 			}
 
 			isResizing = false;
