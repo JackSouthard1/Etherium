@@ -61,15 +61,14 @@ public class Island : MonoBehaviour {
 		gm = GameManager.instance;
 	}
 
-	public void InitIsland(List<Vector2> tilePositions, Vector3 civilizedPosition) {
+	public void InitIsland(List<Vector2> _tilePositions, Vector3 civilizedPosition) {
 		targetPos = civilizedPosition;
-//		teir = Mathf.Clamp(Mathf.RoundToInt(diffuculty.x + diffuculty.y), 0, tm.teirs.Length - 1);
 		teir = Mathf.Clamp(Mathf.FloorToInt(transform.position.magnitude / tm.teirDstIntervals), 0, tm.teirs.Length - 1);
 		teirInfo = tm.teirs [teir];
 
 		setSpawns = tm.GetSetSpawns (teir);
-
-		GenerateTiles (tilePositions);
+		tilePositions = _tilePositions;
+		GenerateTiles ();
 		SpawnEnemies ();
 	}
 		
@@ -99,7 +98,9 @@ public class Island : MonoBehaviour {
 		}
 	}
 
-	void GenerateTiles (List<Vector2> tilePositions) {
+	List<Vector2> tilePositions;
+
+	void GenerateTiles () {
 		tiles = new TerrainManager.Tile[tilePositions.Count];
 
 		// void tiles
@@ -245,55 +246,49 @@ public class Island : MonoBehaviour {
 	}
 
 	private int GetAvaiableTileIndex (bool canBeNextToUsedTile) {
-		canBeNextToUsedTile = true;
-
-		int size = 1;
+		int attempts = 0;
 		int random = Random.Range (0, tiles.Length - 1);
-		int playerTileIndex = 0; // hack?
-
-		int x = random % size;
-		int y = Mathf.FloorToInt (random / size);
-		Vector2 pos = new Vector2 (x, y);
+		Vector2 pos = tilePositions [random];
 
 		if (canBeNextToUsedTile) {
-			if (usedTiles.Contains (random) || random == playerTileIndex) {
-				while (usedTiles.Contains (random) || random == playerTileIndex) {
-					random = Random.Range (0, tiles.Length - 1);
-					x = random % size;
-					y = Mathf.FloorToInt (random / size);
-					pos = new Vector2 (x, y);
+			while (usedTiles.Contains (random)) {
+				random = Random.Range (0, tiles.Length - 1); 
+				pos = tilePositions [random];
+				attempts++;
+				if (attempts > 3) {
+					print (attempts + " Attempts Made");
+					break;
 				}
 			}
 		} else {
-			if (usedTiles.Contains (random) || random == playerTileIndex || NextToUsedTile(pos, random)) {
-				while (usedTiles.Contains (random) || random == playerTileIndex || NextToUsedTile(pos, random)) {
-					random = Random.Range (0, tiles.Length - 1);
-					x = random % size;
-					y = Mathf.FloorToInt (random / size);
-					pos = new Vector2 (x, y);
+			while (usedTiles.Contains (random) || AreAdjacentTiles(pos)) {
+				random = Random.Range (0, tiles.Length - 1); 
+				pos = tilePositions [random];
+				attempts++;
+				if (attempts > 3) {
+					print (attempts + " Attempts Made");
+					break;
 				}
 			}
 		}
+
 		usedTiles.Add (random);
 		usedTilePositions.Add (pos);
 
 		return random;
 	}
 
-	private bool NextToUsedTile (Vector2 pos, int tileIndex) {
-		if (voidTileIndexes.Contains (tileIndex)) {
-			return true;
-		} else {
-			List<Vector2> allDirections = new List<Vector2> () { Vector2.right, Vector2.up, Vector2.left, Vector2.down };
+	private bool AreAdjacentTiles (Vector2 pos) {
+		List<Vector2> allDirections = new List<Vector2> () { Vector2.right, Vector2.up, Vector2.left, Vector2.down };
 
-			foreach (var direction in allDirections) {
-				Vector2 testingPos = pos + direction;
-				if (usedTilePositions.Contains (testingPos)) {
-					return true;
-				}
+		foreach (Vector2 direction in allDirections) {
+			Vector2 posToCheck = pos + direction;
+			if (usedTilePositions.Contains (posToCheck)) {
+				return true;
 			}
-			return false;
 		}
+
+		return false;
 	}
 
 	void FinishCivilizing () {
