@@ -51,7 +51,7 @@ public class Island : MonoBehaviour {
 	public TerrainManager.Tile[] tiles;
 	private TerrainManager tm;
 	private GameManager gm;
-	public float diffuculty;
+	public int diffuculty;
 
 	void Awake () {
 		tm = TerrainManager.instance;
@@ -63,7 +63,8 @@ public class Island : MonoBehaviour {
 
 	public void InitIsland(List<Vector2> _tilePositions, Vector3 civilizedPosition) {
 		targetPos = civilizedPosition;
-		teir = Mathf.Clamp(Mathf.FloorToInt(transform.position.magnitude / tm.teirDstIntervals), 0, tm.teirs.Length - 1);
+//		teir = Mathf.Clamp(Mathf.FloorToInt(transform.position.magnitude / tm.teirDstIntervals), 0, tm.teirs.Length - 1);
+		teir = Mathf.Clamp(diffuculty, 0, tm.teirs.Length - 1);
 		teirInfo = tm.teirs [teir];
 
 		setSpawns = tm.GetSetSpawns (teir);
@@ -220,22 +221,22 @@ public class Island : MonoBehaviour {
 			transform.position = Vector3.Lerp (startPos, targetPos, timeRatio);
 			for (int i = 0; i < tiles.Length; i++) {
 				if (!voidTileIndexes.Contains (i)) {
-					GameObject tileGO = tiles [i].tile;
-					float newHeight = tiles [i].originalY * (1f - timeRatio);
-					tileGO.transform.position = new Vector3 (tileGO.transform.position.x, newHeight, tileGO.transform.position.z);
-
-					if (tiles [i].resourceType == TerrainManager.ResourceInfo.ResourceType.None) {
-						Color newColor = Color.Lerp (tiles [i].originalColor, civilizedColor, timeRatio);
-						tileGO.GetComponentInChildren<MeshRenderer> ().material.color = newColor;
-					}
+//					GameObject tileGO = tiles [i].tile;
+//					float newHeight = tiles [i].originalY * (1f - timeRatio);
+//					tileGO.transform.position = new Vector3 (tileGO.transform.position.x, newHeight, tileGO.transform.position.z);
+//
+//					if (tiles [i].resourceType == TerrainManager.ResourceInfo.ResourceType.None) {
+//						Color newColor = Color.Lerp (tiles [i].originalColor, civilizedColor, timeRatio);
+//						tileGO.GetComponentInChildren<MeshRenderer> ().material.color = newColor;
+//					}
 				}
 			}
 
 			foreach (Pickup pickup in pickups) {
 				for (int i = 0; i < pickup.gameObjects.Count; i++) {
-					float newHeight = ((pickup.originalBaseHeight) * (1f - timeRatio)) + (tm.stackHeight * i);
-					Vector3 newPos = new Vector3 (pickup.gameObjects [i].transform.position.x, newHeight, pickup.gameObjects [i].transform.position.z);
-					pickup.gameObjects[i].transform.position = newPos;
+//					float newHeight = ((pickup.originalBaseHeight) * (1f - timeRatio)) + (tm.stackHeight * i);
+//					Vector3 newPos = new Vector3 (pickup.gameObjects [i].transform.position.x, newHeight, pickup.gameObjects [i].transform.position.z);
+//					pickup.gameObjects[i].transform.position = newPos;
 				}
 			}
 
@@ -301,14 +302,14 @@ public class Island : MonoBehaviour {
 			List<GameObject> gameObjects = pickup.gameObjects;
 
 			for (int k = 0; k < gameObjects.Count; k++) {
-				float height = tm.stackHeight * k;
-				gameObjects[k].transform.position = new Vector3 (Mathf.RoundToInt(gameObjects[k].transform.position.x), height, Mathf.RoundToInt(gameObjects[k].transform.position.z));
+				//				float height = tm.stackHeight * k;
+				gameObjects[k].transform.position = new Vector3 (Mathf.RoundToInt(gameObjects[k].transform.position.x), gameObjects[k].transform.position.y, Mathf.RoundToInt(gameObjects[k].transform.position.z));
 			}
 		}
 			
 		for (int i = 0; i < tiles.Length; i++) {
 			if (!voidTileIndexes.Contains (i)) {
-				tiles [i].tile.transform.position = new Vector3 (Mathf.RoundToInt (tiles [i].tile.transform.position.x), 0f, Mathf.RoundToInt (tiles [i].tile.transform.position.z));
+				tiles [i].tile.transform.position = new Vector3 (Mathf.RoundToInt (tiles [i].tile.transform.position.x), tiles [i].tile.transform.position.y, Mathf.RoundToInt (tiles [i].tile.transform.position.z));
 				tm.tiles.Add (TerrainManager.PosToV2(tiles[i].tile.transform.position), tiles [i]);
 			}
 		}

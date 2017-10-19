@@ -83,14 +83,20 @@ public class TerrainManager : MonoBehaviour {
 		float[,] heightOffsets = new float[sqrtSize, sqrtSize];
 
 		float additiveWidthOffset = 0f;
-		for (int i = 0; i < bottomOffsets.Length; i++) {
-			int groupIndex = i;
-			float offset = tileGroups [groupIndex].GetDimensions ().x;
- 
-			bottomOffsets [i] = additiveWidthOffset;
+		for (int x = 0; x < sqrtSize; x++) {
+			float maxWidth = tileGroups [x].GetDimensions ().x;
+			for (int y = 0; y < sqrtSize; y++) {
+				int groupIndex = (y * sqrtSize) + x;
+				float offset = tileGroups [groupIndex].GetDimensions ().x;
+//				print (tileGroups [groupIndex].minX + " | " + tileGroups [groupIndex].maxX + " = " + offset);
 
-			additiveWidthOffset += offset + spacing;
+				if (offset > maxWidth) {
+					maxWidth = offset;
+				}
+			}
+			bottomOffsets [x] = additiveWidthOffset;
 
+			additiveWidthOffset += maxWidth + spacing;
 		}
 
 		for (int x = 0; x < sqrtSize; x++) {
@@ -122,7 +128,7 @@ public class TerrainManager : MonoBehaviour {
 			island.name = "Island";
 
 			Island islandScript = island.GetComponent<Island> ();
-			islandScript.diffuculty = 0f; // TODO calculate
+			islandScript.diffuculty = Mathf.RoundToInt (i % sqrtSize + Mathf.FloorToInt(i / sqrtSize));
 			islands [i] = islandScript;
 
 			islandScript.InitIsland (centeredTilePositions, targetPos);
@@ -761,7 +767,7 @@ public class TerrainManager : MonoBehaviour {
 		public Vector2 GetDimensions () {
 			float width = maxX - minX;
 			float height = maxY - minY;
-			return new Vector2 (width, height);
+			return new Vector2 (width + 1f, height + 1f);
 		}
 
 		public TileGroup (int _islandIndex, List<Vector2> _unassignedTilePositions) {
