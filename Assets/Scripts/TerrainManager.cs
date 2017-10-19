@@ -76,10 +76,39 @@ public class TerrainManager : MonoBehaviour {
 //		count = Mathf.RoundToInt ((mapSize * mapSize) / islandSize);
 		islands = new Island[count];
 		List<TileGroup> tileGroups = GetTileGroups ();
+
+		int sqrtSize = Mathf.CeilToInt (Mathf.Sqrt (tileGroups.Count));
+		float[] bottomOffsets = new float[sqrtSize];
+		float[,] heightOffsets = new float[sqrtSize, sqrtSize];
+
+		float additiveWidthOffset = 0f;
+		for (int i = 0; i < bottomOffsets.Length; i++) {
+			int groupIndex = i;
+			float offset = tileGroups [groupIndex].GetDimensions ().x;
+ 
+			bottomOffsets [i] = additiveWidthOffset;
+
+			additiveWidthOffset += offset + spacing;
+
+		}
+
+		for (int x = 0; x < sqrtSize; x++) {
+			float additiveHeightOffset = 0f;
+			for (int y = 0; y < sqrtSize; y++) {
+				int groupIndex = (y * sqrtSize) + x;
+
+				float heightOffset = tileGroups [groupIndex].GetDimensions ().y;
+
+				heightOffsets [x, y] = additiveHeightOffset;
+					
+				additiveHeightOffset += heightOffset + spacing;
+			}
+		}
+
 		for (int i = 0; i < tileGroups.Count; i++) {
 			List<Vector2> tilePositions = tileGroups[i].tilePositions;
 
-			Vector3 pos = new Vector3 (tileGroups[i].tilePositions[0].x * spacing, 0f, tileGroups[i].tilePositions[0].y * spacing);
+			Vector3 pos = new Vector3 (tilePositions[0].x + bottomOffsets[i % sqrtSize], 0f, tilePositions[0].y + heightOffsets[i % sqrtSize, Mathf.FloorToInt(i / sqrtSize)]);
 			Vector3 targetPos = new Vector3 (tileGroups[i].tilePositions[0].x, 0f, tileGroups[i].tilePositions[0].y);
 
 			List<Vector2> centeredTilePositions = new List<Vector2> ();
@@ -592,11 +621,10 @@ public class TerrainManager : MonoBehaviour {
 
 		// turn group anchors into tileGroups
 		for (int i = 0; i < groupAnchorPositions.Count; i++) {
-			List<Vector2> _posList = new List<Vector2> ();
 			List<Vector2> _unassignedList = new List<Vector2> ();
 			_unassignedList.Add (groupAnchorPositions [i]);
 
-			tileGroups.Add (new TileGroup (i, 1, _posList, _unassignedList));
+			tileGroups.Add (new TileGroup (i, _unassignedList));
 			allTiles [(int)groupAnchorPositions [i].x, (int)groupAnchorPositions [i].y].islandIndex = -1;
 		}
 
@@ -614,6 +642,8 @@ public class TerrainManager : MonoBehaviour {
 
 					allTiles [(int)tilePosition.x, (int)tilePosition.y].islandIndex = _i;
 					tileGroups [_i].tilePositions.Add (tilePosition);
+					tileGroups [_i].UpdateMinMax (tilePosition);
+
 					tileGroups [_i].tileCount++;
 					placedTiles++;
 
@@ -679,16 +709,41 @@ public class TerrainManager : MonoBehaviour {
 		}
 	}
 
-	public struct TileGroup {
+	public class TileGroup {
 		public int islandIndex;
-		public int tileCount;
-		public List<Vector2> tilePositions;
+		public int tileCount = 0;
+
+		public float minX = Mathf.Infinity;
+		public float maxX = -Mathf.Infinity;
+		public float minY = Mathf.Infinity;
+		public float maxY = -Mathf.Infinity;
+
+		public List<Vector2> tilePositions = new List<Vector2>();
 		public List<Vector2> unassignedTilePositions;
 
-		public TileGroup (int _islandIndex, int _tileCount, List<Vector2> _tilePositions, List<Vector2> _unassignedTilePositions) {
+		public void UpdateMinMax (Vector2 newPos) {
+			if (newPos.x > maxX) {
+				maxX = newPos.x;
+			}
+			if (newPos.y > maxY) {
+				maxY = newPos.y;
+			}
+			if (newPos.x < minX) {
+				minX = newPos.x;
+			}
+			if (newPos.y < minY) {
+				minY = newPos.y;
+			}
+		}
+
+		public Vector2 GetDimensions () {
+			float width = maxX - minX;
+			float height = maxY - minY;
+			return new Vector2 (width, height);
+		}
+
+		public TileGroup (int _islandIndex, List<Vector2> _unassignedTilePositions) {
 			islandIndex = _islandIndex;
-			tileCount = _tileCount;
-			tilePositions = _tilePositions;
 			unassignedTilePositions = _unassignedTilePositions;
 		}
 	}
