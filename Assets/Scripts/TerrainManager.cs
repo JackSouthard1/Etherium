@@ -309,7 +309,6 @@ public class TerrainManager : MonoBehaviour {
 
 	public void ClearTileAtPosition (Vector2 position) {
 		tiles [position].ClearResourceType();
-		print (tiles [position].resourceType);
 		GetTileAtPosition (position).GetComponent<Renderer> ().material.color = islands [0].civilizedColor;
 	}
 
@@ -438,30 +437,51 @@ public class TerrainManager : MonoBehaviour {
 
 	public class Bus {
 		int lifeTime;
-		int timeLeft;
+		int turnsLeft;
 		GameObject busTile;
 		TerrainManager tm;
+		Vector3 goalSize;
+
+		bool isResizing;
 
 		public Bus (int lifeTime, GameObject bus, TerrainManager tm) {
 			this.lifeTime = lifeTime;
 			busTile = bus;
 			this.tm = tm;
-			timeLeft = lifeTime;
+			turnsLeft = lifeTime;
+			goalSize = new Vector3(0.1f, 1f, 0.1f);
 		}
 
 		public void TurnEnd () {
-			
-			float timeRatio = (float)timeLeft / (float)lifeTime;
-			busTile.transform.localScale = new Vector3 (0.1f * timeRatio, 1f, 0.1f * timeRatio);
+			if (turnsLeft < 0) {
+				return;
+			}
 
+			float timeRatio = (float)turnsLeft / (float)lifeTime;
+			goalSize = new Vector3 (0.1f * timeRatio, 1f, 0.1f * timeRatio);
 
-			if (timeLeft <= 0) {
+			turnsLeft -= 1;
+
+			if (!isResizing) {
+				tm.StartCoroutine(ResizeBus ());
+			}
+		}
+
+		public IEnumerator ResizeBus () {
+			isResizing = true;
+			while (Vector3.Distance (busTile.transform.localScale, goalSize) > 0.01f) {
+				busTile.transform.localScale = Vector3.Lerp (busTile.transform.localScale, goalSize, Time.deltaTime * 10f);
+				yield return null;
+			}
+
+			busTile.transform.localScale = goalSize;
+
+			if (turnsLeft < 0) {
 				Destroy (busTile);
 				tm.DestroyBus (this);
 			}
 
-			timeLeft -= 1;
-
+			isResizing = false;
 		}
 
 	}
