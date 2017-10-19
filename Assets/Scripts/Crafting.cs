@@ -43,9 +43,6 @@ public class Crafting : MonoBehaviour {
 		tm = TerrainManager.instance;
 		gameCam = Camera.main;
 		barUI = buildBar.transform.Find ("Canvas").Find ("Bar");
-	}
-
-	void Start () {
 		GenerateRecipes ();
 		buildBar.SetActive (false);
 	}

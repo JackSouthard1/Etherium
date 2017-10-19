@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class CameraController : MonoBehaviour {
-	public Transform target;
+	Transform target;
 	Vector3 offset;
 
-	void Start () {
+	public void Init () {
+		target = GameObject.Find ("Player").transform.Find("Model");
 		offset = transform.position;
 	}
 	

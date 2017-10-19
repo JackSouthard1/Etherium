@@ -77,6 +77,8 @@ public class Island : MonoBehaviour {
 		for (int i = 0; i < enemies.Count; i++) {
 			enemies [i].GetComponentInChildren<Mind> ().active = true;
 		}
+
+		tm.DestroyAllBuses ();
 	}
 
 	public void PlayerExitIsland () {

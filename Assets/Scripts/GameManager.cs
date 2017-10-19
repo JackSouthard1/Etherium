@@ -5,7 +5,6 @@ using UnityEngine;
 public class GameManager : MonoBehaviour {
 	public static GameManager instance;
 
-	public Body player;
 	public List<Body> enemies = new List<Body>();
 	private int enemiesMoving = 0;
 	private TerrainManager tm;
@@ -14,14 +13,31 @@ public class GameManager : MonoBehaviour {
 
 	private Animator cutsceneBars;
 
+	Body player;
+
 	void Awake () {
 		instance = this;
 		tm = TerrainManager.instance;
 		cutsceneBars = GameObject.Find ("CutsceneBars").GetComponent<Animator> ();
+		cutsceneBars.gameObject.SetActive (false);
 	}
 
-	void Start () {
-		player = Player.instance.gameObject.GetComponent<Body> ();
+	public void StartGame () {
+		cutsceneBars.gameObject.SetActive (true);
+
+		tm.SpawnPlayer ();
+		tm.GenerateIslands ();
+
+		Player.instance.Init ();
+		GameObject.FindObjectOfType<MapReveal> ().Init ();
+		GameObject.FindObjectOfType<CameraController> ().Init ();
+
+		Mind[] minds = GameObject.FindObjectsOfType<Mind> ();
+		foreach (Mind mind in minds) {
+			mind.Init ();
+		}
+
+		player = GameObject.Find ("Player").GetComponent<Body> ();
 
 		GameObject[] enemiesGOArray = GameObject.FindGameObjectsWithTag ("Enemy");
 		for (int i = 0; i < enemiesGOArray.Length; i++) {
