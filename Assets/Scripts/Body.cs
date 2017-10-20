@@ -42,6 +42,8 @@ public class Body : MonoBehaviour {
 	public Transform augmentParent;
 	[HideInInspector]
 	public AugmentInfo augment;
+	[HideInInspector]
+	public Animator anim;
 
 	void Awake () {
 		weapon = GetComponentInChildren<Weapon> ();
@@ -51,6 +53,10 @@ public class Body : MonoBehaviour {
 		if (mind.GetType () == typeof(PlayerMind)) {
 			player = true;
 			playerScript = Player.instance;
+		}
+
+		if (player) {
+			anim = transform.Find ("Model").GetComponent<Animator> ();
 		}
 	}
 
@@ -88,6 +94,10 @@ public class Body : MonoBehaviour {
 		Vector3 oldPos = transform.position;
 		transform.position = targetPos;
 		model.position = oldPos;
+
+		if (anim != null && TerrainManager.PosToV2(targetPos) != TerrainManager.PosToV2(oldPos)) {
+			anim.SetTrigger ("Move");
+		}
 	}
 
 	public void AttackInDir (Quaternion targetRot, Vector2 direction) {
