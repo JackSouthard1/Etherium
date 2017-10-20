@@ -45,7 +45,7 @@ public class PlayerMind : Mind {
 	}
 	
 	void StartSwipe() {
-		if (TouchManager.touchCount != 1 || !myTurn || gm.transitioning) {
+		if (Input.touchCount != 1 || !myTurn || gm.transitioning) {
 			return;
 		}
 
