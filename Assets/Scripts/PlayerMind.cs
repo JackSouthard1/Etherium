@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerMind : Mind {
-	Vector2? startingTouchPos = null;
-	bool finishedSwipe = false;
+	bool isSwiping;
 
 	Player player;
 
@@ -12,12 +11,13 @@ public class PlayerMind : Mind {
 
 	protected override void MindStart () {
 		player = Player.instance;
+		TouchManager.instance.OnTouchDown += StartSwipe;
+		TouchManager.instance.OnTouchUp += CancelSwipe;
 	}
 
 	void Update () {
 		if (myTurn && !gm.transitioning) {
 			HandleKeyboardInput ();
-			HandleTouchInput ();
 		}
 	}
 
@@ -43,28 +43,40 @@ public class PlayerMind : Mind {
 			StartCoroutine (player.ShowIdleUI ());
 		}
 	}
+	
+	void StartSwipe() {
+		if (TouchManager.touchCount != 1 || !myTurn || gm.transitioning) {
+			return;
+		}
 
-	void HandleTouchInput() {
-		if (Input.touchCount > 0) {
-			Touch firstTouch = Input.GetTouch (0);
-			
-			if (firstTouch.phase == TouchPhase.Began) {
-				startingTouchPos = firstTouch.position;
-				finishedSwipe = false;
-			} else if (firstTouch.phase == TouchPhase.Ended) {
-				startingTouchPos = null;
-			} else if (!finishedSwipe) {
-				Vector2 currentTouchPos = firstTouch.position;
-				if (Vector2.Distance (startingTouchPos.GetValueOrDefault(Vector2.zero), currentTouchPos) > minDistanceForMove) {
-					//TODO: probably could use a lot of refactoring to ensure that these values are exactly what we want
-					Vector2 dir = currentTouchPos - startingTouchPos.GetValueOrDefault(Vector2.zero);
-					float angle = Mathf.Atan2 (dir.y, dir.x);
-					finishedSwipe = true;
+		StartCoroutine (WaitForSwipe ());
+	}
 
-					float roundedAndle = Mathf.RoundToInt ((angle - (Mathf.PI / 4f)) / (Mathf.PI / 2f)) * (Mathf.PI / 2f);
-					base.RelayAction (new Vector2(Mathf.RoundToInt(Mathf.Cos(roundedAndle)), Mathf.RoundToInt(Mathf.Sin(roundedAndle))));
-				}
+	void CancelSwipe() {
+		isSwiping = false;
+	}
+
+	IEnumerator WaitForSwipe() {
+		isSwiping = true;
+		Vector2 startingTouchPos = Input.GetTouch (0).position;
+		while (isSwiping) {
+			if (Crafting.instance.isBuilding || (TouchManager.touchCount != 1)) {
+				isSwiping = false;
+				break;
 			}
+
+			Vector2 currentTouchPos = Input.GetTouch(0).position;
+			if (Vector2.Distance (startingTouchPos, currentTouchPos) > minDistanceForMove) {
+				//TODO: probably could use a lot of refactoring to ensure that these values are exactly what we want
+				Vector2 dir = currentTouchPos - startingTouchPos;
+				float angle = Mathf.Atan2 (dir.y, dir.x);
+				isSwiping = false;
+
+				float roundedAndle = Mathf.RoundToInt ((angle - (Mathf.PI / 4f)) / (Mathf.PI / 2f)) * (Mathf.PI / 2f);
+				base.RelayAction (new Vector2(Mathf.RoundToInt(Mathf.Cos(roundedAndle)), Mathf.RoundToInt(Mathf.Sin(roundedAndle))));
+			}
+
+			yield return null;
 		}
 	}
 

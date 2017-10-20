@@ -24,9 +24,8 @@ public class Crafting : MonoBehaviour {
 	[Header("Building")]
 	public GameObject buildBar;
 	public float buildTime = 1.5f;
-	private float timeToStopBuilding;
-	private bool startedBuild = false;
-	Building currentBuilding;
+	[HideInInspector]
+	public bool isBuilding = false;
 	Transform barUI;
 
 	Dictionary<string, Craftable> craftableInfos = new Dictionary<string, Craftable>();
@@ -45,6 +44,9 @@ public class Crafting : MonoBehaviour {
 		barUI = buildBar.transform.Find ("Canvas").Find ("Bar");
 		GenerateRecipes ();
 		buildBar.SetActive (false);
+
+		TouchManager.instance.OnTouchDown += CheckForBuildStart;
+		TouchManager.instance.OnTouchUp += CancelBuild;
 	}
 
 	public struct Recipe {
@@ -225,17 +227,11 @@ public class Crafting : MonoBehaviour {
 		anchors.Add (recipe [0, 0]);
 	}
 
-	void Update () {
-		if (Input.GetMouseButtonDown(0) && Input.touchCount < 2) {
-			CheckForBuildStart ();
-		}
-
-		if (startedBuild) {
-			CheckForBuildEnd ();
-		}
-	}
-
 	void CheckForBuildStart () {
+		if (TouchManager.touchCount != 1) {
+			return;
+		}
+
 		Vector2 touchPos;
 		if (Input.touchCount == 1) {
 			touchPos = Input.GetTouch (0).position;
@@ -249,34 +245,41 @@ public class Crafting : MonoBehaviour {
 			Building building = hitInfo.collider.gameObject.GetComponent<Building> ();
 			if (building != null) {
 				if (building.state != Building.BuildingState.Active && !building.IsPlayerInBuilding) {
-					timeToStopBuilding = Time.time + buildTime;
-					startedBuild = true;
-					currentBuilding = building;
-					buildBar.transform.position = currentBuilding.gameObject.transform.position - new Vector3(currentBuilding.info.anchorOffset.x, 0, currentBuilding.info.anchorOffset.y);
-					buildBar.gameObject.SetActive (true);
-					barUI.transform.localScale = new Vector3 (0, 1, 1);
+					StartCoroutine (BuildBuilding (building));
 				}
 			}
 		}
 	}
 
-	void CheckForBuildEnd () {
-		if (Time.time > timeToStopBuilding) {
-			if (currentBuilding.state == Building.BuildingState.Blueprint) {
-				blueprints.Remove (ResourcePickup.GetAtPosition (currentBuilding.coveredTiles [0]));
-				tm.BuildBuilding (currentBuilding);
-			} else if (currentBuilding.state == Building.BuildingState.Inactive) {
-				tm.BreakDownBuilding (currentBuilding);
-			}
-		} else if (!Input.GetMouseButtonUp (0)) {
-			float timeLeft = timeToStopBuilding - Time.time;
+	IEnumerator BuildBuilding(Building building) {
+		isBuilding = true;
+		buildBar.transform.position = building.gameObject.transform.position - new Vector3 (building.info.anchorOffset.x, 0, building.info.anchorOffset.y);
+		buildBar.gameObject.SetActive (true);
+		barUI.transform.localScale = new Vector3 (0, 1, 1);
+
+		float endTime = Time.time + buildTime;
+
+		while (isBuilding && (Time.time < endTime)) {
+			float timeLeft = endTime - Time.time;
 			barUI.transform.localScale = new Vector3 (1 - (timeLeft / buildTime), 1, 1);
-			return;
+			yield return null;
 		}
 
-		startedBuild = false;
-		currentBuilding = null;
+		if (isBuilding) {
+			if (building.state == Building.BuildingState.Blueprint) {
+				blueprints.Remove (ResourcePickup.GetAtPosition (building.coveredTiles [0]));
+				tm.BuildBuilding (building);
+			} else if (building.state == Building.BuildingState.Inactive) {
+				tm.BreakDownBuilding (building);
+			}
+		}
+
+		isBuilding = false;
 		buildBar.gameObject.SetActive (false);
+	}
+
+	void CancelBuild() {
+		isBuilding = false;
 	}
 }
 
