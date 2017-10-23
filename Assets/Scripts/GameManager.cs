@@ -1,9 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour {
 	public static GameManager instance;
+	public static bool isLoadingFromSave;
 
 	public List<Body> enemies = new List<Body>();
 	private int enemiesMoving = 0;
@@ -12,6 +14,7 @@ public class GameManager : MonoBehaviour {
 	public bool transitioning = false;
 
 	private Animator cutsceneBars;
+	private bool savingThisTurn;
 
 	Body player;
 
@@ -22,7 +25,26 @@ public class GameManager : MonoBehaviour {
 		cutsceneBars.gameObject.SetActive (false);
 	}
 
-	public void StartGame () {
+	public void NewGame() {
+		isLoadingFromSave = false;
+		int randomSeed = Random.Range (0, 10000);
+		SavedGame.Init (randomSeed);
+		StartGame (randomSeed);
+	}
+
+	public void ContinueGame() {
+		if (string.IsNullOrEmpty (PlayerPrefs.GetString ("SavedGame"))) {
+			NewGame ();
+			return;
+		}
+
+		isLoadingFromSave = true;
+		SavedGame.LoadSavedGame ();
+		StartGame (SavedGame.data.seed);
+	}
+
+	void StartGame (int randomSeed) {
+		Random.InitState (randomSeed);
 		cutsceneBars.gameObject.SetActive (true);
 
 		tm.SpawnPlayer ();
@@ -44,7 +66,24 @@ public class GameManager : MonoBehaviour {
 			enemies.Add (enemiesGOArray [i].GetComponent<Body> ());
 		}
 
+		if (isLoadingFromSave) {
+			foreach (SavedGame.SavedBuilding building in SavedGame.data.buildings) {
+				building.Spawn ();
+			}
+
+			foreach (SavedGame.SavedPickup pickup in SavedGame.data.pickups) {
+				pickup.Spawn ();
+			}
+
+			foreach (SavedGame.SavedResourceTile resourceTile in SavedGame.data.resourceTiles) {
+				resourceTile.Spawn ();
+			}
+
+			Crafting.instance.TestForCrafting ();
+		}
+
 		PlayerTurnStart ();
+		isLoadingFromSave = false;
 	}
 
 	public void PlayerTurnEnd () {
@@ -52,6 +91,9 @@ public class GameManager : MonoBehaviour {
 
 //		print ("Player Turn End");
 		if (!transitioning) {
+			if (savingThisTurn) {
+				SaveGame ();
+			}
 			EnemyTurnStart ();
 		}
 	}
@@ -94,6 +136,22 @@ public class GameManager : MonoBehaviour {
 	public void CivilizeEnd () {
 		transitioning = false;
 		cutsceneBars.SetBool ("Civilizing", false);
-		PlayerTurnStart ();
+		if (!GameManager.isLoadingFromSave) {
+			if (savingThisTurn) {
+				SaveGame ();
+			}
+			PlayerTurnStart ();
+		}
+	}
+
+	public void SaveThisTurn () {
+		savingThisTurn = true;
+	}
+
+	public void SaveGame() {
+		print ("Saving...");
+		SavedGame.UpdatePlayerInfo ();
+		PlayerPrefs.SetString ("SavedGame", SavedGame.Serialize ());
+		savingThisTurn = false;
 	}
 }

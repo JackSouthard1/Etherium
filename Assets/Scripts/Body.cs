@@ -46,6 +46,8 @@ public class Body : MonoBehaviour {
 	public Animator anim;
 
 	void Awake () {
+		maxHealth = health;
+
 		weapon = GetComponentInChildren<Weapon> ();
 		model = transform.Find ("Model");
 	
@@ -65,11 +67,12 @@ public class Body : MonoBehaviour {
 		gm = GameManager.instance;
 		mr = GameObject.FindObjectOfType<MapReveal> ();
 
-		maxHealth = health;
 		if (healthBar != null)
 			healthBar.UpdateBar (health, maxHealth);
 
-		augment = AugmentInfo.GetInfoFromIndex (0);
+		if (augment.ToIndex() == -1) {
+			augment = AugmentInfo.GetInfoFromIndex (0);
+		}
 	}
 
 	public void TurnStart () {
@@ -122,7 +125,13 @@ public class Body : MonoBehaviour {
 				playerScript.PickupAugment (AugmentPickup.GetAtPosition (newTile));
 			}
 
-			playerScript.Eat ();
+			if (!mind.initializing) {
+				playerScript.Eat ();
+			}
+		}
+
+		if (mind.initializing) {
+			mind.initializing = false;
 		}
 
 		actionsLeft--;
@@ -137,10 +146,16 @@ public class Body : MonoBehaviour {
 
 	public void TakeDamage(float damage) {
 		ChangeHealth (-damage);
+		if (player) {
+			GameManager.instance.SaveThisTurn ();
+		}
 	}
 
 	public void Heal(float extraHealth) {
 		ChangeHealth (extraHealth);
+		if (player) {
+			GameManager.instance.SaveGame ();
+		}
 	}
 
 	void ChangeHealth (float amount) {

@@ -54,7 +54,8 @@ public class TerrainManager : MonoBehaviour {
 	private Crafting crafting;
 
 	//TODO: I was gonna use a System.Action so we can all of these at once but eh
-	List<Building> buildings = new List<Building>();
+	[HideInInspector]
+	public List<Building> buildings = new List<Building>();
 
 	public void TurnEnd () {
 		for (int i = 0; i < buses.Count; i++) {
@@ -131,7 +132,11 @@ public class TerrainManager : MonoBehaviour {
 			islandScript.diffuculty = Mathf.RoundToInt (i % sqrtSize + Mathf.FloorToInt(i / sqrtSize));
 			islands [i] = islandScript;
 
-			islandScript.InitIsland (centeredTilePositions, targetPos);
+			islandScript.InitIsland (centeredTilePositions, targetPos, i);
+		}
+
+		if (!GameManager.isLoadingFromSave) {
+			SavedGame.UpdatePickups ();
 		}
 	}
 
@@ -140,29 +145,40 @@ public class TerrainManager : MonoBehaviour {
 		newPlayer.name = "Player";
 	}
 
-	public Building SpawnBuilding (Vector3 position, GameObject prefab, BuildingInfo info, Island island) {
+	public Building SpawnBuilding (Vector3 position, GameObject prefab, BuildingInfo info, Island island, bool build = false) {
 		GameObject building = (GameObject)Instantiate (prefab, position, Quaternion.identity, transform);
 
 		Building buildingScript = building.GetComponent<Building> ();
 		buildingScript.Init (info, island);
-		buildingScript.CreateBlueprint ();
+		if (!build) {
+			buildingScript.CreateBlueprint ();
+		} else {
+			BuildBuilding (buildingScript);
+		}
 
 		return buildingScript;
 	}
 
 	public void BuildBuilding (Building building) {
-		List<ResourcePickup> resourcesToConsume = new List<ResourcePickup> ();
-		float baseHeight = GetTileAtPosition(building.coveredTiles[0]).transform.position.y;
-		foreach (Vector2 pos in building.coveredTiles) {
-			resourcesToConsume.Add(ResourcePickup.GetAtPosition(pos));
-			GetTileAtPosition (pos).transform.position = new Vector3 (pos.x, baseHeight, pos.y);
+		float baseHeight = GetTileAtPosition (building.coveredTiles [0]).transform.position.y;
+
+		if (!GameManager.isLoadingFromSave) {
+			List<ResourcePickup> resourcesToConsume = new List<ResourcePickup> ();
+			foreach (Vector2 pos in building.coveredTiles) {
+				resourcesToConsume.Add (ResourcePickup.GetAtPosition (pos));
+				tiles [pos].MoveTile (baseHeight);
+			}
+			ConsumeResources (resourcesToConsume);
+		} else {
+			foreach (Vector2 pos in building.coveredTiles) {
+				tiles [pos].MoveTile (baseHeight);
+			}
 		}
-		ConsumeResources (resourcesToConsume);
 
 		building.Build ();
 		buildings.Add (building);
 
-		Transform pad = building.transform.Find ("Pad");
+		Transform pad = building.pad;
 		if(pad != null) {
 			Vector2 pos2D = PosToV2(pad.position);
 			pads.Add(pos2D, pad.position.y);
@@ -184,37 +200,44 @@ public class TerrainManager : MonoBehaviour {
 			}
 		}
 
+		buildings.Remove (building);
 		Destroy (building.gameObject);
+
+		SavedGame.UpdateBuildings ();
 	}
 
-	public ResourcePickup SpawnResource (Vector3 position, ResourceInfo info, Island island, bool initialSpawn = false, float startingHeight = 0f) {
+	public ResourcePickup SpawnResource (Vector3 position, ResourceInfo info, Island island, bool initialSpawn = false) {
 		Vector2 posV2 = PosToV2 (position);
 
 		if (island == null || GetBuildingAtPosition(posV2) != null || WeaponPickup.IsAtPosition(posV2)) {
 			return null;
 		}
 
+		float startingHeight = PadAtPosition (posV2).GetValueOrDefault (position.y);
+
 		if (ResourcePickup.IsAtPosition(posV2)) {
 			ResourcePickup curResource = ResourcePickup.GetAtPosition(posV2);
 			if (curResource.info.type == info.type) {
 				GameObject resourceGO = Instantiate (resourcePrefab, island.transform);
-				resourceGO.transform.position = position;
+				resourceGO.transform.position = new Vector3(position.x, 0f, position.z);
 				resourceGO.gameObject.GetComponentInChildren<SpriteRenderer> ().sprite = info.sprite;
 				resourceGO.gameObject.GetComponentInChildren<SpriteRenderer> ().color = info.color;
 
 				curResource.gameObjects.Add (resourceGO);
-				resourceGO.transform.Translate (Vector3.up * (stackHeight * (curResource.gameObjects.Count - 1) + startingHeight));
+				resourceGO.transform.Translate (Vector3.up * ((stackHeight * (curResource.gameObjects.Count - 1)) + startingHeight));
 
-				if (!initialSpawn) {
+				if (!initialSpawn && !GameManager.isLoadingFromSave) {
 					UpdateResources ();
+					SavedGame.UpdatePickups ();
 				}
+
 				return curResource;
 			} else {
 				return null;
 			}
 		} else {
 			GameObject resourceGO = Instantiate (resourcePrefab, island.transform);
-			resourceGO.transform.position = position;
+			resourceGO.transform.position = new Vector3(position.x, 0f, position.z);
 			ResourcePickup resource = new ResourcePickup (info, resourceGO, island);
 
 			resourceGO.GetComponentInChildren<SpriteRenderer> ().sprite = info.sprite;
@@ -223,9 +246,11 @@ public class TerrainManager : MonoBehaviour {
 			island.pickups.Add (resource);
 
 			resourceGO.transform.Translate (Vector3.up * startingHeight);
-			if (!initialSpawn) {
+			if (!initialSpawn && !GameManager.isLoadingFromSave) {
+				SavedGame.UpdatePickups ();
 				UpdateResources ();
 			}
+
 			return resource;
 		}
 	}
@@ -248,7 +273,8 @@ public class TerrainManager : MonoBehaviour {
 
 		pickups.Add (posV2, weapon);
 		island.pickups.Add (weapon);
-		
+
+		SavedGame.UpdatePickups ();
 		return weapon;
 	}
 
@@ -271,6 +297,7 @@ public class TerrainManager : MonoBehaviour {
 		pickups.Add (posV2, augment);
 		island.pickups.Add (augment);
 
+		SavedGame.UpdatePickups ();
 		return augment;
 	}
 
@@ -328,10 +355,13 @@ public class TerrainManager : MonoBehaviour {
 				pickups.Remove (pickupKey);
 			}
 		}
+
+		SavedGame.UpdatePickups ();
 	}
 
 	void UpdateResources () {
 		crafting.TestForCrafting ();
+		crafting.TestForBlueprints ();
 	}
 
 	public GameObject GetTileAtPosition (Vector2 position) {
@@ -352,7 +382,6 @@ public class TerrainManager : MonoBehaviour {
 
 	public void ClearTileAtPosition (Vector2 position) {
 		tiles [position].ClearResourceType();
-		GetTileAtPosition (position).GetComponent<Renderer> ().material.color = islands [0].civilizedColor;
 	}
 
 	public bool EnemyInRange (Vector2 origin, Vector2 direction, int range) {
@@ -480,7 +509,30 @@ public class TerrainManager : MonoBehaviour {
 		}
 
 		public void ClearResourceType() {
+			if (resourceType != ResourceInfo.ResourceType.None) {
+				SavedGame.RemoveResourceTile (this);
+			}
 			resourceType = ResourceInfo.ResourceType.None;
+
+		}
+
+		public void ResetTile() {
+			tile.GetComponent<Renderer> ().material.color = originalColor;
+			MoveTile (originalY);
+		}
+
+		public void MoveTile(float newHeight) {
+			tile.transform.position = new Vector3 (tile.transform.position.x, newHeight, tile.transform.position.z);
+			Vector2 posV2 = TerrainManager.PosToV2 (tile.transform.position);
+
+			if (ResourcePickup.IsAtPosition (posV2)) {
+				ResourcePickup resource = ResourcePickup.GetAtPosition (posV2);
+				float resourceHeight = TerrainManager.instance.PadAtPosition (posV2).GetValueOrDefault(tile.transform.position.y);
+				for (int i = 0; i < resource.gameObjects.Count; i++) {
+					resource.gameObjects[i].transform.position = new Vector3 (resource.gameObjects[i].transform.position.x, resourceHeight + (TerrainManager.instance.stackHeight * i), resource.gameObjects[i].transform.transform.position.z);
+				}
+				resource.UpdatePosition ();
+			}
 		}
 	}
 

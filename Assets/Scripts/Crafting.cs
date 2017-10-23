@@ -276,6 +276,7 @@ public class Crafting : MonoBehaviour {
 
 		isBuilding = false;
 		buildBar.gameObject.SetActive (false);
+		SavedGame.UpdateBuildings ();
 	}
 
 	void CancelBuild() {

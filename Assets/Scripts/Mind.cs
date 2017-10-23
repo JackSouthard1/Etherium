@@ -8,6 +8,7 @@ public abstract class Mind : MonoBehaviour {
 	protected TerrainManager tm;
 	public bool myTurn = false;
 	public bool active = false;
+	public bool initializing;
 
 	List<Vector2> allDirections {
 		get {
@@ -39,6 +40,7 @@ public abstract class Mind : MonoBehaviour {
 		gm = GameManager.instance;
 		tm = TerrainManager.instance;
 
+		initializing = true;
 		StartActionAttempt (Vector2.zero);
 		MindStart ();
 	}

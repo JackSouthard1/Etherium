@@ -15,7 +15,8 @@ public class ProductionBuilding : Building
 	public float productionAnimationTime;
 
 	TerrainManager tm;
-	int turnsUntilNextResource;
+	[HideInInspector]
+	public int turnsUntilNextResource { get; private set; }
 
 	List<Vector2> adjacentTiles;
 
@@ -51,9 +52,10 @@ public class ProductionBuilding : Building
 			}
 
 			Vector3 spawnPos = (pad != null) ? pad.position : transform.position;
-			float spawnHeight = (pad != null) ? pad.localPosition.y : height;
-			tm.SpawnResource (position: spawnPos, info: tm.ResourceTypeToInfo (resourceType), island: island, startingHeight: spawnHeight);
+			tm.SpawnResource (position: spawnPos, info: tm.ResourceTypeToInfo (resourceType), island: island);
 			supply -= 1;
+
+			SavedGame.UpdateBuildingSupply (this);
 		}
 
 		base.TurnEnd ();

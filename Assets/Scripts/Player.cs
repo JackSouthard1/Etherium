@@ -15,10 +15,12 @@ public class Player : MonoBehaviour {
 	public HealthBar playerHealthBar;
 
 	Transform playerTransform;
-	Body body;
 	TerrainManager tm;
 
-	List<float> inventory = new List<float>();
+	[HideInInspector]
+	public Body body;
+	[HideInInspector]
+	public List<float> inventory = new List<float>();
 	List<UIResource> inventoryUI = new List<UIResource>();
 
 	public GameObject uiResourcePrefab;
@@ -42,6 +44,20 @@ public class Player : MonoBehaviour {
 		body.healthBar = playerHealthBar;
 
 		InitInventory ();
+
+		if (GameManager.isLoadingFromSave) {
+			playerTransform.position = new Vector3 (SavedGame.data.playerPosition.x, 0, SavedGame.data.playerPosition.y);
+			inventory = SavedGame.data.inventory;
+
+			SwitchWeapons (SavedGame.data.weaponIndex);
+			SwitchAugments (SavedGame.data.augmentIndex);
+
+			body.health = SavedGame.data.playerHealth;
+		} else {
+			GameManager.instance.SaveThisTurn ();
+		}
+
+		UpdateInventoryUI ();
 	}
 
 	void InitInventory () {
@@ -56,19 +72,7 @@ public class Player : MonoBehaviour {
 		}
 
 		//temp
-		inventory[tm.ResourceTypeToIndex(TerrainManager.ResourceInfo.ResourceType.Green)] = 3.1f;
-
-		UpdateInventoryUI ();
-	}
-
-	void Update () {
-		if (Input.GetKeyDown (KeyCode.I)) {
-			string str = "Inventory - ";
-			for (int i = 0; i < tm.resourceInfos.Length; i++) {
-				str += tm.ResourceIndexToInfo(i).type.ToString() + ": " + inventory[i].ToString() + ", ";
-			}
-			print (str);
-		}
+		inventory[tm.ResourceTypeToIndex(TerrainManager.ResourceInfo.ResourceType.Green)] = 3f;
 	}
 
 	public void CollectResource (ResourcePickup resource) {
@@ -95,6 +99,7 @@ public class Player : MonoBehaviour {
 		List<int> countsToPickUp = new List<int> { countToPickUp };
 		tm.ConsumeResources (affectedResources, countsToPickUp);
 
+		GameManager.instance.SaveThisTurn ();
 		UpdateInventoryUI ();
 	}
 
@@ -124,6 +129,7 @@ public class Player : MonoBehaviour {
 		}
 		
 		inventory[resourceIndex] -= 1f;
+		GameManager.instance.SaveThisTurn ();
 		UpdateInventoryUI ();
 	}
 
@@ -149,6 +155,10 @@ public class Player : MonoBehaviour {
 
 		body.weapon.info = WeaponInfo.GetInfoFromIndex(weaponIndex);
 		body.weapon.UpdateWeapon ();
+
+		if (!GameManager.isLoadingFromSave) {
+			GameManager.instance.SaveThisTurn ();
+		}
 	}
 
 	public void PickupAugment (AugmentPickup newAugment) {
@@ -160,7 +170,7 @@ public class Player : MonoBehaviour {
 	public void SwitchAugments (int augmentIndex) {
 		AugmentInfo currentAugmentInfo = body.augment;
 
-		if (currentAugmentInfo.ToIndex() != 0) {
+		if (currentAugmentInfo.ToIndex() > 0) {
 			Vector2 posV2 = TerrainManager.PosToV2 (playerTransform.position);
 			if (tm.PadAtPosition (posV2) != null) {
 				return;
@@ -172,6 +182,10 @@ public class Player : MonoBehaviour {
 		}
 
 		body.UpdateAugment (AugmentInfo.GetInfoFromIndex(augmentIndex));
+
+		if (!GameManager.isLoadingFromSave) {
+			GameManager.instance.SaveThisTurn ();
+		}
 	}
 
 	public void Heal(float resourcesConsumed) {

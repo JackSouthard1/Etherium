@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Island : MonoBehaviour {
+	int islandIndex;
+
 	[Header("Teir")]
 	private TerrainManager.Teir teirInfo;
 	public int teir;
@@ -55,13 +57,11 @@ public class Island : MonoBehaviour {
 
 	void Awake () {
 		tm = TerrainManager.instance;
-	}
-
-	void Start () {
 		gm = GameManager.instance;
 	}
 
-	public void InitIsland(List<Vector2> _tilePositions, Vector3 civilizedPosition) {
+	public void InitIsland(List<Vector2> _tilePositions, Vector3 civilizedPosition, int index) {
+		islandIndex = index;
 		targetPos = civilizedPosition;
 //		teir = Mathf.Clamp(Mathf.FloorToInt(transform.position.magnitude / tm.teirDstIntervals), 0, tm.teirs.Length - 1);
 		teir = Mathf.Clamp(diffuculty, 0, tm.teirs.Length - 1);
@@ -70,7 +70,12 @@ public class Island : MonoBehaviour {
 		setSpawns = tm.GetSetSpawns (teir);
 		tilePositions = _tilePositions;
 		GenerateTiles ();
-		SpawnEnemies ();
+		bool alreadyCivilized = SavedGame.data.civilizedIslandIndexes.Contains (index);
+		if (!alreadyCivilized) {
+			SpawnEnemies ();
+		} else {
+			StartCivilizing ();
+		}
 	}
 		
 	public void PlayerEnterIsland () {
@@ -142,7 +147,8 @@ public class Island : MonoBehaviour {
 
 				TerrainManager.ResourceInfo.ResourceType resourceInfoType;
 				Color tileColor;
-				if (resourceTileSpawnIndexs.Contains (index)) {
+
+				if (resourceTileSpawnIndexs.Contains (index) && !GameManager.isLoadingFromSave) {
 					int resourceIndex = tileSpawnIDs [resourceSpawnListIndex];
 					resourceSpawnListIndex++;
 					TerrainManager.ResourceInfo resourceInfo = tm.resourceInfos [resourceIndex];
@@ -161,6 +167,11 @@ public class Island : MonoBehaviour {
 				tileGO.GetComponent<MeshRenderer> ().material.color = tileColor;
 				tiles [index] = tileInfo;
 				tm.tiles.Add (new Vector2 (tile.x + transform.position.x, tile.y + transform.position.z), tileInfo);
+
+				//TODO: it's kinda dumb to have this if statement twice
+				if (resourceTileSpawnIndexs.Contains (index) && !GameManager.isLoadingFromSave) {
+					SavedGame.AddResourceTile (tileInfo);
+				}
 			}
 
 			index++;
@@ -194,23 +205,40 @@ public class Island : MonoBehaviour {
 	}
 
 	void StartCivilizing () {
-		gm.CivilizeStart();
-		civStartTime = Time.time;
-		civilizing = true;
-		startPos = transform.position;
-		Transform player = GameObject.FindGameObjectWithTag ("Player").transform;
-		player.parent = tm.GetTileAtPosition(TerrainManager.PosToV2(player.position)).transform;
-		player.Find ("Model").localPosition = Vector3.zero;
+		if (buildable) {
+			return;
+		}
+
+		if (!GameManager.isLoadingFromSave) {
+			gm.CivilizeStart();
+			civStartTime = Time.time;
+			civilizing = true;
+			startPos = transform.position;
+			Transform player = GameObject.FindGameObjectWithTag ("Player").transform;
+			player.parent = tm.GetTileAtPosition (TerrainManager.PosToV2 (player.position)).transform;
+			player.Find ("Model").localPosition = Vector3.zero;
+		}
 
 		for (int i = 0; i < tiles.Length; i++) {
 			if (!voidTileIndexes.Contains (i)) {
 				GameObject tile = tiles [i].tile;
 				tm.tiles.Remove (TerrainManager.PosToV2(tile.transform.position));
+
+				if (!GameManager.isLoadingFromSave) {
+					if (tiles [i].resourceType != TerrainManager.ResourceInfo.ResourceType.None) {
+						SavedGame.RemoveResourceTile (tiles [i]);
+					}
+				}
 			}
 		}
 
-		foreach (Pickup pickup in pickups) {
-			tm.pickups.Remove (pickup.position);
+		if (!GameManager.isLoadingFromSave) {
+			foreach (Pickup pickup in pickups) {
+				tm.pickups.Remove (pickup.position);
+			}
+			SavedGame.AddCivilizedIsland (islandIndex);
+		} else {
+			FinishCivilizing ();
 		}
 	}
 
@@ -311,6 +339,12 @@ public class Island : MonoBehaviour {
 			if (!voidTileIndexes.Contains (i)) {
 				tiles [i].tile.transform.position = new Vector3 (Mathf.RoundToInt (tiles [i].tile.transform.position.x), tiles [i].tile.transform.position.y, Mathf.RoundToInt (tiles [i].tile.transform.position.z));
 				tm.tiles.Add (TerrainManager.PosToV2(tiles[i].tile.transform.position), tiles [i]);
+
+				if (!GameManager.isLoadingFromSave) {
+					if (tiles [i].resourceType != TerrainManager.ResourceInfo.ResourceType.None) {
+						SavedGame.AddResourceTile (tiles [i]);
+					}
+				}
 			}
 		}
 			
@@ -323,6 +357,10 @@ public class Island : MonoBehaviour {
 
 		buildable = true;
 		civilizing = false;
+
+		if (!GameManager.isLoadingFromSave) {
+			SavedGame.UpdatePickups ();
+		}
 
 		gm.CivilizeEnd();
 	}

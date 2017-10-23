@@ -34,11 +34,6 @@ public class Building : MonoBehaviour {
 	[HideInInspector]
 	public BuildingInfo info { get; private set; }
 
-	//has to be in Start because subclasses use Awake
-	void Start () {
-		pad = transform.Find("Model").Find ("Pad");
-	}
-
 	public void Init(BuildingInfo info, Island island) {
 		this.info = info;
 		this.island = island;
@@ -50,6 +45,8 @@ public class Building : MonoBehaviour {
 				coveredTiles.Add(anchorPos + new Vector2 (x, y));
 			}
 		}
+
+		pad = transform.Find("Model").Find ("Pad");
 	}
 
 	public void CreateBlueprint() {
@@ -108,8 +105,12 @@ public class Building : MonoBehaviour {
 			StandardShaderHelper.ChangeRenderMode(rend.material, StandardShaderHelper.BlendMode.Opaque);
 		}
 
+		//TODO: this can lead to issues if the building is on multiple islands
+		//we can't use the tile's original color though because it won't match with the layer that it's on until after it has been destroyed
+		Color anchorColor = TerrainManager.instance.tiles [coveredTiles [0]].originalColor;
 		foreach (Vector2 pos in coveredTiles) {
 			TerrainManager.instance.ClearTileAtPosition (pos);
+			TerrainManager.instance.GetTileAtPosition(pos).GetComponent<Renderer> ().material.color = anchorColor;
 		}
 
 		//temp

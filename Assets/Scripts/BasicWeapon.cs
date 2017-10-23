@@ -10,7 +10,10 @@ public class BasicWeapon : Weapon {
 	List<Body> hitBodies = new List<Body>();
 
 	public override void ChildStart () {
-		attackAnimation = transform.parent.GetComponentInChildren<Animation> ();
+		if (info.ToIndex () == 0) {
+			attackAnimation = transform.parent.GetComponentInChildren<Animation> ();
+		}
+
 		lr = GetComponent<LineRenderer> ();
 		lr.enabled = false;
 		lr.positionCount = 2;
