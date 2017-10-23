@@ -240,7 +240,7 @@ public class Crafting : MonoBehaviour {
 		}
 
 		RaycastHit hitInfo;
-		Physics.Raycast (gameCam.ScreenPointToRay (touchPos), out hitInfo, 20f);
+		Physics.Raycast (gameCam.ScreenPointToRay (touchPos), out hitInfo, 100f);
 		if (hitInfo.collider != null) {
 			Building building = hitInfo.collider.gameObject.GetComponent<Building> ();
 			if (building != null) {
