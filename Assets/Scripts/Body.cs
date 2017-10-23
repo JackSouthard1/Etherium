@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Body : MonoBehaviour {
 	[Header("Drops")]
-	public TerrainManager.ResourceInfo.ResourceType dropType;
+	public ResourceInfo.ResourceType dropType;
 	public int dropCount;
 
 	[HideInInspector]
@@ -167,7 +167,7 @@ public class Body : MonoBehaviour {
 					print ("Player Dead");
 				} else {
 					for (int i = 0; i < dropCount; i++) {
-						tm.SpawnResource (transform.position, tm.ResourceTypeToInfo (dropType), location);
+						tm.SpawnResource (transform.position, ResourceInfo.GetInfoFromType (dropType), location);
 					}
 					location.EnemyDeath (GetComponent<Body> ());
 					gm.EnemyDeath (GetComponent<Body> ());

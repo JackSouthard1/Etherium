@@ -61,7 +61,7 @@ public class Player : MonoBehaviour {
 	}
 
 	void InitInventory () {
-		foreach (TerrainManager.ResourceInfo resourceInfo in tm.resourceInfos) {
+		foreach (ResourceInfo resourceInfo in tm.resourceInfos) {
 			inventory.Add(0f);
 
 			GameObject newUIResourceObj = (GameObject)Instantiate (uiResourcePrefab, inventoryParent);
@@ -72,7 +72,7 @@ public class Player : MonoBehaviour {
 		}
 
 		//temp
-		inventory[tm.ResourceTypeToIndex(TerrainManager.ResourceInfo.ResourceType.Green)] = 3f;
+		inventory[ResourceInfo.GetIndexFromType(ResourceInfo.ResourceType.Green)] = 3f;
 	}
 
 	public void CollectResource (ResourcePickup resource) {
@@ -94,7 +94,7 @@ public class Player : MonoBehaviour {
 			tm.pickups.Remove (resource.position);
 		}
 
-		inventory [tm.ResourceTypeToIndex(resource.info.type)] += (float) countToPickUp;
+		inventory [resource.info.ToIndex()] += (float) countToPickUp;
 		List<ResourcePickup> affectedResources = new List<ResourcePickup> {resource};
 		List<int> countsToPickUp = new List<int> { countToPickUp };
 		tm.ConsumeResources (affectedResources, countsToPickUp);
@@ -112,8 +112,8 @@ public class Player : MonoBehaviour {
 		return count;
 	}
 
-	public void DropResource (TerrainManager.ResourceInfo resourceInfo) {
-		int resourceIndex = tm.ResourceTypeToIndex (resourceInfo.type);
+	public void DropResource (ResourceInfo resourceInfo) {
+		int resourceIndex = resourceInfo.ToIndex();
 
 		if (inventory [resourceIndex] < 1f) {
 			return;
@@ -189,7 +189,7 @@ public class Player : MonoBehaviour {
 	}
 
 	public void Heal(float resourcesConsumed) {
-		int resourceIndex = tm.ResourceTypeToIndex (TerrainManager.ResourceInfo.ResourceType.Green);
+		int resourceIndex = ResourceInfo.GetIndexFromType (ResourceInfo.ResourceType.Green);
 
 		if (!body.canHeal)
 			return;
@@ -206,7 +206,7 @@ public class Player : MonoBehaviour {
 
 	public void Eat() {
 		float resourcesPerMove = 1f / ((float) movesPerResource);
-		int resourceIndex = tm.ResourceTypeToIndex (TerrainManager.ResourceInfo.ResourceType.Green);
+		int resourceIndex = ResourceInfo.GetIndexFromType (ResourceInfo.ResourceType.Green);
 
 		float newAmount = inventory [resourceIndex] - resourcesPerMove;
 		if (newAmount < 0f) {

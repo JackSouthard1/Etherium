@@ -147,7 +147,7 @@ public class SavedGame {
 			if (pickup is ResourcePickup) {
 				ResourcePickup resourcePickup = pickup as ResourcePickup;
 				pickupType = 0;
-				index = TerrainManager.instance.ResourceTypeToIndex (resourcePickup.info.type);
+				index = resourcePickup.info.ToIndex ();
 				stackHeight = pickup.gameObjects.Count;
 			} else if (pickup is WeaponPickup) {
 				WeaponPickup weaponPickup = pickup as WeaponPickup;
@@ -175,7 +175,7 @@ public class SavedGame {
 			for (int i = 0; i < stackHeight; i++) {
 				switch (pickupType) {
 				case 0:
-					TerrainManager.instance.SpawnResource (spawnPos, TerrainManager.instance.ResourceIndexToInfo(index), island);
+					TerrainManager.instance.SpawnResource (spawnPos, ResourceInfo.GetInfoFromIndex (index), island);
 					break;
 				case 1:
 					TerrainManager.instance.SpawnWeapon (spawnPos, WeaponInfo.GetInfoFromIndex (index), island);
@@ -223,11 +223,11 @@ public class SavedGame {
 
 		public SavedResourceTile (TerrainManager.Tile tile) {
 			tilePos = new SavedTilePos(TerrainManager.PosToV2(tile.tile.transform.position));
-			resourceIndex = TerrainManager.instance.ResourceTypeToIndex(tile.resourceType);
+			resourceIndex = ResourceInfo.GetIndexFromType(tile.resourceType);
 		}
 
 		public void Spawn() {
-			TerrainManager.ResourceInfo info = TerrainManager.instance.ResourceIndexToInfo (resourceIndex);
+			ResourceInfo info = ResourceInfo.GetInfoFromIndex(resourceIndex);
 			TerrainManager.Tile tile = TerrainManager.instance.tiles [tilePos.ToVector2 ()];
 
 			tile.resourceType = info.type;

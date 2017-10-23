@@ -145,13 +145,13 @@ public class Island : MonoBehaviour {
 				tileGO.transform.localPosition = position;
 				tileGO.name = "Tile (" + tile.x + "," + tile.y + ")";
 
-				TerrainManager.ResourceInfo.ResourceType resourceInfoType;
+				ResourceInfo.ResourceType resourceInfoType;
 				Color tileColor;
 
 				if (resourceTileSpawnIndexs.Contains (index) && !GameManager.isLoadingFromSave) {
 					int resourceIndex = tileSpawnIDs [resourceSpawnListIndex];
 					resourceSpawnListIndex++;
-					TerrainManager.ResourceInfo resourceInfo = tm.resourceInfos [resourceIndex];
+					ResourceInfo resourceInfo = ResourceInfo.GetInfoFromIndex(resourceIndex);
 					resourceInfoType = resourceInfo.type;
 					tileColor = resourceInfo.color;
 
@@ -159,7 +159,7 @@ public class Island : MonoBehaviour {
 						tm.SpawnResource(position: transform.TransformPoint(position), info: resourceInfo, island: GetComponent<Island>(), initialSpawn: true);
 					}
 				} else {
-					resourceInfoType = TerrainManager.ResourceInfo.ResourceType.None;
+					resourceInfoType = ResourceInfo.ResourceType.None;
 					tileColor = teirInfo.layers [layer].color;
 				}
 
@@ -225,7 +225,7 @@ public class Island : MonoBehaviour {
 				tm.tiles.Remove (TerrainManager.PosToV2(tile.transform.position));
 
 				if (!GameManager.isLoadingFromSave) {
-					if (tiles [i].resourceType != TerrainManager.ResourceInfo.ResourceType.None) {
+					if (tiles [i].resourceType != ResourceInfo.ResourceType.None) {
 						SavedGame.RemoveResourceTile (tiles [i]);
 					}
 				}
@@ -341,7 +341,7 @@ public class Island : MonoBehaviour {
 				tm.tiles.Add (TerrainManager.PosToV2(tiles[i].tile.transform.position), tiles [i]);
 
 				if (!GameManager.isLoadingFromSave) {
-					if (tiles [i].resourceType != TerrainManager.ResourceInfo.ResourceType.None) {
+					if (tiles [i].resourceType != ResourceInfo.ResourceType.None) {
 						SavedGame.AddResourceTile (tiles [i]);
 					}
 				}

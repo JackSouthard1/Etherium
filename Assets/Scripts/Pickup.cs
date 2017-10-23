@@ -34,10 +34,52 @@ public class Pickup {
 	}
 }
 
-public class ResourcePickup : Pickup {
-	public TerrainManager.ResourceInfo info;
+[System.Serializable]
+public struct ResourceInfo {
+	public Sprite sprite;
+	public Color color;
+	public enum ResourceType
+	{
+		None,
+		Yellow,
+		Green,
+		Purple,
+		Blue
+	};
+	public ResourceType type;
 
-	public ResourcePickup (TerrainManager.ResourceInfo _info, GameObject _resourceGO, Island _island) {
+	public static ResourceInfo GetInfoFromIndex(int index) {
+		return TerrainManager.instance.resourceInfos[index];
+	}
+
+	public static ResourceInfo GetInfoFromType(ResourceType type) {
+		int index = GetIndexFromType (type);
+		if (index != -1) {
+			return GetInfoFromIndex (index);
+		} else {
+			return new ResourceInfo ();
+		}
+	}
+
+	public static int GetIndexFromType(ResourceType type) {
+		for (int i = 0; i < TerrainManager.instance.resourceInfos.Count; i++) {
+			if (TerrainManager.instance.resourceInfos [i].type == type)
+				return i;
+		}
+
+		Debug.LogError ("Resource type " + type.ToString () + " not found in list");
+		return -1;
+	}
+
+	public int ToIndex() {
+		return TerrainManager.instance.resourceInfos.IndexOf(this);
+	}
+}
+
+public class ResourcePickup : Pickup {
+	public ResourceInfo info;
+
+	public ResourcePickup (ResourceInfo _info, GameObject _resourceGO, Island _island) {
 		info = _info;
 		island = _island;
 		gameObjects.Add(_resourceGO);
@@ -52,6 +94,33 @@ public class ResourcePickup : Pickup {
 
 	public static ResourcePickup GetAtPosition(Vector2 position) {
 		return TerrainManager.instance.GetPickupAtPosition(position) as ResourcePickup;
+	}
+}
+
+[System.Serializable]
+public class WeaponInfo : Craftable {
+	public float damage;
+	public int range;
+	public bool passesThroughEnemies;
+
+	public GameObject pickupPrefab;
+	public GameObject weaponPrefab;
+
+	[Header("Animation")]
+	public int shotsPerAttack = 1;
+	public float rateOfFirePerAttack = 0.5f;
+	public float initialDelay = 0.25f;
+
+	public static WeaponInfo GetInfoFromIndex(int index) {
+		if (index < Crafting.instance.weaponInfos.Count && index >= 0) {
+			return Crafting.instance.weaponInfos [index];
+		} else {
+			return null;
+		}
+	}
+
+	public int ToIndex() {
+		return Crafting.instance.weaponInfos.IndexOf (this);
 	}
 }
 
@@ -76,7 +145,6 @@ public class WeaponPickup : Pickup {
 	}
 }
 
-//where to put this?
 [System.Serializable]
 public class AugmentInfo : Craftable {
 	//TODO: is this really the best system for specifying what each augment does?

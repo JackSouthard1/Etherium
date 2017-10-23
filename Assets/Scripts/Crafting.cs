@@ -70,11 +70,11 @@ public class Crafting : MonoBehaviour {
 
 	[System.Serializable]
 	public struct Stack {
-		public TerrainManager.ResourceInfo.ResourceType resourceType;
-		public TerrainManager.ResourceInfo.ResourceType tileType;
+		public ResourceInfo.ResourceType resourceType;
+		public ResourceInfo.ResourceType tileType;
 		public int count;
 
-		public Stack (TerrainManager.ResourceInfo.ResourceType _resourceType, TerrainManager.ResourceInfo.ResourceType _tileType, int _count) {
+		public Stack (ResourceInfo.ResourceType _resourceType, ResourceInfo.ResourceType _tileType, int _count) {
 			resourceType = _resourceType;
 			tileType = _tileType;
 			count = _count;
@@ -143,7 +143,7 @@ public class Crafting : MonoBehaviour {
 	}
 
 	Craftable GetCraftableForResource(ResourcePickup anchorResource, out Vector3 spawnPos) {
-		TerrainManager.ResourceInfo.ResourceType tileType = tm.tiles[anchorResource.position].resourceType;
+		ResourceInfo.ResourceType tileType = tm.tiles[anchorResource.position].resourceType;
 		List<Crafting.Recipe> possibleRecipes = GetPossibleRecipes (new Stack (anchorResource.info.type, tileType, anchorResource.gameObjects.Count));
 
 		bool hasRecipe = false;
@@ -160,7 +160,7 @@ public class Crafting : MonoBehaviour {
 						if (resourceAtPos.island.buildable) {
 							if (resourceAtPos.info.type == recipe.resources [x, y].resourceType && resourceAtPos.gameObjects.Count == recipe.resources [x, y].count) {
 								// check tile
-								TerrainManager.ResourceInfo.ResourceType curTileType = tm.tiles [posToCheck].resourceType;
+								ResourceInfo.ResourceType curTileType = tm.tiles [posToCheck].resourceType;
 								if (curTileType == recipe.resources [x, y].tileType) {
 									affectedResources.Add (resourceAtPos);
 									correct++;

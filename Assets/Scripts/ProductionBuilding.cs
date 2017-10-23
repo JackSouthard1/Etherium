@@ -5,12 +5,12 @@ using UnityEngine;
 public class ProductionBuilding : Building
 {
 	[Header("Production")]
-	public TerrainManager.ResourceInfo.ResourceType resourceType;
+	public ResourceInfo.ResourceType resourceType;
 	public int turnWaitPerResource;
 
 	[Header("Refinery")]
 	public bool isRefinery;
-	public TerrainManager.ResourceInfo.ResourceType consumedType;
+	public ResourceInfo.ResourceType consumedType;
 	public int resourcesConsumed;
 	public float productionAnimationTime;
 
@@ -52,7 +52,7 @@ public class ProductionBuilding : Building
 			}
 
 			Vector3 spawnPos = (pad != null) ? pad.position : transform.position;
-			tm.SpawnResource (position: spawnPos, info: tm.ResourceTypeToInfo (resourceType), island: island);
+			tm.SpawnResource (position: spawnPos, info: ResourceInfo.GetInfoFromType (resourceType), island: island);
 			supply -= 1;
 
 			SavedGame.UpdateBuildingSupply (this);

@@ -27,7 +27,7 @@ public class TerrainManager : MonoBehaviour {
 
 	[Space(10)]
 	[Header("Resources")]
-	public ResourceInfo[] resourceInfos;
+	public List<ResourceInfo> resourceInfos = new List<ResourceInfo>();
 	public GameObject resourcePrefab;
 	public float stackHeight;
 
@@ -192,7 +192,7 @@ public class TerrainManager : MonoBehaviour {
 		Vector2 anchorPos = TerrainManager.PosToV2 (building.gameObject.transform.position) - building.info.anchorOffset;
 		for (int y = 0; y < recipe.rows.Count; y++) {
 			for (int x = 0; x < recipe.rows[y].columns.Count; x++) {
-				TerrainManager.ResourceInfo resourceInfo = TerrainManager.instance.ResourceTypeToInfo (recipe.rows [y].columns [x].resourceType);
+				ResourceInfo resourceInfo = ResourceInfo.GetInfoFromType (recipe.rows [y].columns [x].resourceType);
 
 				for (int i = 0; i < recipe.rows [y].columns [x].count; i++) {
 					TerrainManager.instance.SpawnResource (new Vector3 (anchorPos.x + x, 0, anchorPos.y + y), resourceInfo, building.island);
@@ -478,21 +478,6 @@ public class TerrainManager : MonoBehaviour {
 		public Color color;
 	}
 
-	[System.Serializable]
-	public struct ResourceInfo {
-		public Sprite sprite;
-		public Color color;
-		public enum ResourceType
-		{
-			None,
-			Yellow,
-			Green,
-			Purple,
-			Blue
-		};
-		public ResourceType type;
-	}
-
 	public class Tile {
 		public GameObject tile;
 		public ResourceInfo.ResourceType resourceType;
@@ -601,32 +586,6 @@ public class TerrainManager : MonoBehaviour {
 		public int[] resourceIndexes;
 		public int enemyCount;
 		public int[] enemyIDs;
-	}
-
-	//TODO: make these static
-	public ResourceInfo ResourceIndexToInfo(int index) {
-		return resourceInfos[index];
-	}
-
-	//TODO: do we want to store the list as a dictionary here in the TerrainManager to possibly improve searching?
-	public int ResourceTypeToIndex(ResourceInfo.ResourceType resourceType) {
-		for (int i = 0; i < resourceInfos.Length; i++) {
-			if (resourceInfos [i].type == resourceType)
-				return i;
-		}
-
-		Debug.LogError ("Resource type " + resourceType.ToString () + " not found in list");
-		return 0;
-	}
-
-	public ResourceInfo ResourceTypeToInfo(ResourceInfo.ResourceType resourceType) {
-		for (int i = 0; i < resourceInfos.Length; i++) {
-			if (resourceInfos [i].type == resourceType)
-				return resourceInfos[i];
-		}
-
-		Debug.LogError ("Resource type " + resourceType.ToString () + " not found in list");
-		return new ResourceInfo();
 	}
 
 	public static Vector2 PosToV2 (Vector3 position) {
@@ -827,5 +786,4 @@ public class TerrainManager : MonoBehaviour {
 			unassignedTilePositions = _unassignedTilePositions;
 		}
 	}
-
 }

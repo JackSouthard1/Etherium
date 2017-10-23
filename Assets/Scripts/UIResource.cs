@@ -27,7 +27,7 @@ public class UIResource : MonoBehaviour
 		resourceButton = gameObject.GetComponentInChildren<Button> ();
 	}
 
-	public void Init(TerrainManager.ResourceInfo resourceInfo) {
+	public void Init(ResourceInfo resourceInfo) {
 		resourceButton.image.sprite = resourceInfo.sprite;
 		resourceButton.image.color = resourceInfo.color;
 		resourceButton.onClick.AddListener(() => Player.instance.DropResource(resourceInfo));
