@@ -3825,6 +3825,48 @@ MonoBehaviour:
   busPrefab: {fileID: 1583097085892808, guid: 859b0483d012d49e885107ea349ae083, type: 2}
   lifeTime: 3
   buildings: []
+--- !u!1001 &253317743
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4510080276701872, guid: cf8d55e02a84d4646846a49bec3d1118, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4510080276701872, guid: cf8d55e02a84d4646846a49bec3d1118, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4510080276701872, guid: cf8d55e02a84d4646846a49bec3d1118, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4510080276701872, guid: cf8d55e02a84d4646846a49bec3d1118, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4510080276701872, guid: cf8d55e02a84d4646846a49bec3d1118, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4510080276701872, guid: cf8d55e02a84d4646846a49bec3d1118, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4510080276701872, guid: cf8d55e02a84d4646846a49bec3d1118, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4510080276701872, guid: cf8d55e02a84d4646846a49bec3d1118, type: 2}
+      propertyPath: m_RootOrder
+      value: 9
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: cf8d55e02a84d4646846a49bec3d1118, type: 2}
+  m_IsPrefabParent: 0
 --- !u!1 &281457249
 GameObject:
   m_ObjectHideFlags: 0

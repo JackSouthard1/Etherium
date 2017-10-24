@@ -21,7 +21,7 @@ GameObject:
   - component: {fileID: 4566056868525310}
   - component: {fileID: 33487146568948056}
   - component: {fileID: 23711556003388036}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Stamp
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -36,9 +36,9 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4510080276701872}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: G1_Extractor
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -53,7 +53,7 @@ GameObject:
   - component: {fileID: 4232966302954534}
   - component: {fileID: 33283443422667600}
   - component: {fileID: 23385467528147030}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Pit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -70,7 +70,7 @@ GameObject:
   - component: {fileID: 4527630754543332}
   - component: {fileID: 33964517807290710}
   - component: {fileID: 23416393082685404}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Growth
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -86,7 +86,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4181166763425592}
   - component: {fileID: 95861132322574902}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}

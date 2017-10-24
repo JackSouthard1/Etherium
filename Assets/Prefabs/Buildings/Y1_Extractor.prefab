@@ -21,7 +21,7 @@ GameObject:
   - component: {fileID: 4406259575897374}
   - component: {fileID: 33657004309768948}
   - component: {fileID: 23423054826839010}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: (A) Pit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -38,7 +38,7 @@ GameObject:
   - component: {fileID: 4645403398079200}
   - component: {fileID: 33764557112819044}
   - component: {fileID: 23849514222841476}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: (P) Frame1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -54,7 +54,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4298746739002508}
   - component: {fileID: 111293427399396732}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Lifts
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -69,7 +69,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4939010643763422}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -86,7 +86,7 @@ GameObject:
   - component: {fileID: 4237377105072402}
   - component: {fileID: 33083396475457850}
   - component: {fileID: 23769662506515580}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: (S) Lift_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -103,7 +103,7 @@ GameObject:
   - component: {fileID: 4632460666272734}
   - component: {fileID: 33679987205362882}
   - component: {fileID: 23859456766079452}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: (S) Lift_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -120,9 +120,9 @@ GameObject:
   - component: {fileID: 4631789325776348}
   - component: {fileID: 65876328639204992}
   - component: {fileID: 114056017514757644}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Y1_Extractor
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -137,7 +137,7 @@ GameObject:
   - component: {fileID: 4406400426533208}
   - component: {fileID: 33968916089069408}
   - component: {fileID: 23528024706165524}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: (S) Lift_3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -154,7 +154,7 @@ GameObject:
   - component: {fileID: 4286663206095026}
   - component: {fileID: 33730544236017290}
   - component: {fileID: 23895167799758236}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: (P) Frame2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -171,7 +171,7 @@ GameObject:
   - component: {fileID: 4427512333192722}
   - component: {fileID: 33940010739889748}
   - component: {fileID: 23708762137852930}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Pad
   m_TagString: Untagged
   m_Icon: {fileID: 0}

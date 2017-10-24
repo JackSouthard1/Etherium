@@ -21,7 +21,7 @@ GameObject:
   - component: {fileID: 4043911223561114}
   - component: {fileID: 33791941772410588}
   - component: {fileID: 23129989159379200}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Pad
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -57,7 +57,7 @@ GameObject:
   - component: {fileID: 114941819989696646}
   m_Layer: 8
   m_Name: Generator
-  m_TagString: Building
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -407,15 +407,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68a5fd1afb37c463ab168a61a721e90c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  info:
-    name: 
-    recipe:
-      rows: []
-    anchorOffset: {x: 0, y: 0}
-    prefab: {fileID: 0}
-    mainColor: {r: 0, g: 0, b: 0, a: 0}
-    secondaryColor: {r: 0, g: 0, b: 0, a: 0}
-    alternateColor: {r: 0, g: 0, b: 0, a: 0}
   standable: 1
   height: 0.5
   island: {fileID: 0}
@@ -423,6 +414,7 @@ MonoBehaviour:
   supply: 50
   state: 0
   anim: {fileID: 0}
+  coveredTiles: []
   resourceType: 2
   turnWaitPerResource: 5
   isRefinery: 0
