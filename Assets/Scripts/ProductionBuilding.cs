@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class ProductionBuilding : Building
 {
-	public bool usesTurnedBasedAnimatinon;
 	public bool autoCycles = false;
 
 	[Header("Production")]
@@ -34,10 +33,10 @@ public class ProductionBuilding : Building
 
 		if (isRefinery) {
 			adjacentTiles = GetAdjacentTiles ();
-			if (!usesTurnedBasedAnimatinon) {
+			if (autoCycles) {
 				SetAnimTrigger ("Waiting");
 			}
-		} else if (!usesTurnedBasedAnimatinon) {
+		} else if (autoCycles) {
 			SetAnimTrigger ("Producing");
 		}
 
@@ -46,13 +45,14 @@ public class ProductionBuilding : Building
 
 	public override void TurnEnd() {
 		if (state == BuildingState.Waiting) {
-			if (!ResourcePickup.IsAtPosition (TerrainManager.PosToV2 (spawnPos))) {
+			if (!ResourcePickup.IsAtPosition (TerrainManager.PosToV2 (spawnPos)) && !TerrainManager.instance.PlayerAtPos(TerrainManager.PosToV2(spawnPos))) {
 				state = BuildingState.Active;
-				if (usesTurnedBasedAnimatinon) {
+
+				if (autoCycles) {
+					SetAnimTrigger ("Producing");
+				} else {
 					ResetAnimTrigger ("TurnEnd");
 					SetAnimTrigger ("Reset");
-				} else {
-					SetAnimTrigger ("Producing");
 				}
 
 				standable = false;
@@ -90,9 +90,8 @@ public class ProductionBuilding : Building
 			SavedGame.UpdateBuildingSupply (this);
 		}
 
-		if (usesTurnedBasedAnimatinon) {
+		if (!autoCycles) {
 			SetAnimTrigger ("TurnEnd");
-			print ("yape");
 		}
 
 		base.TurnEnd ();
@@ -103,11 +102,7 @@ public class ProductionBuilding : Building
 		if (!autoCycles) {
 			state = BuildingState.Waiting;
 			standable = true;
-			if (usesTurnedBasedAnimatinon) {
-				SetAnimTrigger ("Skip");
-			} else {
-				SetAnimTrigger ("Waiting");
-			}
+			SetAnimTrigger ("Skip");
 		}
 	}
 

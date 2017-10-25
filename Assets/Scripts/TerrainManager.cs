@@ -430,6 +430,10 @@ public class TerrainManager : MonoBehaviour {
 		return false;
 	}
 
+	public bool PlayerAtPos (Vector2 pos) {
+		return (PosToV2(GameObject.Find("Player").transform.position) == pos);
+	}
+
 	public bool UnstandableBuildingAtPosition (Vector2 position) {
 		RaycastHit hit;
 		if (Physics.Raycast (new Vector3 (position.x, 5f, position.y), Vector3.down, out hit, 5f)) {

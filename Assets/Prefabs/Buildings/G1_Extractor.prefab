@@ -329,7 +329,6 @@ MonoBehaviour:
   state: 0
   anim: {fileID: 0}
   coveredTiles: []
-  usesTurnedBasedAnimatinon: 1
   autoCycles: 0
   resourceType: 2
   resourcesProducedPerCycle: 3
