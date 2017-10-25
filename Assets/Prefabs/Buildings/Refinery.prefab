@@ -74,7 +74,7 @@ GameObject:
   - component: {fileID: 114859841547237412}
   m_Layer: 8
   m_Name: Refinery
-  m_TagString: Enemy
+  m_TagString: Building
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -566,6 +566,7 @@ MonoBehaviour:
   state: 0
   anim: {fileID: 0}
   coveredTiles: []
+  usesTurnedBasedAnimatinon: 0
   resourceType: 4
   turnWaitPerResource: 5
   isRefinery: 1

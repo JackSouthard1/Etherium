@@ -57,7 +57,7 @@ GameObject:
   - component: {fileID: 114941819989696646}
   m_Layer: 8
   m_Name: Generator
-  m_TagString: Enemy
+  m_TagString: Building
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -415,6 +415,7 @@ MonoBehaviour:
   state: 0
   anim: {fileID: 0}
   coveredTiles: []
+  usesTurnedBasedAnimatinon: 0
   resourceType: 2
   turnWaitPerResource: 5
   isRefinery: 0

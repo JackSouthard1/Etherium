@@ -209,11 +209,17 @@ public class TerrainManager : MonoBehaviour {
 	public ResourcePickup SpawnResource (Vector3 position, ResourceInfo info, Island island, bool initialSpawn = false) {
 		Vector2 posV2 = PosToV2 (position);
 
-		if (island == null || GetBuildingAtPosition(posV2) != null || WeaponPickup.IsAtPosition(posV2)) {
+		if (island == null || WeaponPickup.IsAtPosition(posV2)) {
 			return null;
 		}
 
-		float startingHeight = PadAtPosition (posV2).GetValueOrDefault (position.y);
+		float startingHeight;
+		Building building = GetBuildingAtPosition (posV2).GetComponent<Building>();
+		if (building != null) {
+			startingHeight = building.height;
+		} else {
+			startingHeight = PadAtPosition (posV2).GetValueOrDefault (position.y);
+		}
 
 		if (ResourcePickup.IsAtPosition(posV2)) {
 			ResourcePickup curResource = ResourcePickup.GetAtPosition(posV2);

@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 33487146568948056}
   - component: {fileID: 23711556003388036}
   m_Layer: 8
-  m_Name: Stamp
+  m_Name: (P) Stamp
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -36,9 +36,11 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4510080276701872}
+  - component: {fileID: 114707056011674076}
+  - component: {fileID: 65180908203389232}
   m_Layer: 8
   m_Name: G1_Extractor
-  m_TagString: Enemy
+  m_TagString: Building
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -54,7 +56,7 @@ GameObject:
   - component: {fileID: 33283443422667600}
   - component: {fileID: 23385467528147030}
   m_Layer: 8
-  m_Name: Pit
+  m_Name: (A) Pit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -71,7 +73,7 @@ GameObject:
   - component: {fileID: 33964517807290710}
   - component: {fileID: 23416393082685404}
   m_Layer: 8
-  m_Name: Growth
+  m_Name: (S) Growth
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -100,7 +102,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1779648448766018}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.2, z: 0}
   m_LocalScale: {x: 0.25, y: 0.25, z: 0.25}
   m_Children:
   - {fileID: 4566056868525310}
@@ -279,6 +281,18 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1704000137529686}
   m_Mesh: {fileID: 4300002, guid: aacbd4fe1d1f54c78bb835fa03c33866, type: 3}
+--- !u!65 &65180908203389232
+BoxCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1436597290551580}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.6, y: 0.4, z: 0.6}
+  m_Center: {x: 0, y: 0.2, z: 0}
 --- !u!95 &95861132322574902
 Animator:
   serializedVersion: 3
@@ -296,3 +310,29 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
+--- !u!114 &114707056011674076
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1436597290551580}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68a5fd1afb37c463ab168a61a721e90c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  standable: 1
+  height: 0
+  island: {fileID: 0}
+  pad: {fileID: 0}
+  supply: 50
+  state: 0
+  anim: {fileID: 0}
+  coveredTiles: []
+  usesTurnedBasedAnimatinon: 1
+  resourceType: 2
+  turnWaitPerResource: 4
+  isRefinery: 0
+  consumedType: 0
+  resourcesConsumed: 0
+  productionAnimationTime: 0

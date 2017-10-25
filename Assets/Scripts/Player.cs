@@ -120,7 +120,7 @@ public class Player : MonoBehaviour {
 		}
 
 		Vector2 posV2 = TerrainManager.PosToV2 (playerTransform.position);
-		if (tm.PadAtPosition (posV2) != null) {
+		if (tm.PadAtPosition (posV2) != null || tm.GetBuildingAtPosition(posV2) != null) {
 			return;
 		}
 

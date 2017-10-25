@@ -4,14 +4,18 @@ using UnityEngine;
 
 public class ProductionBuilding : Building
 {
+	public bool usesTurnedBasedAnimatinon;
+	public bool autoCycles = false;
+
 	[Header("Production")]
 	public ResourceInfo.ResourceType resourceType;
+	public int resourcesProducedPerCycle = 1;
 	public int turnWaitPerResource;
 
 	[Header("Refinery")]
 	public bool isRefinery;
 	public ResourceInfo.ResourceType consumedType;
-	public int resourcesConsumed;
+	public int resourcesConsumedPerCycle;
 	public float productionAnimationTime;
 
 	TerrainManager tm;
@@ -20,20 +24,38 @@ public class ProductionBuilding : Building
 
 	List<Vector2> adjacentTiles;
 
-	//has to be awake because base class has Start
-	void Awake () {
+	Vector3 spawnPos;
+
+	public override void Init (BuildingInfo info, Island island) {
 		turnsUntilNextResource = turnWaitPerResource;
 		tm = TerrainManager.instance;
 
+		base.Init (info, island);
+
 		if (isRefinery) {
 			adjacentTiles = GetAdjacentTiles ();
-			SetAnimTrigger ("Waiting");
-		} else {
+			if (!usesTurnedBasedAnimatinon) {
+				SetAnimTrigger ("Waiting");
+			}
+		} else if (!usesTurnedBasedAnimatinon) {
 			SetAnimTrigger ("Producing");
 		}
+
+		spawnPos = (pad != null) ? pad.position : transform.position;
 	}
 
 	public override void TurnEnd() {
+		if (state == BuildingState.Waiting) {
+			if (!ResourcePickup.IsAtPosition (TerrainManager.PosToV2 (spawnPos))) {
+				state = BuildingState.Active;
+				if (usesTurnedBasedAnimatinon) {
+					SetAnimTrigger ("Reset");
+				} else {
+					SetAnimTrigger ("Producing");
+				}
+			}
+		}
+
 		if (state != BuildingState.Active)
 			return;
 
@@ -51,14 +73,26 @@ public class ProductionBuilding : Building
 				}
 			}
 
-			Vector3 spawnPos = (pad != null) ? pad.position : transform.position;
 			tm.SpawnResource (position: spawnPos, info: ResourceInfo.GetInfoFromType (resourceType), island: island);
 			supply -= 1;
 
 			SavedGame.UpdateBuildingSupply (this);
 		}
 
+		if (usesTurnedBasedAnimatinon) {
+			SetAnimTrigger ("TurnEnd");
+		}
+
 		base.TurnEnd ();
+	}
+
+	//TODO: some way of knowing that this building is always unstandable
+	public void SpawnTop() {
+		state = BuildingState.Waiting;
+		if (usesTurnedBasedAnimatinon) {
+			SetAnimTrigger ("Skip");
+		}
+		//start here - we are making the function that resets the building when resources are placed on top
 	}
 
 	bool ConsumeAdjacentResources {
@@ -72,17 +106,17 @@ public class ProductionBuilding : Building
 					ResourcePickup adjacentResource = ResourcePickup.GetAtPosition (adjacentTile);
 					if (adjacentResource.info.type == consumedType) {
 						resourcesToConsume.Add (adjacentResource);
-						amountsToConsume.Add (Mathf.Min(adjacentResource.gameObjects.Count, resourcesConsumed - totalResourceCount));
+						amountsToConsume.Add (Mathf.Min(adjacentResource.gameObjects.Count, resourcesConsumedPerCycle - totalResourceCount));
 
 						totalResourceCount += adjacentResource.gameObjects.Count;
 
-						if (totalResourceCount >= resourcesConsumed)
+						if (totalResourceCount >= resourcesConsumedPerCycle)
 							break;
 					}
 				}
 			}
 
-			if (totalResourceCount < resourcesConsumed)
+			if (totalResourceCount < resourcesConsumedPerCycle)
 				return false;
 
 			tm.ConsumeResources (resourcesToConsume, amountsToConsume);

@@ -8,8 +8,9 @@ public class Building : MonoBehaviour {
 	{
 		Blueprint = 0,
 		Active = 1,
-		Inactive = 2,
-		Destroyed = 3
+		Waiting = 2,
+		Inactive = 3,
+		Destroyed = 4
 	}
 
 	public bool standable = false;
@@ -34,7 +35,9 @@ public class Building : MonoBehaviour {
 	[HideInInspector]
 	public BuildingInfo info { get; private set; }
 
-	public void Init(BuildingInfo info, Island island) {
+	public virtual void Init(BuildingInfo info, Island island) {
+		anim = gameObject.GetComponentInChildren<Animator> ();
+
 		this.info = info;
 		this.island = island;
 
@@ -56,9 +59,6 @@ public class Building : MonoBehaviour {
 			rend.material.color = new Color (1f, 1f, 1f, blueprintAlpha);
 			StandardShaderHelper.ChangeRenderMode (rend.material, StandardShaderHelper.BlendMode.Fade);
 		}
-
-		//temp
-		gameObject.GetComponentInChildren<Animation>().Stop();
 	}
 
 	public void Build() {
@@ -76,9 +76,6 @@ public class Building : MonoBehaviour {
 			}
 			StandardShaderHelper.ChangeRenderMode(rend.material, StandardShaderHelper.BlendMode.Opaque);
 		}
-
-		//temp
-		gameObject.GetComponentInChildren<Animation>().Play();
 	}
 
 	public virtual void TurnEnd() {
@@ -112,9 +109,6 @@ public class Building : MonoBehaviour {
 			TerrainManager.instance.ClearTileAtPosition (pos);
 			TerrainManager.instance.GetTileAtPosition(pos).GetComponent<Renderer> ().material.color = anchorColor;
 		}
-
-		//temp
-		gameObject.GetComponentInChildren<Animation> ().Stop ();
 	}
 
 	public void SetAnimTrigger(string triggerName) {
