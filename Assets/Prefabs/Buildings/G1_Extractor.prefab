@@ -332,8 +332,8 @@ MonoBehaviour:
   usesTurnedBasedAnimatinon: 1
   autoCycles: 0
   resourceType: 2
-  resourcesProducedPerCycle: 1
-  turnWaitPerResource: 4
+  resourcesProducedPerCycle: 3
+  turnWaitPerResource: 3
   isRefinery: 0
   consumedType: 0
   resourcesConsumedPerCycle: 0
