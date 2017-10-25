@@ -49,10 +49,15 @@ public class ProductionBuilding : Building
 			if (!ResourcePickup.IsAtPosition (TerrainManager.PosToV2 (spawnPos))) {
 				state = BuildingState.Active;
 				if (usesTurnedBasedAnimatinon) {
+					ResetAnimTrigger ("TurnEnd");
 					SetAnimTrigger ("Reset");
 				} else {
 					SetAnimTrigger ("Producing");
 				}
+
+				standable = false;
+				turnsUntilNextResource = turnWaitPerResource;
+				return;
 			}
 		}
 
@@ -73,14 +78,21 @@ public class ProductionBuilding : Building
 				}
 			}
 
-			tm.SpawnResource (position: spawnPos, info: ResourceInfo.GetInfoFromType (resourceType), island: island);
-			supply -= 1;
+			for (int i = 0; i < resourcesProducedPerCycle; i++) {
+				if (supply <= 0) {
+					break;
+				}
+
+				tm.SpawnResource (position: spawnPos, info: ResourceInfo.GetInfoFromType (resourceType), island: island);
+				supply -= 1;
+			}
 
 			SavedGame.UpdateBuildingSupply (this);
 		}
 
 		if (usesTurnedBasedAnimatinon) {
 			SetAnimTrigger ("TurnEnd");
+			print ("yape");
 		}
 
 		base.TurnEnd ();
@@ -88,11 +100,15 @@ public class ProductionBuilding : Building
 
 	//TODO: some way of knowing that this building is always unstandable
 	public void SpawnTop() {
-		state = BuildingState.Waiting;
-		if (usesTurnedBasedAnimatinon) {
-			SetAnimTrigger ("Skip");
+		if (!autoCycles) {
+			state = BuildingState.Waiting;
+			standable = true;
+			if (usesTurnedBasedAnimatinon) {
+				SetAnimTrigger ("Skip");
+			} else {
+				SetAnimTrigger ("Waiting");
+			}
 		}
-		//start here - we are making the function that resets the building when resources are placed on top
 	}
 
 	bool ConsumeAdjacentResources {

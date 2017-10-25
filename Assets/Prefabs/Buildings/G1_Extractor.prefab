@@ -102,7 +102,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1779648448766018}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.2, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.25, y: 0.25, z: 0.25}
   m_Children:
   - {fileID: 4566056868525310}
@@ -321,8 +321,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68a5fd1afb37c463ab168a61a721e90c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  standable: 1
-  height: 0
+  standable: 0
+  height: 0.1
   island: {fileID: 0}
   pad: {fileID: 0}
   supply: 50
@@ -330,9 +330,11 @@ MonoBehaviour:
   anim: {fileID: 0}
   coveredTiles: []
   usesTurnedBasedAnimatinon: 1
+  autoCycles: 0
   resourceType: 2
+  resourcesProducedPerCycle: 1
   turnWaitPerResource: 4
   isRefinery: 0
   consumedType: 0
-  resourcesConsumed: 0
+  resourcesConsumedPerCycle: 0
   productionAnimationTime: 0

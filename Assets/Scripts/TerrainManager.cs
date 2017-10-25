@@ -214,9 +214,14 @@ public class TerrainManager : MonoBehaviour {
 		}
 
 		float startingHeight;
-		Building building = GetBuildingAtPosition (posV2).GetComponent<Building>();
-		if (building != null) {
-			startingHeight = building.height;
+		GameObject buildingObj = GetBuildingAtPosition (posV2);
+		if (buildingObj != null) {
+			Building building = buildingObj.GetComponent<Building> ();
+			startingHeight = building.height + GetTileAtPosition(posV2).transform.position.y;
+			if (building is ProductionBuilding) {
+				(building as ProductionBuilding).SpawnTop ();
+			}
+
 		} else {
 			startingHeight = PadAtPosition (posV2).GetValueOrDefault (position.y);
 		}

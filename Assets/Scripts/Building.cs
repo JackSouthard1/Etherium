@@ -116,6 +116,11 @@ public class Building : MonoBehaviour {
 			anim.SetTrigger (triggerName);
 	}
 
+	public void ResetAnimTrigger(string triggerName) {
+		if (anim != null)
+			anim.ResetTrigger (triggerName);
+	}
+
 	public bool IsPlayerInBuilding {
 		get {
 			Vector2 playerPos = TerrainManager.PosToV2 (GameObject.Find ("Player").transform.position);
