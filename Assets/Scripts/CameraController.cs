@@ -32,10 +32,27 @@ public class CameraController : MonoBehaviour {
 		target = GameObject.Find ("Player").transform.Find("Model");
 		offset = transform.position;
 	}
-	
+
+	void Update () {
+		if (Input.GetKey (KeyCode.Equals)) {
+			zoomMomentum = -0.25f;
+		}
+
+		if (Input.GetKey (KeyCode.Minus)) {
+			zoomMomentum = 0.25f;
+		}
+	}
+
 	void LateUpdate () {
 		if (target != null && !smoothMoving) {
 			transform.position = target.position + offset;
+		}
+
+		if (Mathf.Abs(zoomMomentum) > 0.05f) {
+			cam.orthographicSize += zoomMomentum;
+			cam.orthographicSize = Mathf.Clamp(cam.orthographicSize, minZoom, maxZoom);
+
+			zoomMomentum *= Mathf.Pow(zoomFriction, Time.deltaTime);
 		}
 	}
 
@@ -64,20 +81,6 @@ public class CameraController : MonoBehaviour {
 			float deltaMagnitudeDiff = prevTouchDeltaMag - touchDeltaMag;
 
 			zoomMomentum = deltaMagnitudeDiff * zoomSpeed;
-
-			cam.orthographicSize += zoomMomentum;
-			cam.orthographicSize = Mathf.Clamp(cam.orthographicSize, minZoom, maxZoom);
-
-			zoomMomentum *= Mathf.Pow(zoomFriction, Time.deltaTime);
-
-			yield return null;
-		}
-
-		while (zoomMomentum > 0.05f) {
-			cam.orthographicSize += zoomMomentum;
-			cam.orthographicSize = Mathf.Clamp(cam.orthographicSize, minZoom, maxZoom);
-
-			zoomMomentum *= Mathf.Pow(zoomFriction, Time.deltaTime);
 
 			yield return null;
 		}
