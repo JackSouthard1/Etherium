@@ -9,6 +9,7 @@ public class HealthBar : MonoBehaviour
 
 	public void UpdateBar(float curHeatlh, float maxHealth) {
 		if (curHeatlh > 0) {
+			bar.gameObject.SetActive (true);
 			bar.transform.localScale = new Vector3 (curHeatlh / maxHealth, 1f, 1f);
 		} else {
 			bar.gameObject.SetActive (false);

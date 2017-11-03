@@ -90,15 +90,19 @@ public class Body : MonoBehaviour {
 		}
 	}
 
-	public void MoveToPos (Vector3 targetPos, Quaternion targetRot) {
-		inAction = true;
-		StartCoroutine (MoveToPosition (targetPos, moveTime));
-		StartCoroutine (RotateToDir (targetRot, moveTime));
+	public void MoveToPos (Vector3 targetPos, Quaternion targetRot, bool instant = false) {
+		if (!instant) {
+			inAction = true;
+			StartCoroutine (MoveToPosition (targetPos, moveTime));
+			StartCoroutine (RotateToDir (targetRot, moveTime));
+		} else {
+			model.rotation = targetRot;
+		}
 		Vector3 oldPos = transform.position;
 		transform.position = targetPos;
-		model.position = oldPos;
+		model.position = (!instant) ? oldPos : targetPos;
 
-		if (anim != null && TerrainManager.PosToV2(targetPos) != TerrainManager.PosToV2(oldPos)) {
+		if (anim != null && TerrainManager.PosToV2(targetPos) != TerrainManager.PosToV2(oldPos) && !instant) {
 			anim.SetTrigger ("Move");
 		}
 	}
@@ -146,7 +150,7 @@ public class Body : MonoBehaviour {
 
 	public void TakeDamage(float damage) {
 		ChangeHealth (-damage);
-		if (player) {
+		if (player && (health > 0f)) {
 			GameManager.instance.SaveThisTurn ();
 		}
 	}
@@ -158,21 +162,29 @@ public class Body : MonoBehaviour {
 		}
 	}
 
+	public void ResetHealth() {
+		health = maxHealth;
+
+		if (healthBar != null) {
+			healthBar.UpdateBar (health, maxHealth);
+		}
+	}
+
 	void ChangeHealth (float amount) {
 		health += amount;
 
 		if (amount < 0f) {
 			if (health <= 0) {
 				if (player) {
-					print ("Player Dead");
+					StartCoroutine (playerScript.Respawn ());
 				} else {
 					for (int i = 0; i < dropCount; i++) {
 						tm.SpawnResource (transform.position, ResourceInfo.GetInfoFromType (dropType), location);
 					}
 					location.EnemyDeath (GetComponent<Body> ());
 					gm.EnemyDeath (GetComponent<Body> ());
+					Destroy (gameObject);
 				}
-				Destroy (gameObject);
 			}
 		} else {
 			if (health > maxHealth) {

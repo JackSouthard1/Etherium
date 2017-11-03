@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class CameraController : MonoBehaviour {
+	public static CameraController instance;
+
 	public float zoomSpeed;
 	public float zoomFriction;
 	public float minZoom;
@@ -14,6 +16,11 @@ public class CameraController : MonoBehaviour {
 	Camera cam;
 
 	bool isZooming;
+	bool smoothMoving;
+
+	void Awake () {
+		instance = this;
+	}
 
 	void Start () {
 		cam = gameObject.GetComponent<Camera> ();
@@ -27,7 +34,7 @@ public class CameraController : MonoBehaviour {
 	}
 	
 	void LateUpdate () {
-		if (target != null) {
+		if (target != null && !smoothMoving) {
 			transform.position = target.position + offset;
 		}
 	}
@@ -78,5 +85,21 @@ public class CameraController : MonoBehaviour {
 
 	void EndZoom () {
 		isZooming = false;
+	}
+
+	public IEnumerator SmoothMoveOverTime(Vector3 startingPlayerPos, Vector3 endingPlayerPos, float time) {
+		smoothMoving = true;
+
+		float timeLeft = time;
+		Vector3 startingPos = startingPlayerPos + offset;
+		Vector3 endingPos = endingPlayerPos + offset;
+
+		while (timeLeft > 0f) {
+			timeLeft -= Time.deltaTime;
+			transform.position = Vector3.Lerp (startingPos, endingPos, 1f - (timeLeft / time));
+			yield return null;
+		}
+
+		smoothMoving = false;
 	}
 }

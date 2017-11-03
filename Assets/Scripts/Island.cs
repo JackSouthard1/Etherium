@@ -210,7 +210,7 @@ public class Island : MonoBehaviour {
 		}
 
 		if (!GameManager.isLoadingFromSave) {
-			gm.CivilizeStart();
+			gm.TransitionStart();
 			civStartTime = Time.time;
 			civilizing = true;
 			startPos = transform.position;
@@ -362,7 +362,7 @@ public class Island : MonoBehaviour {
 			SavedGame.UpdatePickups ();
 		}
 
-		gm.CivilizeEnd();
+		gm.TransitionEnd();
 	}
 		
 	public struct Layer {

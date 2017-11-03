@@ -6,8 +6,8 @@ Material:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: Core
-  m_Shader: {fileID: 4800000, guid: 6226460d0b73d466798207155c6df7d4, type: 3}
+  m_Name: Core_Player
+  m_Shader: {fileID: 10755, guid: 0000000000000000f000000000000000, type: 0}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -72,5 +72,5 @@ Material:
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 0.78843963, g: 0.1566825, b: 0.9264706, a: 1}
+    - _Color: {r: 0.9158529, g: 0.9264706, b: 0.1566825, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}

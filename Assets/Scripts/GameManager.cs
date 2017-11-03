@@ -128,12 +128,12 @@ public class GameManager : MonoBehaviour {
 		enemies.Remove (enemy);
 	}
 
-	public void CivilizeStart () {
+	public void TransitionStart () {
 		transitioning = true;
 		cutsceneBars.SetBool ("Civilizing", true);
 	}
 
-	public void CivilizeEnd () {
+	public void TransitionEnd () {
 		transitioning = false;
 		cutsceneBars.SetBool ("Civilizing", false);
 		if (!GameManager.isLoadingFromSave) {

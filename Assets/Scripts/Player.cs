@@ -27,6 +27,10 @@ public class Player : MonoBehaviour {
 
 	const float healAmount = 1f;
 	const float inventoryPadding = 15f;
+	const float respawnTime = 3f;
+	const float respawnAnimationTime = 1f;
+
+	bool isRespawning;
 
 	void Awake () {
 		instance = this;
@@ -71,8 +75,18 @@ public class Player : MonoBehaviour {
 			inventoryUI.Add(newUIResource);
 		}
 
+		ResetInventory ();
+	}
+
+	void ResetInventory () {
+		for (int i = 0; i < inventory.Count; i++) {
+			inventory [i] = 0f;
+		}
+
 		//temp
 		inventory[ResourceInfo.GetIndexFromType(ResourceInfo.ResourceType.Green)] = 3f;
+
+		UpdateInventoryUI ();
 	}
 
 	public void CollectResource (ResourcePickup resource) {
@@ -237,5 +251,36 @@ public class Player : MonoBehaviour {
 		idleIcon.SetActive (true);
 		yield return new WaitForSeconds (0.5f);
 		idleIcon.SetActive (false);
+	}
+
+	public IEnumerator Respawn() {
+		if (isRespawning) {
+			yield break;
+		}
+
+		isRespawning = true;
+		GameManager.instance.TransitionStart ();
+		body.anim.SetBool ("Respawning", true);
+
+		yield return new WaitForSeconds (respawnAnimationTime);
+
+		ResetInventory ();
+		body.location.PlayerExitIsland ();
+		Vector3 startingPos = body.transform.position;
+		body.MoveToPos (TerrainManager.instance.GetTileAtPosition(Vector2.zero).transform.position, Quaternion.identity, true);
+		Vector3 endingPos = body.transform.position;
+
+		float transitionTime = respawnTime - (2f * respawnAnimationTime);
+		StartCoroutine(CameraController.instance.SmoothMoveOverTime (startingPos, endingPos, transitionTime));
+
+		yield return new WaitForSeconds (transitionTime);
+
+		body.anim.SetBool ("Respawning", false);
+
+		yield return new WaitForSeconds (respawnAnimationTime);
+
+		body.ResetHealth ();
+		GameManager.instance.TransitionEnd ();
+		isRespawning = false;
 	}
 }
