@@ -89,6 +89,17 @@ public class Player : MonoBehaviour {
 		UpdateInventoryUI ();
 	}
 
+	public void PickUpPickup() {
+		Vector2 playerPos = TerrainManager.PosToV2 (playerTransform.position);
+		if (ResourcePickup.IsAtPosition (playerPos)) {
+			CollectResource (ResourcePickup.GetAtPosition (playerPos));
+		} else if (WeaponPickup.IsAtPosition (playerPos)) {
+			PickupWeapon (WeaponPickup.GetAtPosition (playerPos));
+		} else if (AugmentPickup.IsAtPosition (playerPos)) {
+			PickupAugment (AugmentPickup.GetAtPosition (playerPos));
+		}
+	}
+
 	public void CollectResource (ResourcePickup resource) {
 		int stackCount = resource.gameObjects.Count;
 		int countToPickUp = stackCount;

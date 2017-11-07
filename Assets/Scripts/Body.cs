@@ -121,14 +121,6 @@ public class Body : MonoBehaviour {
 	public void CompleteAction () {
 		Vector2 newTile = TerrainManager.PosToV2(transform.position);
 		if (player) {
-			if (ResourcePickup.IsAtPosition (newTile)) {
-				playerScript.CollectResource (ResourcePickup.GetAtPosition (newTile));
-			} else if (WeaponPickup.IsAtPosition (newTile)) {
-				playerScript.PickupWeapon (WeaponPickup.GetAtPosition (newTile));
-			} else if (AugmentPickup.IsAtPosition (newTile)) {
-				playerScript.PickupAugment (AugmentPickup.GetAtPosition (newTile));
-			}
-
 			if (!mind.initializing) {
 				playerScript.Eat ();
 			}
