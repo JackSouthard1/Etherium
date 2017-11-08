@@ -16,6 +16,7 @@ public class SavedGame {
 	public List<SavedPickup> pickups = new List<SavedPickup>();
 	public List<SavedResourceTile> resourceTiles = new List<SavedResourceTile>();
 	public Dictionary<int, List<SavedEnemy>> savedEnemyLists = new Dictionary<int, List<SavedEnemy>>();
+	public List<SavedTilePos> revealedTiles = new List<SavedTilePos>();
 
 	public SavedTilePos playerPosition;
 	public int weaponIndex;
@@ -116,6 +117,15 @@ public class SavedGame {
 		}
 
 		data.savedEnemyLists.Add (islandIndex, newSavedEnemies);
+
+		GameManager.instance.SaveThisTurn ();
+	}
+
+	public static void UpdateRevealTiles(List<Vector2> newTiles) {
+		data.revealedTiles.Clear ();
+		foreach (Vector2 tile in newTiles) {
+			data.revealedTiles.Add (new SavedTilePos (tile));
+		}
 
 		GameManager.instance.SaveThisTurn ();
 	}

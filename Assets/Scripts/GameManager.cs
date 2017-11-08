@@ -80,6 +80,8 @@ public class GameManager : MonoBehaviour {
 			}
 
 			Crafting.instance.TestForCrafting ();
+
+			GetComponent<MapReveal> ().LoadSavedRevealArea ();
 		}
 
 		PlayerTurnStart ();
