@@ -94,6 +94,7 @@ public class Island : MonoBehaviour {
 
 	public void EnemyDeath (Body enemy) {
 		enemies.Remove (enemy);
+		SaveEnemies ();
 	}
 
 	public void TestEnemyCount () {
@@ -179,28 +180,37 @@ public class Island : MonoBehaviour {
 	}
 
 	void SpawnEnemies () {
-		List<int> spawnIDs = new List<int> ();
-		foreach (var setSpawn in setSpawns) {
-			if (setSpawn.type == TerrainManager.SetSpawn.SpawnType.Enemy) {
-				spawnIDs.Add (setSpawn.spawnID);
+		if (!SavedGame.data.savedEnemyLists.ContainsKey (islandIndex)) {
+			List<int> spawnIDs = new List<int> ();
+			foreach (var setSpawn in setSpawns) {
+				if (setSpawn.type == TerrainManager.SetSpawn.SpawnType.Enemy) {
+					spawnIDs.Add (setSpawn.spawnID);
+				}
 			}
-		}
-		int enemiesLeft = teirInfo.enemyCount - spawnIDs.Count;
-		for (int i = 0; i < enemiesLeft; i++) {
-			spawnIDs.Add(teirInfo.enemyIDs[Random.Range(0, teirInfo.enemyIDs.Length)]);
-		}
+			int enemiesLeft = teirInfo.enemyCount - spawnIDs.Count;
+			for (int i = 0; i < enemiesLeft; i++) {
+				spawnIDs.Add (teirInfo.enemyIDs [Random.Range (0, teirInfo.enemyIDs.Length)]);
+			}
 
-		List<int> spawnTileIndexs = new List<int> ();
+			List<int> spawnTileIndexs = new List<int> ();
 
-		for (int f = 0; f < spawnIDs.Count; f++) {
-			spawnTileIndexs.Add (GetAvaiableTileIndex (true));
-		}
+			for (int f = 0; f < spawnIDs.Count; f++) {
+				spawnTileIndexs.Add (GetAvaiableTileIndex (true));
+			}
 
-		for (int i = 0; i < spawnIDs.Count; i++) {
-			GameObject enemyPrefab = tm.enemyPrefabs [spawnIDs [i]];
-			GameObject enemy = (GameObject)Instantiate(enemyPrefab, transform);
-			enemy.transform.position = tiles[spawnTileIndexs[i]].tile.transform.position;
-			enemies.Add (enemy.GetComponent<Body>());
+			for (int i = 0; i < spawnIDs.Count; i++) {
+				GameObject enemyPrefab = tm.enemyPrefabs [spawnIDs [i]];
+				GameObject enemy = (GameObject)Instantiate (enemyPrefab, transform);
+				enemy.transform.position = tiles [spawnTileIndexs [i]].tile.transform.position;
+
+				Body enemyBody = enemy.GetComponent<Body> ();
+				enemyBody.id = spawnIDs [i];
+				enemies.Add (enemyBody);
+			}
+		} else {
+			foreach (SavedGame.SavedEnemy enemy in SavedGame.data.savedEnemyLists[islandIndex]) {
+				enemies.Add (enemy.Spawn ());
+			}
 		}
 	}
 
@@ -363,6 +373,10 @@ public class Island : MonoBehaviour {
 		}
 
 		gm.TransitionEnd();
+	}
+
+	public void SaveEnemies() {
+		SavedGame.UpdateEnemyList (islandIndex, enemies);
 	}
 		
 	public struct Layer {

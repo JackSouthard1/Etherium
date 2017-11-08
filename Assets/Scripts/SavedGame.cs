@@ -15,6 +15,7 @@ public class SavedGame {
 	public List<SavedBuilding> buildings = new List<SavedBuilding>();
 	public List<SavedPickup> pickups = new List<SavedPickup>();
 	public List<SavedResourceTile> resourceTiles = new List<SavedResourceTile>();
+	public Dictionary<int, List<SavedEnemy>> savedEnemyLists = new Dictionary<int, List<SavedEnemy>>();
 
 	public SavedTilePos playerPosition;
 	public int weaponIndex;
@@ -35,6 +36,10 @@ public class SavedGame {
 
 	public static void AddCivilizedIsland(int newIslandIndex) {
 		data.civilizedIslandIndexes.Add (newIslandIndex);
+
+		if (data.savedEnemyLists.ContainsKey (newIslandIndex)) {
+			data.savedEnemyLists.Remove (newIslandIndex);
+		}
 
 		GameManager.instance.SaveThisTurn ();
 	}
@@ -100,10 +105,19 @@ public class SavedGame {
 		GameManager.instance.SaveThisTurn ();
 	}
 
-	public static void UpdateAll() {
-		UpdateBuildings ();
-		UpdatePickups ();
-		UpdatePlayerInfo ();
+	public static void UpdateEnemyList(int islandIndex, List<Body> enemies) {
+		if (data.savedEnemyLists.ContainsKey (islandIndex)) {
+			data.savedEnemyLists.Remove (islandIndex);
+		}
+
+		List<SavedEnemy> newSavedEnemies = new List<SavedEnemy> ();
+		foreach (Body enemy in enemies) {
+			newSavedEnemies.Add (new SavedEnemy (enemy));
+		}
+
+		data.savedEnemyLists.Add (islandIndex, newSavedEnemies);
+
+		GameManager.instance.SaveThisTurn ();
 	}
 
 	public static string Serialize() {
@@ -232,6 +246,28 @@ public class SavedGame {
 
 			tile.resourceType = info.type;
 			tile.tile.GetComponent<Renderer> ().material.color = info.color;
+		}
+	}
+
+	[Serializable]
+	public struct SavedEnemy {
+		public SavedTilePos tilePos;
+		public int index;
+		public float health;
+
+		public SavedEnemy (Body enemyBody) {
+			tilePos = new SavedTilePos(TerrainManager.PosToV2(enemyBody.gameObject.transform.position));
+			index = enemyBody.id;
+			health = enemyBody.health;
+		}
+
+		public Body Spawn() {
+			GameObject newEnemy = (GameObject) GameObject.Instantiate (TerrainManager.instance.enemyPrefabs[index], new Vector3(tilePos.x, 0f, tilePos.y), Quaternion.identity);
+			Body body = newEnemy.GetComponent<Body> ();
+			body.id = index;
+			body.health = health;
+
+			return body;
 		}
 	}
 
