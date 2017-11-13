@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Body : MonoBehaviour {
+	[HideInInspector]
+	public int id;
+
 	[Header("Drops")]
 	public ResourceInfo.ResourceType dropType;
 	public int dropCount;
@@ -119,16 +122,7 @@ public class Body : MonoBehaviour {
 	}
 
 	public void CompleteAction () {
-		Vector2 newTile = TerrainManager.PosToV2(transform.position);
 		if (player) {
-			if (ResourcePickup.IsAtPosition (newTile)) {
-				playerScript.CollectResource (ResourcePickup.GetAtPosition (newTile));
-			} else if (WeaponPickup.IsAtPosition (newTile)) {
-				playerScript.PickupWeapon (WeaponPickup.GetAtPosition (newTile));
-			} else if (AugmentPickup.IsAtPosition (newTile)) {
-				playerScript.PickupAugment (AugmentPickup.GetAtPosition (newTile));
-			}
-
 			if (!mind.initializing) {
 				playerScript.Eat ();
 			}
@@ -172,6 +166,10 @@ public class Body : MonoBehaviour {
 
 	void ChangeHealth (float amount) {
 		health += amount;
+
+		if (location != null) {
+			location.SaveEnemies ();
+		}
 
 		if (amount < 0f) {
 			if (health <= 0) {

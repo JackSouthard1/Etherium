@@ -26,6 +26,8 @@ public class MapReveal : MonoBehaviour {
 	public void PlayerPositionChanged () {
 		List<Vector2> cords = GetFieldCoordinatesInRange ();
 
+		bool shouldUpdate = false;
+
 		for (int i = 0; i < cords.Count; i++) {
 
 			FieldData field;
@@ -36,7 +38,12 @@ public class MapReveal : MonoBehaviour {
 				newField.transform.position = new Vector3 (cords [i].x + offset.x, offset.y, cords [i].y + offset.z);
 				newField.transform.localScale = new Vector3 (scale, 1, scale);
 				revealTiles.Add (cords [i], new FieldData(cords[i], newField));
+				shouldUpdate = true;
 			}
+		}
+
+		if (shouldUpdate) {
+			SavedGame.UpdateRevealTiles (revealTiles.Keys.ToList ());
 		}
 	}
 
@@ -59,6 +66,16 @@ public class MapReveal : MonoBehaviour {
 		}
 
 		return coords;
+	}
+
+	public void LoadSavedRevealArea () {
+		foreach (SavedGame.SavedTilePos tilePos in SavedGame.data.revealedTiles) {
+			Vector2 coord = tilePos.ToVector2 ();
+			GameObject newField = (GameObject)Instantiate (revealTile, Vector3.zero, Quaternion.identity, revealArea);
+			newField.transform.position = new Vector3 (coord.x + offset.x, offset.y, coord.y + offset.z);
+			newField.transform.localScale = new Vector3 (scale, 1, scale);
+			revealTiles.Add (coord, new FieldData(coord, newField));
+		}
 	}
 
 	public struct FieldData {

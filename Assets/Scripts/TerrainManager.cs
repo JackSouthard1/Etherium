@@ -143,6 +143,7 @@ public class TerrainManager : MonoBehaviour {
 	public void SpawnPlayer() {
 		GameObject newPlayer = (GameObject) Instantiate (playerPrefab);
 		newPlayer.name = "Player";
+		newPlayer.GetComponent<Body> ().id = -1;
 	}
 
 	public Building SpawnBuilding (Vector3 position, GameObject prefab, BuildingInfo info, Island island, bool build = false) {
