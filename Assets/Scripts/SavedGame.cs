@@ -231,7 +231,7 @@ public class SavedGame {
 			TerrainManager.Tile tile = TerrainManager.instance.tiles [tilePos.ToVector2 ()];
 
 			tile.resourceType = info.type;
-			tile.tile.GetComponent<Renderer> ().material.color = info.color;
+			tile.tile.GetComponent<Renderer> ().material.color = info.colorLight;
 		}
 	}
 

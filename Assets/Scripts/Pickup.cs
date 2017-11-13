@@ -37,7 +37,9 @@ public class Pickup {
 [System.Serializable]
 public struct ResourceInfo {
 	public Sprite sprite;
-	public Color color;
+	public Color colorLight;
+	public Color colorDark;
+	public Mesh mesh;
 	public enum ResourceType
 	{
 		None,

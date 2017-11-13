@@ -231,8 +231,9 @@ public class TerrainManager : MonoBehaviour {
 			if (curResource.info.type == info.type) {
 				GameObject resourceGO = Instantiate (resourcePrefab, island.transform);
 				resourceGO.transform.position = new Vector3(position.x, 0f, position.z);
-				resourceGO.gameObject.GetComponentInChildren<SpriteRenderer> ().sprite = info.sprite;
-				resourceGO.gameObject.GetComponentInChildren<SpriteRenderer> ().color = info.color;
+				resourceGO.gameObject.GetComponentInChildren<MeshFilter> ().mesh = info.mesh;
+				resourceGO.gameObject.GetComponentInChildren<MeshRenderer> ().materials[0].color = info.colorDark;
+				resourceGO.gameObject.GetComponentInChildren<MeshRenderer> ().materials[1].color = info.colorLight;
 
 				curResource.gameObjects.Add (resourceGO);
 				resourceGO.transform.Translate (Vector3.up * ((stackHeight * (curResource.gameObjects.Count - 1)) + startingHeight));
@@ -251,8 +252,9 @@ public class TerrainManager : MonoBehaviour {
 			resourceGO.transform.position = new Vector3(position.x, 0f, position.z);
 			ResourcePickup resource = new ResourcePickup (info, resourceGO, island);
 
-			resourceGO.GetComponentInChildren<SpriteRenderer> ().sprite = info.sprite;
-			resourceGO.gameObject.GetComponentInChildren<SpriteRenderer> ().color = info.color;
+			resourceGO.gameObject.GetComponentInChildren<MeshFilter> ().mesh = info.mesh;
+			resourceGO.gameObject.GetComponentInChildren<MeshRenderer> ().materials[0].color = info.colorDark;
+			resourceGO.gameObject.GetComponentInChildren<MeshRenderer> ().materials[1].color = info.colorLight;
 			pickups.Add (posV2, resource);
 			island.pickups.Add (resource);
 

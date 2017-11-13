@@ -29,7 +29,7 @@ public class UIResource : MonoBehaviour
 
 	public void Init(ResourceInfo resourceInfo) {
 		resourceButton.image.sprite = resourceInfo.sprite;
-		resourceButton.image.color = resourceInfo.color;
+//		resourceButton.image.color = resourceInfo.colorLight;
 		resourceButton.onClick.AddListener(() => Player.instance.DropResource(resourceInfo));
 	}
 
