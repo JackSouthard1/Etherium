@@ -3921,16 +3921,19 @@ MonoBehaviour:
   - sprite: {fileID: 21300000, guid: 615a8284df0f54a07aee15cfc9f23ef1, type: 3}
     colorLight: {r: 1, g: 0.7764706, b: 0.18431373, a: 1}
     colorDark: {r: 0.83137256, g: 0.64705884, b: 0.15686275, a: 1}
+    tileColor: {r: 1, g: 0.8206661, b: 0.3455882, a: 1}
     mesh: {fileID: 4300016, guid: 45233cca447f7441d848a7b85f18232d, type: 3}
     type: 1
   - sprite: {fileID: 21300000, guid: f16584b48e8bb44bb8bba8d220d45e31, type: 3}
     colorLight: {r: 0.9372549, g: 0.25882354, b: 0.8784314, a: 1}
     colorDark: {r: 0.7372549, g: 0.20784314, b: 0.69411767, a: 1}
+    tileColor: {r: 0, g: 0, b: 0, a: 0}
     mesh: {fileID: 4300004, guid: 45233cca447f7441d848a7b85f18232d, type: 3}
     type: 3
   - sprite: {fileID: 21300000, guid: 0fc4b33e4d4a94eb7b2955cbd272b80b, type: 3}
-    colorLight: {r: 0.29803923, g: 0.9568628, b: 0.40784317, a: 0}
-    colorDark: {r: 0.23529413, g: 0.76470596, b: 0.32156864, a: 0}
+    colorLight: {r: 0.29803923, g: 0.9568628, b: 0.40784317, a: 1}
+    colorDark: {r: 0.23529413, g: 0.76470596, b: 0.32156864, a: 1}
+    tileColor: {r: 0.41911763, g: 1, b: 0.5159314, a: 1}
     mesh: {fileID: 4300008, guid: 45233cca447f7441d848a7b85f18232d, type: 3}
     type: 2
   resourcePrefab: {fileID: 1957892413181948, guid: 09a9dca98a4b3443c88611ce76cd310d,

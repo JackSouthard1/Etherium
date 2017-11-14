@@ -39,6 +39,7 @@ public struct ResourceInfo {
 	public Sprite sprite;
 	public Color colorLight;
 	public Color colorDark;
+	public Color tileColor;
 	public Mesh mesh;
 	public enum ResourceType
 	{
