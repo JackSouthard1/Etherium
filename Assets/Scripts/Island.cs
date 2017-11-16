@@ -154,7 +154,7 @@ public class Island : MonoBehaviour {
 					resourceSpawnListIndex++;
 					ResourceInfo resourceInfo = ResourceInfo.GetInfoFromIndex(resourceIndex);
 					resourceInfoType = resourceInfo.type;
-					tileColor = resourceInfo.color;
+					tileColor = resourceInfo.tileColor;
 
 					for (int i = 0; i < resourcesPerTile; i++) {
 						tm.SpawnResource(position: transform.TransformPoint(position), info: resourceInfo, island: GetComponent<Island>(), initialSpawn: true);
