@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Building : MonoBehaviour {
+public abstract class Building : MonoBehaviour {
 
 	public enum BuildingState
 	{
@@ -18,22 +18,19 @@ public class Building : MonoBehaviour {
 
 	public Island island;
 
-	public Transform pad;
-
-	public int supply;
-
 	public BuildingState state;
 	public bool isPhysical { get { return state != BuildingState.Blueprint && state != BuildingState.Destroyed; } }
 
 	public Animator anim;
 
 	const float blueprintAlpha = 0.5f;
-	Color padColor = new Color(0.25f, 0.95f, 0.95f, 1f);
 
 	[HideInInspector]
 	public List<Vector2> coveredTiles = new List<Vector2>();
 	[HideInInspector]
 	public BuildingInfo info { get; private set; }
+
+	Color padColor = new Color(0.25f, 0.95f, 0.95f, 1f);
 
 	public virtual void Init(BuildingInfo info, Island island) {
 		anim = gameObject.GetComponentInChildren<Animator> ();
@@ -48,8 +45,6 @@ public class Building : MonoBehaviour {
 				coveredTiles.Add(anchorPos + new Vector2 (x, y));
 			}
 		}
-
-		pad = transform.Find("Model").Find ("Pad");
 	}
 
 	public void CreateBlueprint() {
@@ -78,13 +73,9 @@ public class Building : MonoBehaviour {
 		}
 	}
 
-	public virtual void TurnEnd() {
-		if (supply <= 0) {
-			Deactivate ();
-		}
-	}
+	public abstract void TurnEnd ();
 
-	void Deactivate() {
+	protected void Deactivate() {
 		state = BuildingState.Inactive;
 		SetAnimTrigger ("Deactivate");
 

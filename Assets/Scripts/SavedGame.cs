@@ -224,7 +224,12 @@ public class SavedGame {
 		public SavedBuilding (Building building) {
 			tilePos = new SavedTilePos(TerrainManager.PosToV2 (building.transform.position));
 			index = Crafting.instance.buildingInfos.IndexOf (building.info);
-			supply = building.supply;
+			if(building is ProductionBuilding) {
+				supply = (building as ProductionBuilding).supply;
+			} else {
+				supply = -1;
+			}
+			//TODO: save targetId
 			//TODO: to prevent trolls we'll probably also need to store the turns before the next spawn but for now it's low priority
 		}
 
@@ -236,7 +241,10 @@ public class SavedGame {
 			Island island = tileAtPos.transform.parent.GetComponent<Island>();
 
 			Building newBuilding = TerrainManager.instance.SpawnBuilding (spawnPos, info.prefab, info, island, true);
-			newBuilding.supply = supply;
+
+			if (newBuilding is ProductionBuilding) {
+				(newBuilding as ProductionBuilding).supply = supply;
+			}
 		}
 	}
 

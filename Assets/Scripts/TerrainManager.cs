@@ -179,10 +179,12 @@ public class TerrainManager : MonoBehaviour {
 		building.Build ();
 		buildings.Add (building);
 
-		Transform pad = building.pad;
-		if(pad != null) {
-			Vector2 pos2D = PosToV2(pad.position);
-			pads.Add(pos2D, pad.position.y);
+		if (building is ProductionBuilding) {
+			Transform pad = (building as ProductionBuilding).pad;
+			if (pad != null) {
+				Vector2 pos2D = PosToV2 (pad.position);
+				pads.Add (pos2D, pad.position.y);
+			}
 		}
 	}
 

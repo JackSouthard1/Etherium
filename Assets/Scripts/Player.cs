@@ -27,10 +27,10 @@ public class Player : MonoBehaviour {
 
 	const float healAmount = 1f;
 	const float inventoryPadding = 15f;
-	const float respawnTime = 3f;
-	const float respawnAnimationTime = 1f;
+	const float teleportTime = 3f;
+	const float animationTime = 1f;
 
-	bool isRespawning;
+	bool isTeleporting;
 
 	void Awake () {
 		instance = this;
@@ -265,33 +265,40 @@ public class Player : MonoBehaviour {
 	}
 
 	public IEnumerator Respawn() {
-		if (isRespawning) {
+		if (isTeleporting) {
 			yield break;
 		}
 
-		isRespawning = true;
-		GameManager.instance.TransitionStart ();
-		body.anim.SetBool ("Respawning", true);
-
-		yield return new WaitForSeconds (respawnAnimationTime);
+		yield return StartCoroutine (Teleport(Vector2.zero, "Respawning"));
 
 		ResetInventory ();
-		body.location.PlayerExitIsland ();
+		body.ResetHealth ();
+	}
+
+	public IEnumerator Teleport(Vector2 targetTile, string animationKey) {
+		isTeleporting = true;
+		GameManager.instance.TransitionStart ();
+		body.anim.SetBool (animationKey, true);
+
+		yield return new WaitForSeconds (animationTime);
+
 		Vector3 startingPos = body.transform.position;
-		body.MoveToPos (TerrainManager.instance.GetTileAtPosition(Vector2.zero).transform.position, Quaternion.identity, true);
+		if (body.location != null) {
+			body.location.PlayerExitIsland ();
+		}
+		body.MoveToPos (TerrainManager.instance.GetTileAtPosition(targetTile).transform.position, Quaternion.identity, true);
 		Vector3 endingPos = body.transform.position;
 
-		float transitionTime = respawnTime - (2f * respawnAnimationTime);
+		float transitionTime = teleportTime - (2f * animationTime);
 		StartCoroutine(CameraController.instance.SmoothMoveOverTime (startingPos, endingPos, transitionTime));
 
 		yield return new WaitForSeconds (transitionTime);
+		
+		body.anim.SetBool (animationKey, false);
 
-		body.anim.SetBool ("Respawning", false);
+		yield return new WaitForSeconds (animationTime);
 
-		yield return new WaitForSeconds (respawnAnimationTime);
-
-		body.ResetHealth ();
 		GameManager.instance.TransitionEnd ();
-		isRespawning = false;
+		isTeleporting = false;
 	}
 }

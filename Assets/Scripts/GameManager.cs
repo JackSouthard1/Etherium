@@ -7,7 +7,7 @@ public class GameManager : MonoBehaviour {
 	public static GameManager instance;
 	public static bool isLoadingFromSave;
 
-	public List<Body> enemies = new List<Body>();
+	List<Body> enemies = new List<Body>();
 	private int enemiesMoving = 0;
 	private TerrainManager tm;
 

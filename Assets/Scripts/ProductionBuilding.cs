@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class ProductionBuilding : Building
 {
+	public Transform pad;
+
+	public int supply;
+
 	public bool autoCycles = false;
 
 	[Header("Production")]
@@ -41,6 +45,8 @@ public class ProductionBuilding : Building
 		}
 
 		spawnPos = (pad != null) ? pad.position : transform.position;
+
+		pad = transform.Find("Model").Find ("Pad");
 	}
 
 	public override void TurnEnd() {
@@ -94,7 +100,9 @@ public class ProductionBuilding : Building
 			SetAnimTrigger ("TurnEnd");
 		}
 
-		base.TurnEnd ();
+		if (supply <= 0) {
+			Deactivate ();
+		}
 	}
 
 	//TODO: some way of knowing that this building is always unstandable

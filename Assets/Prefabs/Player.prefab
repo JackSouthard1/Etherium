@@ -483,6 +483,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf1a02818662c46c7a21ab3a71f2db12, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  id: 0
   dropType: 0
   dropCount: 0
   tm: {fileID: 0}
