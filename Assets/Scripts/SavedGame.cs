@@ -50,7 +50,13 @@ public class SavedGame {
 		data.buildings = new List<SavedBuilding> ();
 		buildingsByPos.Clear ();
 		foreach (Building building in allBuildings) {
-			SavedBuilding savedBuilding = new SavedBuilding (building);
+			SavedBuilding savedBuilding = null;
+			if (building is ProductionBuilding) {
+				savedBuilding = new SavedProductionBuilding (building);
+			} else if (building is TeleporterBuilding) {
+				savedBuilding = new SavedTeleporterBuilding (building);
+			}
+
 			data.buildings.Add(savedBuilding);
 			buildingsByPos.Add (TerrainManager.PosToV2 (building.transform.position), savedBuilding);
 		}
@@ -61,8 +67,8 @@ public class SavedGame {
 
 	public static void UpdateBuildingSupply(Building building) {
 		Vector2 key = TerrainManager.PosToV2 (building.transform.position);
-		SavedBuilding oldSavedBuilding = buildingsByPos [key];
-		SavedBuilding newSavedBuilding = new SavedBuilding (building);
+		SavedProductionBuilding oldSavedBuilding = buildingsByPos [key] as SavedProductionBuilding;
+		SavedProductionBuilding newSavedBuilding = new SavedProductionBuilding (building);
 
 		data.buildings.Remove (oldSavedBuilding);
 		data.buildings.Add (newSavedBuilding);
@@ -103,6 +109,12 @@ public class SavedGame {
 		data.inventory = Player.instance.inventory;
 		data.playerHealth = Player.instance.body.health;
 
+		List<Vector2> newTiles = MapReveal.revealTiles.Keys.ToList ();
+		data.revealedTiles.Clear ();
+		foreach (Vector2 tile in newTiles) {
+			data.revealedTiles.Add (new SavedTilePos (tile));
+		}
+
 		GameManager.instance.SaveThisTurn ();
 	}
 
@@ -117,15 +129,6 @@ public class SavedGame {
 		}
 
 		data.savedEnemyLists.Add (islandIndex, newSavedEnemies);
-
-		GameManager.instance.SaveThisTurn ();
-	}
-
-	public static void UpdateRevealTiles(List<Vector2> newTiles) {
-		data.revealedTiles.Clear ();
-		foreach (Vector2 tile in newTiles) {
-			data.revealedTiles.Add (new SavedTilePos (tile));
-		}
 
 		GameManager.instance.SaveThisTurn ();
 	}
@@ -216,35 +219,57 @@ public class SavedGame {
 	}
 
 	[Serializable]
-	public struct SavedBuilding {
+	public abstract class SavedBuilding {
 		public SavedTilePos tilePos;
 		public int index;
-		public int supply;
 
-		public SavedBuilding (Building building) {
+		public void Init (Building building) {
 			tilePos = new SavedTilePos(TerrainManager.PosToV2 (building.transform.position));
 			index = Crafting.instance.buildingInfos.IndexOf (building.info);
-			if(building is ProductionBuilding) {
-				supply = (building as ProductionBuilding).supply;
-			} else {
-				supply = -1;
-			}
-			//TODO: save targetId
 			//TODO: to prevent trolls we'll probably also need to store the turns before the next spawn but for now it's low priority
 		}
 
-		public void Spawn() {
+		public abstract void Spawn ();
+
+		public Building SpawnBuilding() {
 			BuildingInfo info = Crafting.instance.buildingInfos [index];
 
 			GameObject tileAtPos = TerrainManager.instance.GetTileAtPosition (tilePos.ToVector2 () - info.anchorOffset);
 			Vector3 spawnPos = new Vector3 (tilePos.x, tileAtPos.transform.position.y, tilePos.y);
 			Island island = tileAtPos.transform.parent.GetComponent<Island>();
 
-			Building newBuilding = TerrainManager.instance.SpawnBuilding (spawnPos, info.prefab, info, island, true);
+			return TerrainManager.instance.SpawnBuilding (spawnPos, info.prefab, info, island, true);
+		}
+	}
 
-			if (newBuilding is ProductionBuilding) {
-				(newBuilding as ProductionBuilding).supply = supply;
-			}
+	//these could probably use some refactoring
+	[Serializable]
+	public class SavedProductionBuilding : SavedBuilding {
+		public int supply;
+
+		public SavedProductionBuilding (Building building) {
+			Init(building);
+			supply = (building as ProductionBuilding).supply;
+		}
+
+		public override void Spawn() {
+			Building newBuilding = SpawnBuilding ();
+			(newBuilding as ProductionBuilding).supply = supply;
+		}
+	}
+
+	[Serializable]
+	public class SavedTeleporterBuilding : SavedBuilding {
+		public int targetId;
+
+		public SavedTeleporterBuilding (Building building) {
+			Init(building);
+			targetId = (building as TeleporterBuilding).targetId;
+		}
+
+		public override void Spawn() {
+			Building newBuilding = SpawnBuilding ();
+			(newBuilding as TeleporterBuilding).targetId = targetId;
 		}
 	}
 

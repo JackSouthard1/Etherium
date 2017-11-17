@@ -13,7 +13,7 @@ public class MapReveal : MonoBehaviour {
 	public GameObject revealTile;
 	public float scale;
 
-	private Dictionary<Vector2, FieldData> revealTiles = new Dictionary<Vector2, FieldData>();
+	public static Dictionary<Vector2, FieldData> revealTiles = new Dictionary<Vector2, FieldData>();
 
 	void Awake () {
 		revealArea = GameObject.Find("RevealArea").transform;
@@ -25,9 +25,7 @@ public class MapReveal : MonoBehaviour {
 	
 	public void PlayerPositionChanged () {
 		List<Vector2> cords = GetFieldCoordinatesInRange ();
-
-		bool shouldUpdate = false;
-
+		
 		for (int i = 0; i < cords.Count; i++) {
 
 			FieldData field;
@@ -38,12 +36,7 @@ public class MapReveal : MonoBehaviour {
 				newField.transform.position = new Vector3 (cords [i].x + offset.x, offset.y, cords [i].y + offset.z);
 				newField.transform.localScale = new Vector3 (scale, 1, scale);
 				revealTiles.Add (cords [i], new FieldData(cords[i], newField));
-				shouldUpdate = true;
 			}
-		}
-
-		if (shouldUpdate) {
-			SavedGame.UpdateRevealTiles (revealTiles.Keys.ToList ());
 		}
 	}
 

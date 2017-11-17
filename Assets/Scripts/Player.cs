@@ -84,7 +84,7 @@ public class Player : MonoBehaviour {
 		}
 
 		//temp
-		inventory[ResourceInfo.GetIndexFromType(ResourceInfo.ResourceType.Green)] = 3f;
+		inventory[ResourceInfo.GetIndexFromType(ResourceInfo.ResourceType.G1)] = 3f;
 
 		UpdateInventoryUI ();
 	}
@@ -214,7 +214,7 @@ public class Player : MonoBehaviour {
 	}
 
 	public void Heal(float resourcesConsumed) {
-		int resourceIndex = ResourceInfo.GetIndexFromType (ResourceInfo.ResourceType.Green);
+		int resourceIndex = ResourceInfo.GetIndexFromType (ResourceInfo.ResourceType.G1);
 
 		if (!body.canHeal)
 			return;
@@ -231,7 +231,7 @@ public class Player : MonoBehaviour {
 
 	public void Eat() {
 		float resourcesPerMove = 1f / ((float) movesPerResource);
-		int resourceIndex = ResourceInfo.GetIndexFromType (ResourceInfo.ResourceType.Green);
+		int resourceIndex = ResourceInfo.GetIndexFromType (ResourceInfo.ResourceType.G1);
 
 		float newAmount = inventory [resourceIndex] - resourcesPerMove;
 		if (newAmount < 0f) {

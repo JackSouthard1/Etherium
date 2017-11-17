@@ -44,10 +44,9 @@ public struct ResourceInfo {
 	public enum ResourceType
 	{
 		None,
-		Yellow,
-		Green,
-		Purple,
-		Blue
+		Y1,
+		G1,
+		P1
 	};
 	public ResourceType type;
 
