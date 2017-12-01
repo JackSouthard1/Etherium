@@ -53,7 +53,6 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4298746739002508}
-  - component: {fileID: 111293427399396732}
   m_Layer: 8
   m_Name: Lifts
   m_TagString: Untagged
@@ -120,6 +119,7 @@ GameObject:
   - component: {fileID: 4631789325776348}
   - component: {fileID: 65876328639204992}
   - component: {fileID: 114056017514757644}
+  - component: {fileID: 95282908199858190}
   m_Layer: 8
   m_Name: Y1_Extractor
   m_TagString: Building
@@ -602,21 +602,23 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.6, y: 0.9, z: 0.6}
   m_Center: {x: 0, y: 0.45, z: 0}
---- !u!111 &111293427399396732
-Animation:
+--- !u!95 &95282908199858190
+Animator:
+  serializedVersion: 3
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1179750010835726}
+  m_GameObject: {fileID: 1769193789467524}
   m_Enabled: 1
-  serializedVersion: 3
-  m_Animation: {fileID: 7400000, guid: b31b1b22d18444e3c8ce40c2c7c19233, type: 2}
-  m_Animations:
-  - {fileID: 7400000, guid: b31b1b22d18444e3c8ce40c2c7c19233, type: 2}
-  m_WrapMode: 0
-  m_PlayAutomatically: 1
-  m_AnimatePhysics: 0
-  m_CullingType: 0
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 395e5a43aee014180a851dc97d5db885, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
 --- !u!114 &114056017514757644
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -631,15 +633,16 @@ MonoBehaviour:
   standable: 0
   height: 0
   island: {fileID: 0}
-  pad: {fileID: 0}
-  supply: 50
   state: 0
   anim: {fileID: 0}
   coveredTiles: []
-  usesTurnedBasedAnimatinon: 0
+  pad: {fileID: 0}
+  supply: 50
+  autoCycles: 1
   resourceType: 1
+  resourcesProducedPerCycle: 1
   turnWaitPerResource: 5
   isRefinery: 0
   consumedType: 0
-  resourcesConsumed: 0
+  resourcesConsumedPerCycle: 0
   productionAnimationTime: 0

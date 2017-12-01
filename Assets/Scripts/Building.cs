@@ -16,11 +16,14 @@ public abstract class Building : MonoBehaviour {
 	public bool standable = false;
 	public float height = 0f;
 
+	[HideInInspector]
 	public Island island;
 
+	[HideInInspector]
 	public BuildingState state;
 	public bool isPhysical { get { return state != BuildingState.Blueprint && state != BuildingState.Destroyed; } }
 
+	[HideInInspector]
 	public Animator anim;
 
 	const float blueprintAlpha = 0.5f;
@@ -56,8 +59,12 @@ public abstract class Building : MonoBehaviour {
 		}
 	}
 
-	public void Build() {
+	public virtual void Build() {
 		state = BuildingState.Active;
+		SetBuildingColors ();
+	}
+
+	void SetBuildingColors() {
 		MeshRenderer[] mrs = transform.Find("Model").GetComponentsInChildren<MeshRenderer> ();
 		foreach (MeshRenderer rend in mrs) {
 			if (rend.gameObject.name.Contains ("(P)")) {
@@ -77,7 +84,10 @@ public abstract class Building : MonoBehaviour {
 
 	protected void Deactivate() {
 		state = BuildingState.Inactive;
-		SetAnimTrigger ("Deactivate");
+
+		if (anim != null) {
+			anim.enabled = false;
+		}
 
 		MeshRenderer[] mrs = transform.Find("Model").GetComponentsInChildren<MeshRenderer> ();
 		foreach (MeshRenderer rend in mrs) {
@@ -102,12 +112,17 @@ public abstract class Building : MonoBehaviour {
 		}
 	}
 
-	public void SetAnimTrigger(string triggerName) {
+	protected void SetAnimBool(string boolName, bool isActive) {
+		if (anim != null)
+			anim.SetBool (boolName, isActive);
+	}
+
+	protected void SetAnimTrigger(string triggerName) {
 		if (anim != null)
 			anim.SetTrigger (triggerName);
 	}
 
-	public void ResetAnimTrigger(string triggerName) {
+	protected void ResetAnimTrigger(string triggerName) {
 		if (anim != null)
 			anim.ResetTrigger (triggerName);
 	}

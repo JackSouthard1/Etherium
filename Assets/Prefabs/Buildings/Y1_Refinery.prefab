@@ -103,7 +103,6 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4350540602942354}
-  - component: {fileID: 95236422020119276}
   m_Layer: 8
   m_Name: Box
   m_TagString: Untagged
@@ -138,7 +137,7 @@ GameObject:
   - component: {fileID: 64624507563530312}
   - component: {fileID: 23730695847796696}
   m_Layer: 8
-  m_Name: Box_Bottom
+  m_Name: (S) Box_Bottom
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -255,6 +254,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4620991523868888}
   - component: {fileID: 65982135289212454}
+  - component: {fileID: 114841096947204344}
   m_Layer: 8
   m_Name: Y1_Refinery
   m_TagString: Building
@@ -270,6 +270,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4265034981826402}
+  - component: {fileID: 95774152521308442}
   m_Layer: 8
   m_Name: Model
   m_TagString: Untagged
@@ -338,7 +339,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1940193557170626}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -1}
+  m_LocalPosition: {x: 0, y: 0.01, z: -1}
   m_LocalScale: {x: 0.08, y: 1, z: 0.08}
   m_Children: []
   m_Father: {fileID: 4265034981826402}
@@ -350,7 +351,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1418975949786406}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.25, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -453,7 +454,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1328248556127552}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.01, z: 0}
+  m_LocalPosition: {x: 0, y: 0.02, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4123918071699630}
@@ -1191,13 +1192,13 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.6, y: 0.6, z: 0.6}
   m_Center: {x: 0, y: 0.3, z: 0}
---- !u!95 &95236422020119276
+--- !u!95 &95774152521308442
 Animator:
   serializedVersion: 3
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1328248556127552}
+  m_GameObject: {fileID: 1835278949460044}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 7adb90c99b2064bffb7aafc80686f848, type: 2}
@@ -1208,3 +1209,28 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
+--- !u!114 &114841096947204344
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1755507051648512}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f42307ac286f4a7bbf3226e164533ed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  standable: 1
+  height: 0.1
+  island: {fileID: 0}
+  state: 0
+  anim: {fileID: 0}
+  coveredTiles: []
+  pad: {fileID: 0}
+  supply: 50
+  autoCycles: 1
+  resourceType: 3
+  resourcesProducedPerCycle: 1
+  turnWaitPerResource: 3
+  consumedType: 1
+  resourcesConsumedPerCycle: 4

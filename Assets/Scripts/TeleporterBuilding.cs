@@ -14,9 +14,17 @@ public class TeleporterBuilding : Building {
 		}
 
 		int newTarget;
+		int attempts = 0;
 		while (true) {
 			newTarget = Random.Range (0, teleporters.Count);
 			if (newTarget != id && teleporters[newTarget].island != island) {
+				break;
+			}
+
+			attempts++;
+			if (attempts >= 5) {
+				print ("BALLAD");
+				newTarget = -1;
 				break;
 			}
 		}
@@ -24,10 +32,10 @@ public class TeleporterBuilding : Building {
 		return newTarget;
 	}
 
-	public override void Init (BuildingInfo info, Island island) {
+	public override void Build () {
 		id = teleporters.Count;
 		teleporters.Add (this);
-		base.Init (info, island);
+		base.Build ();
 	}
 
 	public override void TurnEnd () {

@@ -3915,7 +3915,7 @@ MonoBehaviour:
     - color: {r: 0.2392157, g: 0.5568628, b: 0.8745099, a: 0}
     - color: {r: 0.2627451, g: 0.6156863, b: 0.9725491, a: 0}
     resourceIndexes: 02000000
-    enemyCount: 1
+    enemyCount: 3
     enemyIDs: 00000000
   resourceInfos:
   - sprite: {fileID: 21300000, guid: 615a8284df0f54a07aee15cfc9f23ef1, type: 3}
@@ -4647,22 +4647,23 @@ MonoBehaviour:
     recipe:
       rows:
       - columns:
-        - resourceType: 3
+        - resourceType: 1
           tileType: 0
           count: 1
-        - resourceType: 4
-          tileType: 1
+      - columns:
+        - resourceType: 3
+          tileType: 0
           count: 2
-    anchorOffset: {x: 1, y: 0}
-    prefab: {fileID: 1322542648624708, guid: 1bcde767246bc404180734be2c2fe021, type: 2}
-    mainColor: {r: 0.24313727, g: 0.9686275, b: 1, a: 0}
-    secondaryColor: {r: 0.9096647, g: 0.24410684, b: 0.9485294, a: 0}
+    anchorOffset: {x: 0, y: 1}
+    prefab: {fileID: 1755507051648512, guid: 3b5b02cd071324eb39ea1bf55729bff7, type: 2}
+    mainColor: {r: 0.83137256, g: 0.64705884, b: 0.15686275, a: 1}
+    secondaryColor: {r: 0.64705884, g: 0.052335653, b: 0.5985999, a: 1}
     alternateColor: {r: 0.86666673, g: 0.6509804, b: 0.18431373, a: 0}
   - name: Teleporter
     recipe:
       rows:
       - columns:
-        - resourceType: 3
+        - resourceType: 1
           tileType: 0
           count: 3
     anchorOffset: {x: 0, y: 0}

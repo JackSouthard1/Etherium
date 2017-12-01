@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class ProductionBuilding : Building
 {
+	[HideInInspector]
 	public Transform pad;
 
 	public int supply;
@@ -15,89 +16,88 @@ public class ProductionBuilding : Building
 	public int resourcesProducedPerCycle = 1;
 	public int turnWaitPerResource;
 
-	[Header("Refinery")]
-	public bool isRefinery;
-	public ResourceInfo.ResourceType consumedType;
-	public int resourcesConsumedPerCycle;
-	public float productionAnimationTime;
-
-	TerrainManager tm;
-	[HideInInspector]
-	public int turnsUntilNextResource { get; private set; }
-
-	List<Vector2> adjacentTiles;
+	protected int turnsUntilNextResource;
 
 	Vector3 spawnPos;
 
 	public override void Init (BuildingInfo info, Island island) {
 		turnsUntilNextResource = turnWaitPerResource;
-		tm = TerrainManager.instance;
 
 		base.Init (info, island);
 
-		if (isRefinery) {
-			adjacentTiles = GetAdjacentTiles ();
-			if (autoCycles) {
-				SetAnimTrigger ("Waiting");
-			}
-		} else if (autoCycles) {
-			SetAnimTrigger ("Producing");
-		}
+		pad = transform.Find("Model").Find ("Pad");
 
 		spawnPos = (pad != null) ? pad.position : transform.position;
+	}
 
-		pad = transform.Find("Model").Find ("Pad");
+	public override void Build () {
+		base.Build ();
+		if (autoCycles) {
+			SetAnimBool ("Producing", true);
+		}
 	}
 
 	public override void TurnEnd() {
-		if (state == BuildingState.Waiting) {
-			if (!ResourcePickup.IsAtPosition (TerrainManager.PosToV2 (spawnPos)) && !TerrainManager.instance.PlayerAtPos(TerrainManager.PosToV2(spawnPos))) {
-				state = BuildingState.Active;
-
-				if (autoCycles) {
-					SetAnimTrigger ("Producing");
-				} else {
-					ResetAnimTrigger ("TurnEnd");
-					SetAnimTrigger ("Reset");
-				}
-
-				standable = false;
-				turnsUntilNextResource = turnWaitPerResource;
-				return;
-			}
-		}
-
-		if (state != BuildingState.Active)
+		if (!shouldRecognizeTurn) {
 			return;
-
-		turnsUntilNextResource -= 1;
-		if (turnsUntilNextResource <= 0) {
-			turnsUntilNextResource = turnWaitPerResource;
-
-			if (isRefinery) {
-				if (!ConsumeAdjacentResources) {
-					return;
-				}
-
-				if (anim != null) {
-					StartCoroutine (RefineryProductionAnimation ());
-				}
-			}
-
-			for (int i = 0; i < resourcesProducedPerCycle; i++) {
-				if (supply <= 0) {
-					break;
-				}
-
-				tm.SpawnResource (position: spawnPos, info: ResourceInfo.GetInfoFromType (resourceType), island: island);
-				supply -= 1;
-			}
-
-			SavedGame.UpdateBuildingSupply (this);
 		}
+			
+		CompleteTurn ();
+
+		if(shouldProduce) {
+			ProduceResources ();
+		}
+	}
+
+	protected void CompleteTurn() {
+		turnsUntilNextResource -= 1;
 
 		if (!autoCycles) {
 			SetAnimTrigger ("TurnEnd");
+		}
+	}
+
+	protected bool shouldProduce {
+		get {
+			return (turnsUntilNextResource <= 0);
+		}
+	}
+
+	protected bool shouldRecognizeTurn {
+		get {
+			if (state == BuildingState.Active) {
+				return true;
+			} else {
+				if (state == BuildingState.Waiting) {
+					if (!ResourcePickup.IsAtPosition (TerrainManager.PosToV2 (spawnPos)) && !TerrainManager.instance.PlayerAtPos (TerrainManager.PosToV2 (spawnPos))) {
+						state = BuildingState.Active;
+
+						ResetAnimTrigger ("TurnEnd");
+						SetAnimTrigger ("Reset");
+					}
+				}
+
+				return false;
+			}
+		}
+	}
+
+	public virtual void ProduceResources() {
+		turnsUntilNextResource = turnWaitPerResource;
+
+		for (int i = 0; i < resourcesProducedPerCycle; i++) {
+			if (supply <= 0) {
+				break;
+			}
+
+			TerrainManager.instance.SpawnResource (position: spawnPos, info: ResourceInfo.GetInfoFromType (resourceType), island: island);
+			supply -= 1;
+		}
+
+		SavedGame.UpdateBuildingSupply (this);
+
+		if (!autoCycles) {
+			state = BuildingState.Waiting;
 		}
 
 		if (supply <= 0) {
@@ -112,52 +112,5 @@ public class ProductionBuilding : Building
 			standable = true;
 			SetAnimTrigger ("Skip");
 		}
-	}
-
-	bool ConsumeAdjacentResources {
-		get {
-			List<ResourcePickup> resourcesToConsume = new List<ResourcePickup> ();
-			List<int> amountsToConsume = new List<int> ();
-			int totalResourceCount = 0;
-
-			foreach (Vector2 adjacentTile in adjacentTiles) {
-				if (ResourcePickup.IsAtPosition(adjacentTile)) {
-					ResourcePickup adjacentResource = ResourcePickup.GetAtPosition (adjacentTile);
-					if (adjacentResource.info.type == consumedType) {
-						resourcesToConsume.Add (adjacentResource);
-						amountsToConsume.Add (Mathf.Min(adjacentResource.gameObjects.Count, resourcesConsumedPerCycle - totalResourceCount));
-
-						totalResourceCount += adjacentResource.gameObjects.Count;
-
-						if (totalResourceCount >= resourcesConsumedPerCycle)
-							break;
-					}
-				}
-			}
-
-			if (totalResourceCount < resourcesConsumedPerCycle)
-				return false;
-
-			tm.ConsumeResources (resourcesToConsume, amountsToConsume);
-			return true;
-		}
-	}
-
-	List<Vector2> GetAdjacentTiles() {
-		Vector2 curPosV2 = TerrainManager.PosToV2 (transform.position);
-		List<Vector2> adjacentTiles = new List<Vector2> ();
-
-		adjacentTiles.Add (curPosV2 + Vector2.right);
-		adjacentTiles.Add (curPosV2 + Vector2.left);
-		adjacentTiles.Add (curPosV2 + Vector2.up);
-		adjacentTiles.Add (curPosV2 + Vector2.down);
-
-		return adjacentTiles;
-	}
-
-	IEnumerator RefineryProductionAnimation() {
-		SetAnimTrigger ("Producing");
-		yield return new WaitForSeconds (productionAnimationTime);
-		SetAnimTrigger ("Waiting");
 	}
 }
