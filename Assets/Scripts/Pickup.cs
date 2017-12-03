@@ -97,6 +97,30 @@ public class ResourcePickup : Pickup {
 	public static ResourcePickup GetAtPosition(Vector2 position) {
 		return TerrainManager.instance.GetPickupAtPosition(position) as ResourcePickup;
 	}
+
+	public void AnimateMove(Vector3 endPos, bool forwards, int count) {
+		for (int i = 0; i < count; i++) {
+			GameObject newResource = TerrainManager.CreateResource (info);
+			ResourceLerp lerper = newResource.AddComponent<ResourceLerp> ();
+			if (forwards) {
+				lerper.Init (gameObjects[0].transform.position, endPos, i);
+			} else {
+				gameObjects [gameObjects.Count - i - 1].GetComponentInChildren<Renderer> ().enabled = false;
+				lerper.cb = RevealResource;
+				lerper.Init (endPos, gameObjects[0].transform.position, i);
+			}
+		}
+	}
+
+	public void RevealResource() {
+		foreach (GameObject go in gameObjects) {
+			Renderer rend = go.GetComponentInChildren<Renderer> ();
+			if (!rend.enabled) {
+				rend.enabled = true;
+				break;
+			}
+		}
+	}
 }
 
 [System.Serializable]

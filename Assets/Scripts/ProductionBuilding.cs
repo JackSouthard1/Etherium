@@ -16,6 +16,10 @@ public class ProductionBuilding : Building
 	public int resourcesProducedPerCycle = 1;
 	public int turnWaitPerResource;
 
+	[Header("Animation")]
+	public bool movesResources = false;
+	public Transform productionCenter;
+
 	protected int turnsUntilNextResource;
 
 	Vector3 spawnPos;
@@ -92,6 +96,10 @@ public class ProductionBuilding : Building
 
 			TerrainManager.instance.SpawnResource (position: spawnPos, info: ResourceInfo.GetInfoFromType (resourceType), island: island);
 			supply -= 1;
+		}
+
+		if (movesResources) {
+			ResourcePickup.GetAtPosition (TerrainManager.PosToV2 (spawnPos)).AnimateMove (productionCenter.position, false, resourcesProducedPerCycle);
 		}
 
 		SavedGame.UpdateBuildingSupply (this);

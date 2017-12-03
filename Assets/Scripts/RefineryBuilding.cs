@@ -64,7 +64,12 @@ public class RefineryBuilding : ProductionBuilding
 			if (totalResourceCount < resourcesConsumedPerCycle)
 				return false;
 
-			TerrainManager.instance.ConsumeResources (resourcesToConsume, amountsToConsume);
+			if (movesResources) {
+				TerrainManager.instance.PullResources (resourcesToConsume, amountsToConsume, productionCenter.position);
+			} else {
+				TerrainManager.instance.ConsumeResources (resourcesToConsume, amountsToConsume);
+			}
+
 			SetAnimBool ("Producing", true);
 			return true;
 		}

@@ -232,11 +232,8 @@ public class TerrainManager : MonoBehaviour {
 		if (ResourcePickup.IsAtPosition(posV2)) {
 			ResourcePickup curResource = ResourcePickup.GetAtPosition(posV2);
 			if (curResource.info.type == info.type) {
-				GameObject resourceGO = Instantiate (resourcePrefab, island.transform);
+				GameObject resourceGO = CreateResource (info, island.transform);
 				resourceGO.transform.position = new Vector3(position.x, 0f, position.z);
-				resourceGO.gameObject.GetComponentInChildren<MeshFilter> ().mesh = info.mesh;
-				resourceGO.gameObject.GetComponentInChildren<MeshRenderer> ().materials[0].color = info.colorDark;
-				resourceGO.gameObject.GetComponentInChildren<MeshRenderer> ().materials[1].color = info.colorLight;
 
 				curResource.gameObjects.Add (resourceGO);
 				resourceGO.transform.Translate (Vector3.up * ((stackHeight * (curResource.gameObjects.Count - 1)) + startingHeight));
@@ -251,17 +248,14 @@ public class TerrainManager : MonoBehaviour {
 				return null;
 			}
 		} else {
-			GameObject resourceGO = Instantiate (resourcePrefab, island.transform);
+			GameObject resourceGO = CreateResource (info, island.transform);
 			resourceGO.transform.position = new Vector3(position.x, 0f, position.z);
 			ResourcePickup resource = new ResourcePickup (info, resourceGO, island);
 
-			resourceGO.gameObject.GetComponentInChildren<MeshFilter> ().mesh = info.mesh;
-			resourceGO.gameObject.GetComponentInChildren<MeshRenderer> ().materials[0].color = info.colorDark;
-			resourceGO.gameObject.GetComponentInChildren<MeshRenderer> ().materials[1].color = info.colorLight;
 			pickups.Add (posV2, resource);
 			island.pickups.Add (resource);
-
 			resourceGO.transform.Translate (Vector3.up * startingHeight);
+
 			if (!initialSpawn && !GameManager.isLoadingFromSave) {
 				SavedGame.UpdatePickups ();
 				UpdateResources ();
@@ -269,6 +263,16 @@ public class TerrainManager : MonoBehaviour {
 
 			return resource;
 		}
+	}
+
+	public static GameObject CreateResource(ResourceInfo info, Transform parent = null) {
+		GameObject resourceGO = Instantiate (TerrainManager.instance.resourcePrefab, parent);
+
+		resourceGO.gameObject.GetComponentInChildren<MeshFilter> ().mesh = info.mesh;
+		resourceGO.gameObject.GetComponentInChildren<MeshRenderer> ().materials[0].color = info.colorDark;
+		resourceGO.gameObject.GetComponentInChildren<MeshRenderer> ().materials[1].color = info.colorLight;
+
+		return resourceGO;
 	}
 
 	public WeaponPickup SpawnWeapon (Vector3 position, WeaponInfo info, Island island) {
@@ -325,6 +329,14 @@ public class TerrainManager : MonoBehaviour {
 
 		PickupObjects (objectsToPickup, amountsToConsume);
 		crafting.TestForBlueprints ();
+	}
+
+	public void PullResources (List<ResourcePickup> consumedResources, List<int> amountsToConsume, Vector3 targetPos) {
+		for (int i = 0; i < consumedResources.Count; i++) {
+			consumedResources [i].AnimateMove (targetPos, true, amountsToConsume [i]);
+		}
+
+		ConsumeResources (consumedResources, amountsToConsume);
 	}
 
 	public void PickupWeapon (WeaponPickup weapon) {
