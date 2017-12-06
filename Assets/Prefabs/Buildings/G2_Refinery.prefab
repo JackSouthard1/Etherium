@@ -256,7 +256,7 @@ GameObject:
   - component: {fileID: 65982135289212454}
   - component: {fileID: 114841096947204344}
   m_Layer: 8
-  m_Name: Y1_Refinery
+  m_Name: G2_Refinery
   m_TagString: Building
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1229,10 +1229,10 @@ MonoBehaviour:
   pad: {fileID: 0}
   supply: 50
   autoCycles: 1
-  resourceType: 2
+  resourceType: 6
   resourcesProducedPerCycle: 1
-  turnWaitPerResource: 10
+  turnWaitPerResource: 8
   movesResources: 1
   productionCenter: {fileID: 4123918071699630}
-  consumedType: 1
-  resourcesConsumedPerCycle: 4
+  consumedType: 5
+  resourcesConsumedPerCycle: 2

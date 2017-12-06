@@ -39,14 +39,21 @@ public struct ResourceInfo {
 	public Sprite sprite;
 	public Color colorLight;
 	public Color colorDark;
+	public bool hasTile;
 	public Color tileColor;
 	public Mesh mesh;
 	public enum ResourceType
 	{
 		None,
 		Y1,
+		Y2,
+		Y3,
 		G1,
-		P1
+		G2,
+		G3,
+		P1,
+		P2,
+		P3
 	};
 	public ResourceType type;
 
@@ -65,6 +72,7 @@ public struct ResourceInfo {
 
 	public static int GetIndexFromType(ResourceType type) {
 		for (int i = 0; i < TerrainManager.instance.resourceInfos.Count; i++) {
+//			Debug.Log (TerrainManager.instance.resourceInfos [i].type + "     " + type);
 			if (TerrainManager.instance.resourceInfos [i].type == type)
 				return i;
 		}
