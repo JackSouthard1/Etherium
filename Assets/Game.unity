@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44824833, g: 0.49827534, b: 0.57558256, a: 1}
+  m_IndirectSpecularColor: {r: 0.44824868, g: 0.49827576, b: 0.575583, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -4877,7 +4877,9 @@ MonoBehaviour:
     recipe:
       rows: []
     anchorOffset: {x: 0, y: 0}
-    extraInventorySpace: 0
+    type: 0
+    boost: 0
+    boostValue: 0
     pickupPrefab: {fileID: 0}
     augmentPrefab: {fileID: 0}
   - name: Backpack
@@ -4892,10 +4894,50 @@ MonoBehaviour:
           tileType: 0
           count: 2
     anchorOffset: {x: 0, y: 0}
-    extraInventorySpace: 5
+    type: 2
+    boost: 1
+    boostValue: 5
     pickupPrefab: {fileID: 1904551253670318, guid: 85093563476454b9b97c3d916e0af1a0,
       type: 2}
     augmentPrefab: {fileID: 1512133876029398, guid: fb1b1507a7cda406fb81abbe8ff8a38f,
+      type: 2}
+  - name: Armor
+    recipe:
+      rows:
+      - columns:
+        - resourceType: 4
+          tileType: 0
+          count: 2
+      - columns:
+        - resourceType: 4
+          tileType: 0
+          count: 2
+    anchorOffset: {x: 0, y: 0}
+    type: 3
+    boost: 0
+    boostValue: 1
+    pickupPrefab: {fileID: 1904551253670318, guid: 85093563476454b9b97c3d916e0af1a0,
+      type: 2}
+    augmentPrefab: {fileID: 1512133876029398, guid: babecada7c5a64596b57c5577ae9f7f2,
+      type: 2}
+  - name: Vision
+    recipe:
+      rows:
+      - columns:
+        - resourceType: 7
+          tileType: 0
+          count: 2
+      - columns:
+        - resourceType: 7
+          tileType: 0
+          count: 2
+    anchorOffset: {x: 0, y: 0}
+    type: 1
+    boost: 2
+    boostValue: 5
+    pickupPrefab: {fileID: 1904551253670318, guid: 85093563476454b9b97c3d916e0af1a0,
+      type: 2}
+    augmentPrefab: {fileID: 1360485411390864, guid: 6d607dd2e6bda49919d229e5d154a7d6,
       type: 2}
   buildBar: {fileID: 281457249}
   buildTime: 1.5
@@ -4912,7 +4954,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offset: {x: -3.54, y: 5, z: -3.54}
-  detectionRange: 30
+  baseDetectionRange: 30
   revealTile: {fileID: 1377789561812212, guid: 500c438f357f04fe7966e84cb62e1097, type: 2}
   scale: 0.1
 --- !u!114 &919949636
@@ -5654,20 +5696,6 @@ Light:
   m_Lightmapping: 4
   m_AreaSize: {x: 1, y: 1}
   m_BounceIntensity: 1
-  m_FalloffTable:
-    m_Table[0]: 0
-    m_Table[1]: 0
-    m_Table[2]: 0
-    m_Table[3]: 0
-    m_Table[4]: 0
-    m_Table[5]: 0
-    m_Table[6]: 0
-    m_Table[7]: 0
-    m_Table[8]: 0
-    m_Table[9]: 0
-    m_Table[10]: 0
-    m_Table[11]: 0
-    m_Table[12]: 0
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
   m_ShadowRadius: 0
