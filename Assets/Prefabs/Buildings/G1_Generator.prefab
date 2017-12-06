@@ -56,7 +56,7 @@ GameObject:
   - component: {fileID: 65538370349511610}
   - component: {fileID: 114941819989696646}
   m_Layer: 8
-  m_Name: Generator
+  m_Name: G1_Generator
   m_TagString: Building
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -410,15 +410,14 @@ MonoBehaviour:
   standable: 1
   height: 0.5
   island: {fileID: 0}
-  pad: {fileID: 0}
-  supply: 50
   state: 0
   anim: {fileID: 0}
   coveredTiles: []
-  usesTurnedBasedAnimatinon: 0
+  pad: {fileID: 0}
+  supply: 50
+  autoCycles: 0
   resourceType: 2
+  resourcesProducedPerCycle: 1
   turnWaitPerResource: 5
-  isRefinery: 0
-  consumedType: 0
-  resourcesConsumed: 0
-  productionAnimationTime: 0
+  movesResources: 0
+  productionCenter: {fileID: 0}

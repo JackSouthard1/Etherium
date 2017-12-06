@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44824868, g: 0.49827576, b: 0.575583, a: 1}
+  m_IndirectSpecularColor: {r: 0.44824833, g: 0.49827534, b: 0.57558256, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -3888,13 +3888,25 @@ MonoBehaviour:
   setSpawns:
   - teir: 0
     type: 1
-    spawnID: 2
-  - teir: 0
-    type: 1
-    spawnID: 2
-  - teir: 0
-    type: 1
     spawnID: 0
+  - teir: 0
+    type: 1
+    spawnID: 3
+  - teir: 0
+    type: 1
+    spawnID: 3
+  - teir: 2
+    type: 1
+    spawnID: 1
+  - teir: 2
+    type: 0
+    spawnID: 1
+  - teir: 4
+    type: 1
+    spawnID: 2
+  - teir: 4
+    type: 1
+    spawnID: 2
   islandPrefab: {fileID: 1957064115911918, guid: 2445b5953a110497c9303ac250f66a2c,
     type: 2}
   count: 9
@@ -3911,31 +3923,97 @@ MonoBehaviour:
     enemyCount: 0
     enemyIDs: 00000000
   - layers:
-    - color: {r: 0.18431373, g: 0.46274513, b: 0.7372549, a: 0}
-    - color: {r: 0.2392157, g: 0.5568628, b: 0.8745099, a: 0}
-    - color: {r: 0.2627451, g: 0.6156863, b: 0.9725491, a: 0}
-    resourceIndexes: 02000000
-    enemyCount: 3
+    - color: {r: 0.63235295, g: 0.31887007, b: 0.14878891, a: 0}
+    - color: {r: 0.625, g: 0.37691295, b: 0.24356619, a: 0}
+    - color: {r: 0.6544118, g: 0.48228052, b: 0.38975996, a: 0}
+    resourceIndexes: 03000000
+    enemyCount: 1
     enemyIDs: 00000000
+  - layers:
+    - color: {r: 0.66098726, g: 0.18431373, b: 0.7372549, a: 0}
+    - color: {r: 0.6552867, g: 0.28319636, b: 0.71323526, a: 0}
+    - color: {r: 0.6788955, g: 0.36397058, b: 0.72794116, a: 0}
+    resourceIndexes: 00000000
+    enemyCount: 2
+    enemyIDs: 00000000
+  - layers:
+    - color: {r: 0.35196275, g: 0.7205882, b: 0.20663925, a: 0}
+    - color: {r: 0.3979844, g: 0.7205882, b: 0.27022058, a: 0}
+    - color: {r: 0.52616316, g: 0.7352941, b: 0.4433391, a: 0}
+    resourceIndexes: 04000000
+    enemyCount: 3
+    enemyIDs: 0000000001000000
+  - layers:
+    - color: {r: 0.20663925, g: 0.27398422, b: 0.7205882, a: 0}
+    - color: {r: 0.25951555, g: 0.3174409, b: 0.7058823, a: 0}
+    - color: {r: 0.3602941, g: 0.40704975, b: 0.7205882, a: 0}
+    resourceIndexes: 01000000
+    enemyCount: 3
+    enemyIDs: 0100000002000000
   resourceInfos:
   - sprite: {fileID: 21300000, guid: 615a8284df0f54a07aee15cfc9f23ef1, type: 3}
     colorLight: {r: 1, g: 0.7764706, b: 0.18431373, a: 1}
     colorDark: {r: 0.83137256, g: 0.64705884, b: 0.15686275, a: 1}
+    hasTile: 1
     tileColor: {r: 1, g: 0.8206661, b: 0.3455882, a: 1}
     mesh: {fileID: 4300016, guid: 45233cca447f7441d848a7b85f18232d, type: 3}
     type: 1
-  - sprite: {fileID: 21300000, guid: f16584b48e8bb44bb8bba8d220d45e31, type: 3}
-    colorLight: {r: 0.9372549, g: 0.25882354, b: 0.8784314, a: 1}
-    colorDark: {r: 0.7372549, g: 0.20784314, b: 0.69411767, a: 1}
-    tileColor: {r: 0, g: 0, b: 0, a: 0}
-    mesh: {fileID: 4300004, guid: 45233cca447f7441d848a7b85f18232d, type: 3}
+  - sprite: {fileID: 21300000, guid: 3af95e5e57cb3492297506a87ac4472e, type: 3}
+    colorLight: {r: 1, g: 0.77647066, b: 0.18431373, a: 1}
+    colorDark: {r: 0.8313726, g: 0.64705884, b: 0.15686275, a: 1}
+    hasTile: 0
+    tileColor: {r: 1, g: 0.8196079, b: 0.34509805, a: 1}
+    mesh: {fileID: 4300014, guid: 45233cca447f7441d848a7b85f18232d, type: 3}
+    type: 2
+  - sprite: {fileID: 21300000, guid: 332ef3d65d77c4083ad787c4eb8f6f59, type: 3}
+    colorLight: {r: 1, g: 0.77647066, b: 0.18431373, a: 1}
+    colorDark: {r: 0.8313726, g: 0.64705884, b: 0.15686275, a: 1}
+    hasTile: 0
+    tileColor: {r: 1, g: 0.8196079, b: 0.34509805, a: 1}
+    mesh: {fileID: 4300010, guid: 45233cca447f7441d848a7b85f18232d, type: 3}
     type: 3
   - sprite: {fileID: 21300000, guid: 0fc4b33e4d4a94eb7b2955cbd272b80b, type: 3}
     colorLight: {r: 0.29803923, g: 0.9568628, b: 0.40784317, a: 1}
     colorDark: {r: 0.23529413, g: 0.76470596, b: 0.32156864, a: 1}
-    tileColor: {r: 0.41911763, g: 1, b: 0.5159314, a: 1}
+    hasTile: 1
+    tileColor: {r: 0.5609428, g: 0.9632353, b: 0.4603698, a: 1}
     mesh: {fileID: 4300008, guid: 45233cca447f7441d848a7b85f18232d, type: 3}
-    type: 2
+    type: 4
+  - sprite: {fileID: 21300000, guid: 830304de49b5c4ce29f067680314a790, type: 3}
+    colorLight: {r: 0.29803923, g: 0.9568628, b: 0.40784317, a: 1}
+    colorDark: {r: 0.23529413, g: 0.76470596, b: 0.32156864, a: 1}
+    hasTile: 0
+    tileColor: {r: 0.41911763, g: 1, b: 0.5159314, a: 1}
+    mesh: {fileID: 4300006, guid: 45233cca447f7441d848a7b85f18232d, type: 3}
+    type: 5
+  - sprite: {fileID: 21300000, guid: dc230e348496a428681924aef02ec72a, type: 3}
+    colorLight: {r: 0.29803923, g: 0.9568628, b: 0.40784317, a: 1}
+    colorDark: {r: 0.23529413, g: 0.76470596, b: 0.32156864, a: 1}
+    hasTile: 0
+    tileColor: {r: 0.41911763, g: 1, b: 0.5159314, a: 1}
+    mesh: {fileID: 4300018, guid: 45233cca447f7441d848a7b85f18232d, type: 3}
+    type: 6
+  - sprite: {fileID: 21300000, guid: f16584b48e8bb44bb8bba8d220d45e31, type: 3}
+    colorLight: {r: 0.93725497, g: 0.25882354, b: 0.87843144, a: 1}
+    colorDark: {r: 0.7372549, g: 0.20784315, b: 0.69411767, a: 1}
+    hasTile: 0
+    tileColor: {r: 0, g: 0, b: 0, a: 1}
+    mesh: {fileID: 4300004, guid: 45233cca447f7441d848a7b85f18232d, type: 3}
+    type: 7
+  - sprite: {fileID: 21300000, guid: cbf04bb52fde64c5890ee9dfba409ce8, type: 3}
+    colorLight: {r: 0.93725497, g: 0.25882354, b: 0.87843144, a: 1}
+    colorDark: {r: 0.7372549, g: 0.20784315, b: 0.69411767, a: 1}
+    hasTile: 0
+    tileColor: {r: 0, g: 0, b: 0, a: 1}
+    mesh: {fileID: 4300002, guid: 45233cca447f7441d848a7b85f18232d, type: 3}
+    type: 8
+  - sprite: {fileID: 21300000, guid: f91ffef0069dc4e90b016e37930b47b1, type: 3}
+    colorLight: {r: 0.93725497, g: 0.25882354, b: 0.87843144, a: 1}
+    colorDark: {r: 0.7372549, g: 0.20784315, b: 0.69411767, a: 1}
+    hasTile: 0
+    tileColor: {r: 0, g: 0, b: 0, a: 1}
+    mesh: {fileID: 4300008, guid: 45233cca447f7441d848a7b85f18232d, type: 3}
+    type: 9
   resourcePrefab: {fileID: 1957892413181948, guid: 09a9dca98a4b3443c88611ce76cd310d,
     type: 2}
   stackHeight: 0.05
@@ -4616,23 +4694,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   buildingInfos:
-  - name: BasicFarm
+  - name: G1_Extractor
     recipe:
       rows:
       - columns:
         - resourceType: 1
-          tileType: 2
+          tileType: 4
           count: 2
     anchorOffset: {x: 0, y: 0}
     prefab: {fileID: 1436597290551580, guid: cf8d55e02a84d4646846a49bec3d1118, type: 2}
     mainColor: {r: 0.1583045, g: 0.89705884, b: 0.2551069, a: 0}
     secondaryColor: {r: 0.43382353, g: 0.43382353, b: 0.43382353, a: 0}
     alternateColor: {r: 0, g: 0, b: 0, a: 0}
-  - name: Extractor
+  - name: Y1_Extractor
     recipe:
       rows:
       - columns:
-        - resourceType: 3
+        - resourceType: 7
           tileType: 1
           count: 3
         - resourceType: 1
@@ -4643,15 +4721,15 @@ MonoBehaviour:
     mainColor: {r: 0.24313727, g: 0.9686275, b: 1, a: 0}
     secondaryColor: {r: 0.9096647, g: 0.24410684, b: 0.9485294, a: 0}
     alternateColor: {r: 0.86666673, g: 0.6509804, b: 0.18431373, a: 0}
-  - name: Refinery
+  - name: Y1_Refinery
     recipe:
       rows:
       - columns:
-        - resourceType: 1
+        - resourceType: 2
           tileType: 0
-          count: 1
+          count: 3
       - columns:
-        - resourceType: 3
+        - resourceType: 7
           tileType: 0
           count: 2
     anchorOffset: {x: 0, y: 1}
@@ -4659,17 +4737,85 @@ MonoBehaviour:
     mainColor: {r: 0.83137256, g: 0.64705884, b: 0.15686275, a: 1}
     secondaryColor: {r: 0.64705884, g: 0.052335653, b: 0.5985999, a: 1}
     alternateColor: {r: 0.86666673, g: 0.6509804, b: 0.18431373, a: 0}
-  - name: Teleporter
+  - name: Y2_Refinery
+    recipe:
+      rows:
+      - columns:
+        - resourceType: 3
+          tileType: 0
+          count: 3
+      - columns:
+        - resourceType: 8
+          tileType: 0
+          count: 2
+    anchorOffset: {x: 0, y: 1}
+    prefab: {fileID: 1755507051648512, guid: 6587edee3f02f4260ae8e51f4699df42, type: 2}
+    mainColor: {r: 0.83137256, g: 0.64705884, b: 0.15686275, a: 1}
+    secondaryColor: {r: 0.19598834, g: 0.9191176, b: 0.9191176, a: 1}
+    alternateColor: {r: 0.86666673, g: 0.6509804, b: 0.18431373, a: 0}
+  - name: G1_Refinery
+    recipe:
+      rows:
+      - columns:
+        - resourceType: 8
+          tileType: 0
+          count: 2
+      - columns:
+        - resourceType: 1
+          tileType: 0
+          count: 2
+    anchorOffset: {x: 0, y: 1}
+    prefab: {fileID: 1755507051648512, guid: 247b3c749eee34f0bb4ea452d539dac8, type: 2}
+    mainColor: {r: 0.83137256, g: 0.64705884, b: 0.15686275, a: 1}
+    secondaryColor: {r: 0.19598834, g: 0.9191176, b: 0.32066584, a: 1}
+    alternateColor: {r: 0.86666673, g: 0.6509804, b: 0.18431373, a: 0}
+  - name: G2_Refinery
+    recipe:
+      rows:
+      - columns:
+        - resourceType: 9
+          tileType: 0
+          count: 2
+      - columns:
+        - resourceType: 2
+          tileType: 0
+          count: 2
+    anchorOffset: {x: 0, y: 1}
+    prefab: {fileID: 1755507051648512, guid: e8b18e0051b074f36a06ce96e14832e1, type: 2}
+    mainColor: {r: 0.83137256, g: 0.64705884, b: 0.15686275, a: 1}
+    secondaryColor: {r: 0.5586073, g: 0.9044118, b: 0.61822873, a: 1}
+    alternateColor: {r: 0.86666673, g: 0.6509804, b: 0.18431373, a: 0}
+  - name: P1_Refinery
     recipe:
       rows:
       - columns:
         - resourceType: 1
           tileType: 0
-          count: 3
-    anchorOffset: {x: 0, y: 0}
-    prefab: {fileID: 1769193789467524, guid: 25ec0d0730435480398506f509158f9b, type: 2}
-    mainColor: {r: 0.24313727, g: 0.9686275, b: 1, a: 0}
-    secondaryColor: {r: 0.9096647, g: 0.24410684, b: 0.9485294, a: 0}
+          count: 4
+      - columns:
+        - resourceType: 7
+          tileType: 0
+          count: 2
+    anchorOffset: {x: 0, y: 1}
+    prefab: {fileID: 1755507051648512, guid: e611269357edc427eb5217243107a154, type: 2}
+    mainColor: {r: 0.83137256, g: 0.64705884, b: 0.15686275, a: 1}
+    secondaryColor: {r: 0.9044118, g: 0.2527033, b: 0.85946643, a: 1}
+    alternateColor: {r: 0.86666673, g: 0.6509804, b: 0.18431373, a: 0}
+  - name: P2_Refinery
+    recipe:
+      rows:
+      - columns:
+        - resourceType: 2
+          tileType: 0
+          count: 4
+      - columns:
+        - resourceType: 8
+          tileType: 0
+          count: 2
+    anchorOffset: {x: 0, y: 1}
+    prefab: {fileID: 1755507051648512, guid: f89f235ffdc9a420ba90b12c36e7618a, type: 2}
+    mainColor: {r: 0.83137256, g: 0.64705884, b: 0.15686275, a: 1}
+    secondaryColor: {r: 0.9044118, g: 0.2527033, b: 0.56282663, a: 1}
     alternateColor: {r: 0.86666673, g: 0.6509804, b: 0.18431373, a: 0}
   weaponInfos:
   - name: Default
@@ -5508,6 +5654,20 @@ Light:
   m_Lightmapping: 4
   m_AreaSize: {x: 1, y: 1}
   m_BounceIntensity: 1
+  m_FalloffTable:
+    m_Table[0]: 0
+    m_Table[1]: 0
+    m_Table[2]: 0
+    m_Table[3]: 0
+    m_Table[4]: 0
+    m_Table[5]: 0
+    m_Table[6]: 0
+    m_Table[7]: 0
+    m_Table[8]: 0
+    m_Table[9]: 0
+    m_Table[10]: 0
+    m_Table[11]: 0
+    m_Table[12]: 0
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
   m_ShadowRadius: 0

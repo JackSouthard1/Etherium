@@ -324,16 +324,14 @@ MonoBehaviour:
   standable: 0
   height: 0.1
   island: {fileID: 0}
-  pad: {fileID: 0}
-  supply: 50
   state: 0
   anim: {fileID: 0}
   coveredTiles: []
+  pad: {fileID: 0}
+  supply: 50
   autoCycles: 0
-  resourceType: 2
+  resourceType: 4
   resourcesProducedPerCycle: 3
   turnWaitPerResource: 3
-  isRefinery: 0
-  consumedType: 0
-  resourcesConsumedPerCycle: 0
-  productionAnimationTime: 0
+  movesResources: 0
+  productionCenter: {fileID: 0}
