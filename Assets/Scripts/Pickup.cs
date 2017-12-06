@@ -173,8 +173,26 @@ public class WeaponPickup : Pickup {
 
 [System.Serializable]
 public class AugmentInfo : Craftable {
+	public enum Slot
+	{
+		None,
+		Top,
+		Back,
+		Side
+	}
+
+	public Slot type;
+
 	//TODO: is this really the best system for specifying what each augment does?
-	public int extraInventorySpace;
+	public enum BoostType
+	{
+		Health,
+		Inventory,
+		Vision,
+		CriticalChance
+	}
+	public BoostType boost;
+	public int boostValue;
 
 	public GameObject pickupPrefab;
 	public GameObject augmentPrefab;

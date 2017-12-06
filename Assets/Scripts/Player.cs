@@ -9,7 +9,7 @@ public class Player : MonoBehaviour {
 	public int movesPerResource;
 
 	public int defaultInventorySize;
-	int curInventorySize { get { return defaultInventorySize + body.augment.extraInventorySpace;} }
+	int curInventorySize { get { return defaultInventorySize + body.GetTotalBoostValue (AugmentInfo.BoostType.Inventory);} }
 
 	public GameObject idleIcon;
 	public HealthBar playerHealthBar;
@@ -54,7 +54,7 @@ public class Player : MonoBehaviour {
 			inventory = SavedGame.data.inventory;
 
 			SwitchWeapons (SavedGame.data.weaponIndex);
-			SwitchAugments (SavedGame.data.augmentIndex);
+			InitAugments (SavedGame.data.augmentIndexes);
 
 			body.health = SavedGame.data.playerHealth;
 		} else {
@@ -187,26 +187,30 @@ public class Player : MonoBehaviour {
 	}
 
 	public void PickupAugment (AugmentPickup newAugment) {
-		tm.PickupAugment (newAugment);
-
-		SwitchAugments (newAugment.info.ToIndex());
+		if (body.UpdateAugment (newAugment.info)) {
+			tm.PickupAugment (newAugment);
+		}
 	}
 
-	public void SwitchAugments (int augmentIndex) {
-		AugmentInfo currentAugmentInfo = body.augment;
+	public void InitAugments (List<int> augmentIndexes) {
+		for (int i = 0; i < augmentIndexes.Count; i++) {
+			body.augmentSlots [i].UpdateAugment (AugmentInfo.GetInfoFromIndex (augmentIndexes [i]));
+		}
+	}
 
-		if (currentAugmentInfo.ToIndex() > 0) {
+	public void DropAugment (int slotIndex) {
+		if (!body.augmentSlots[slotIndex].isEmpty) {
 			Vector2 posV2 = TerrainManager.PosToV2 (playerTransform.position);
 			if (tm.PadAtPosition (posV2) != null) {
 				return;
 			}
 
-			if (tm.SpawnAugment (playerTransform.position, currentAugmentInfo, body.location) == null) {
+			if (tm.SpawnAugment (playerTransform.position, body.augmentSlots[slotIndex].augment, body.location) == null) {
 				return;
 			}
 		}
 
-		body.UpdateAugment (AugmentInfo.GetInfoFromIndex(augmentIndex));
+		body.augmentSlots [slotIndex].UpdateAugment (AugmentInfo.GetInfoFromIndex(0));
 
 		if (!GameManager.isLoadingFromSave) {
 			GameManager.instance.SaveThisTurn ();

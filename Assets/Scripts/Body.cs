@@ -32,7 +32,8 @@ public class Body : MonoBehaviour {
 
 	[Space(10)]
 	public float health;
-	private float maxHealth;
+	private float originalMaxHealth;
+	private float maxHealth { get { return originalMaxHealth + GetTotalBoostValue(AugmentInfo.BoostType.Health);} }
 	public bool canHeal { get { return health < maxHealth && mind.myTurn; } }
 
 	[HideInInspector]
@@ -42,14 +43,12 @@ public class Body : MonoBehaviour {
 	[HideInInspector]
 	public HealthBar healthBar;
 
-	public Transform augmentParent;
-	[HideInInspector]
-	public AugmentInfo augment;
+	public List<SlotData> augmentSlots;
 	[HideInInspector]
 	public Animator anim;
 
 	void Awake () {
-		maxHealth = health;
+		originalMaxHealth = health;
 
 		weapon = GetComponentInChildren<Weapon> ();
 		model = transform.Find ("Model");
@@ -73,8 +72,14 @@ public class Body : MonoBehaviour {
 		if (healthBar != null)
 			healthBar.UpdateBar (health, maxHealth);
 
-		if (augment.ToIndex() == -1) {
-			augment = AugmentInfo.GetInfoFromIndex (0);
+		ResetAugments ();
+	}
+
+	void ResetAugments() {
+		foreach (SlotData slot in augmentSlots) {
+			if (slot.augment.ToIndex() == -1) {
+				slot.UpdateAugment(AugmentInfo.GetInfoFromIndex (0));
+			}
 		}
 	}
 
@@ -233,16 +238,62 @@ public class Body : MonoBehaviour {
 		CompleteAction ();
 	}
 
-	public void UpdateAugment(AugmentInfo newAugment) {
-		if(augmentParent.childCount > 0) {
-			Destroy(augmentParent.GetChild(0).gameObject);
-		}
-		
-		augment = newAugment;
+	public bool UpdateAugment(AugmentInfo newAugment) {
+		SlotData slot = GetAvailableSlot (newAugment.type);
+		if (slot != null) {
+			slot.UpdateAugment (newAugment);
 
-		if(newAugment.augmentPrefab != null) {
-			Instantiate (newAugment.augmentPrefab, augmentParent);
+			if (healthBar != null)
+				healthBar.UpdateBar (health, maxHealth);
+			
+			return true;
+		} else {
+			return false;
 		}
+	}
+
+	[System.Serializable]
+	public class SlotData
+	{
+		public Transform parent;
+		public AugmentInfo.Slot type;
+		[HideInInspector]
+		public AugmentInfo augment;
+
+		public void UpdateAugment(AugmentInfo newAugment) {
+			if (parent.childCount > 0) {
+				Destroy (parent.GetChild (0).gameObject);
+			}
+
+			augment = newAugment;
+
+			if(newAugment.augmentPrefab != null) {
+				Instantiate (newAugment.augmentPrefab, parent);
+			}
+		}
+
+		public bool isEmpty { get { return augment.ToIndex () <= 0; } }
+	}
+
+	public SlotData GetAvailableSlot(AugmentInfo.Slot slotType) {
+		foreach (SlotData slot in augmentSlots) {
+			if ((slot.type == slotType && slot.isEmpty) || slotType == AugmentInfo.Slot.None) {
+				return slot;
+			}
+		}
+
+		return null;
+	}
+
+	public int GetTotalBoostValue(AugmentInfo.BoostType boostType) {
+		int boostAmount = 0;
+		foreach (SlotData slot in augmentSlots) {
+			if (slot.augment.boost == boostType) {
+				boostAmount += slot.augment.boostValue;
+			}
+		}
+
+		return boostAmount;
 	}
 
 //	[System.Serializable]

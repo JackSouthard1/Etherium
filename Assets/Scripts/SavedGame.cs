@@ -20,7 +20,7 @@ public class SavedGame {
 
 	public SavedTilePos playerPosition;
 	public int weaponIndex;
-	public int augmentIndex;
+	public List<int> augmentIndexes = new List<int>();
 	public float playerHealth;
 	public List<float> inventory = new List<float>();
 
@@ -31,6 +31,12 @@ public class SavedGame {
 	public static void Init(int _seed) {
 		data = new SavedGame ();
 		data.seed = _seed;
+
+		//HACK: can we get this value from somewhere else?
+		data.augmentIndexes = new List<int> ();
+		for (int i = 0; i < 4; i++) {
+			data.augmentIndexes.Add(0);
+		}
 
 		GameManager.instance.SaveThisTurn ();
 	}
@@ -105,7 +111,9 @@ public class SavedGame {
 	public static void UpdatePlayerInfo() {
 		data.playerPosition = new SavedTilePos (TerrainManager.PosToV2 (Player.instance.body.transform.position));
 		data.weaponIndex = Player.instance.body.weapon.infoIndex;
-		data.augmentIndex = Player.instance.body.augment.ToIndex();
+		for (int i = 0; i < data.augmentIndexes.Count; i++) {
+			data.augmentIndexes [i] = Player.instance.body.augmentSlots [i].augment.ToIndex ();
+		}
 		data.inventory = Player.instance.inventory;
 		data.playerHealth = Player.instance.body.health;
 

@@ -8,7 +8,9 @@ public class MapReveal : MonoBehaviour {
 	private Transform player;
 	private Transform revealArea;
 	public Vector3 offset;
-	public float detectionRange;
+	public int baseDetectionRange = 30;
+
+	float detectionRange { get { return baseDetectionRange + Player.instance.body.GetTotalBoostValue (AugmentInfo.BoostType.Vision); } }
 
 	public GameObject revealTile;
 	public float scale;
