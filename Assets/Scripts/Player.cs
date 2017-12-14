@@ -6,7 +6,6 @@ public class Player : MonoBehaviour {
 	public static Player instance;
 
 	public Transform inventoryParent;
-	public int movesPerResource;
 
 	public int defaultInventorySize;
 	int curInventorySize { get { return defaultInventorySize + body.GetTotalBoostValue (AugmentInfo.BoostType.Inventory);} }
@@ -22,6 +21,8 @@ public class Player : MonoBehaviour {
 	[HideInInspector]
 	public List<float> inventory = new List<float>();
 	List<UIResource> inventoryUI = new List<UIResource>();
+	[HideInInspector]
+	public List<int> edibleResources = new List<int>();
 
 	public GameObject uiResourcePrefab;
 
@@ -40,6 +41,11 @@ public class Player : MonoBehaviour {
 		tm = TerrainManager.instance;
 
 		idleIcon.SetActive (false);
+
+		//TODO: maybe refactor the resource type system so that the enum only represents color and there is an int for the level
+		edibleResources.Add(ResourceInfo.GetIndexFromType(ResourceInfo.ResourceType.G1));
+		edibleResources.Add(ResourceInfo.GetIndexFromType(ResourceInfo.ResourceType.G2));
+		edibleResources.Add(ResourceInfo.GetIndexFromType(ResourceInfo.ResourceType.G3));
 	}
 
 	public void Init() {
@@ -217,35 +223,47 @@ public class Player : MonoBehaviour {
 		}
 	}
 
-	public void Heal(float resourcesConsumed) {
-		int resourceIndex = ResourceInfo.GetIndexFromType (ResourceInfo.ResourceType.G1);
+	public void Heal() {
+		float newResourceAmount;
+		int resourceIndex = GetLowestFoodIndex(1f, out newResourceAmount);
 
 		if (!body.canHeal)
 			return;
 
-		float newAmount = inventory [resourceIndex] - resourcesConsumed;
-		if (newAmount < 0f)
-			return;
-
-		inventory [resourceIndex] = Mathf.Round (newAmount * 10f) / 10f;
+		inventory [resourceIndex] = Mathf.Round (newResourceAmount * 1000f) / 1000f;
 		body.Heal (healAmount);
 
 		UpdateInventoryUI ();
 	}
 
 	public void Eat() {
-		float resourcesPerMove = 1f / ((float) movesPerResource);
-		int resourceIndex = ResourceInfo.GetIndexFromType (ResourceInfo.ResourceType.G1);
+		float newResourceAmount = 0f;
+		int resourceIndex = GetLowestFoodIndex (0.1f, out newResourceAmount);
 
-		float newAmount = inventory [resourceIndex] - resourcesPerMove;
-		if (newAmount < 0f) {
-			newAmount = 0f;
+		if (resourceIndex == -1) {
 			body.TakeDamage (0.5f);
+		} else {
+			//TODO: better way to fix float innacuracy?
+			inventory [resourceIndex] = Mathf.Round (newResourceAmount * 1000f) / 1000f;
 		}
-		//TODO: better way to fix float innacuracy?
-		inventory [resourceIndex] = Mathf.Round(newAmount * 10f) / 10f;
 
 		UpdateInventoryUI ();
+	}
+
+	int GetLowestFoodIndex (float baseAmountToConsume, out float newResourceAmount) {
+		newResourceAmount = 0f;
+
+		for (int i = 0; i < edibleResources.Count; i++) {
+			float multiplier = (i != 0) ? (3f * i) : 1;
+			newResourceAmount = inventory [edibleResources[i]] - (baseAmountToConsume  / multiplier);
+
+			if (newResourceAmount >= 0f) {
+				return edibleResources[i];
+			}
+		}
+
+		newResourceAmount = 0f;
+		return -1;
 	}
 
 	void UpdateInventoryUI () {

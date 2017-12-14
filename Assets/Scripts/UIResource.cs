@@ -35,14 +35,14 @@ public class UIResource : MonoBehaviour
 
 	public void UpdateVisual() {
 		if (amount > 0f) {
-			//int displayAmount = Mathf.FloorToInt (amount);
+			float displayAmount = Mathf.Round (amount * 10f) / 10f;
 
-			float textWidth = (float)(amount.ToString ().Length * numberWidth);
-			if(amount.ToString().Contains("."))
+			float textWidth = (float)(displayAmount.ToString ().Length * numberWidth);
+			if(displayAmount.ToString().Contains("."))
 				textWidth -= (numberWidth - decimalWidth);
 
 			amountText.rectTransform.sizeDelta = new Vector2 (textWidth, amountText.rectTransform.rect.height);
-			amountText.text = amount.ToString ();
+			amountText.text = displayAmount.ToString ();
 
 			SetVisible (true);
 		} else {
