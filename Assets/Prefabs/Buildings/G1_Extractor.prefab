@@ -328,10 +328,12 @@ MonoBehaviour:
   anim: {fileID: 0}
   coveredTiles: []
   pad: {fileID: 0}
-  supply: 50
+  hasLimitedSupply: 0
+  supply: 0
   autoCycles: 0
   resourceType: 4
   resourcesProducedPerCycle: 3
   turnWaitPerResource: 3
+  maxPadCapacity: 3
   movesResources: 0
   productionCenter: {fileID: 0}

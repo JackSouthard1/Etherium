@@ -7,6 +7,7 @@ public class ProductionBuilding : Building
 	[HideInInspector]
 	public Transform pad;
 
+	public bool hasLimitedSupply = true;
 	public int supply;
 
 	public bool autoCycles = false;
@@ -15,6 +16,7 @@ public class ProductionBuilding : Building
 	public ResourceInfo.ResourceType resourceType;
 	public int resourcesProducedPerCycle = 1;
 	public int turnWaitPerResource;
+	public int maxPadCapacity;
 
 	[Header("Animation")]
 	public bool movesResources = false;
@@ -67,13 +69,23 @@ public class ProductionBuilding : Building
 		}
 	}
 
+	bool exceedsPadCapacity {
+		get {
+			Vector2 posV2 = TerrainManager.PosToV2 (spawnPos);
+			if (!ResourcePickup.IsAtPosition (posV2)) {
+				return false;
+			}
+			return (ResourcePickup.GetAtPosition (posV2).gameObjects.Count >= maxPadCapacity);
+		}
+	}
+
 	protected bool shouldRecognizeTurn {
 		get {
 			if (state == BuildingState.Active) {
 				return true;
 			} else {
 				if (state == BuildingState.Waiting) {
-					if (!ResourcePickup.IsAtPosition (TerrainManager.PosToV2 (spawnPos)) && !TerrainManager.instance.PlayerAtPos (TerrainManager.PosToV2 (spawnPos))) {
+					if (!ResourcePickup.IsAtPosition (TerrainManager.PosToV2 (spawnPos)) && !TerrainManager.instance.PlayerAtPos (TerrainManager.PosToV2 (spawnPos)) && !exceedsPadCapacity) {
 						state = BuildingState.Active;
 
 						ResetAnimTrigger ("TurnEnd");
@@ -90,12 +102,18 @@ public class ProductionBuilding : Building
 		turnsUntilNextResource = turnWaitPerResource;
 
 		for (int i = 0; i < resourcesProducedPerCycle; i++) {
-			if (supply <= 0) {
+			if (hasLimitedSupply && supply <= 0) {
+				break;
+			}
+
+			if (exceedsPadCapacity) {
 				break;
 			}
 
 			TerrainManager.instance.SpawnResource (position: spawnPos, info: ResourceInfo.GetInfoFromType (resourceType), island: island);
-			supply -= 1;
+			if (hasLimitedSupply) {
+				supply -= 1;
+			}
 		}
 
 		if (movesResources) {
@@ -108,7 +126,7 @@ public class ProductionBuilding : Building
 			state = BuildingState.Waiting;
 		}
 
-		if (supply <= 0) {
+		if (hasLimitedSupply && supply <= 0) {
 			Deactivate ();
 		}
 	}
