@@ -60,11 +60,14 @@ public class Island : MonoBehaviour {
 		gm = GameManager.instance;
 	}
 
-	public void InitIsland(List<Vector2> _tilePositions, Vector3 civilizedPosition, int index) {
+	public void InitIsland(List<Vector2> _tilePositions, Vector3 civilizedPosition, int index, int _teir) {
 		islandIndex = index;
 		targetPos = civilizedPosition;
 //		teir = Mathf.Clamp(Mathf.FloorToInt(transform.position.magnitude / tm.teirDstIntervals), 0, tm.teirs.Length - 1);
-		teir = Mathf.Clamp(diffuculty, 0, tm.teirs.Length - 1);
+		if (_teir > (tm.teirs.Length - 1)) {
+			_teir = tm.teirs.Length - 1;
+		}
+		this.teir = _teir;
 		teirInfo = tm.teirs [teir];
 
 		setSpawns = tm.GetSetSpawns (teir);

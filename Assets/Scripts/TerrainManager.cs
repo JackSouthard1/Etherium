@@ -22,7 +22,7 @@ public class TerrainManager : MonoBehaviour {
 
 	[Space(10)]
 	[Header("Teirs")]
-	public float teirDstIntervals;
+	public int islandsPerTeir;
 	public Teir[] teirs;
 
 	[Space(10)]
@@ -78,6 +78,22 @@ public class TerrainManager : MonoBehaviour {
 //		count = Mathf.RoundToInt ((mapSize * mapSize) / islandSize);
 		islands = new Island[count];
 		List<TileGroup> tileGroups = GetTileGroups ();
+		List<TileGroup> sortedGroups = new List<TileGroup>(tileGroups);
+		sortedGroups.Sort (CompareIslands);
+
+		Dictionary<Vector2, int> tierIndexes = new Dictionary<Vector2, int>();
+		int curTier = 0;
+		int curIslandsInTeir = 1;
+
+		for (int i = 0; i < sortedGroups.Count; i++) {
+			tierIndexes.Add (sortedGroups[i].tilePositions[0], curTier);
+
+			curIslandsInTeir++;
+			if (curIslandsInTeir >= islandsPerTeir) {
+				curIslandsInTeir = 0;
+				curTier++;
+			}
+		}
 
 		int sqrtSize = Mathf.CeilToInt (Mathf.Sqrt (tileGroups.Count));
 		float[] bottomOffsets = new float[sqrtSize];
@@ -131,13 +147,27 @@ public class TerrainManager : MonoBehaviour {
 			Island islandScript = island.GetComponent<Island> ();
 			islandScript.diffuculty = Mathf.RoundToInt (i % sqrtSize + Mathf.FloorToInt(i / sqrtSize));
 			islands [i] = islandScript;
-
-			islandScript.InitIsland (centeredTilePositions, targetPos, i);
+			int islandTeir = tierIndexes [tileGroups[i].tilePositions[0]];
+			islandScript.InitIsland (centeredTilePositions, targetPos, i, islandTeir);
 		}
 
 		if (!GameManager.isLoadingFromSave) {
 			SavedGame.UpdatePickups ();
 		}
+	}
+
+	int CompareIslands(TileGroup groupA, TileGroup groupB) {
+		Vector2 a = groupA.tilePositions [0];
+		Vector2 b = groupB.tilePositions [0];
+
+		float da = a.sqrMagnitude;
+		float db = b.sqrMagnitude;
+
+		if (da < db)
+			return -1;
+		else if (db < da)
+			return 1;
+		return 0;
 	}
 
 	public void SpawnPlayer() {
@@ -779,6 +809,16 @@ public class TerrainManager : MonoBehaviour {
 			position = _tilePosition;
 		}
 	}
+
+//	public class TierIndexData {
+//		public int tier;
+//		public int index;
+//
+//		public TierIndexData (int _tier, int _index) {
+//			tier = _tier;
+//			index = _index;
+//		}
+//	}
 
 	public class TileGroup {
 		public int islandIndex;
