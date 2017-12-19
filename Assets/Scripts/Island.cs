@@ -152,15 +152,14 @@ public class Island : MonoBehaviour {
 				ResourceInfo.ResourceType resourceInfoType;
 				Color tileColor;
 
+				ResourceInfo resourceInfo = new ResourceInfo ();
 				if (resourceTileSpawnIndexs.Contains (index) && !GameManager.isLoadingFromSave) {
 					int resourceIndex = tileSpawnIDs [resourceSpawnListIndex];
 					resourceSpawnListIndex++;
 
-					ResourceInfo resourceInfo = ResourceInfo.GetInfoFromIndex(resourceIndex);
+					resourceInfo = ResourceInfo.GetInfoFromIndex(resourceIndex);
 
-					for (int i = 0; i < resourcesPerTile; i++) {
-						tm.SpawnResource(position: transform.TransformPoint(position), info: resourceInfo, island: GetComponent<Island>(), initialSpawn: true);
-					}
+
 
 					if (resourceInfo.hasTile) {
 						resourceInfoType = resourceInfo.type;
@@ -179,6 +178,11 @@ public class Island : MonoBehaviour {
 				tiles [index] = tileInfo;
 				tm.tiles.Add (new Vector2 (tile.x + transform.position.x, tile.y + transform.position.z), tileInfo);
 
+				if (resourceTileSpawnIndexs.Contains (index) && !GameManager.isLoadingFromSave) {
+					for (int i = 0; i < resourcesPerTile; i++) {
+						tm.SpawnResource(position: transform.TransformPoint(position), info: resourceInfo, island: GetComponent<Island>(), initialSpawn: true);
+					}
+				}
 				//TODO: it's kinda dumb to have this if statement twice
 				if (resourceTileSpawnIndexs.Contains (index) && tileInfo.resourceType != ResourceInfo.ResourceType.None && !GameManager.isLoadingFromSave) {
 					SavedGame.AddResourceTile (tileInfo);

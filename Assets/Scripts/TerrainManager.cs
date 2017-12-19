@@ -260,40 +260,61 @@ public class TerrainManager : MonoBehaviour {
 			startingHeight = PadAtPosition (posV2).GetValueOrDefault (position.y);
 		}
 
-		if (ResourcePickup.IsAtPosition(posV2)) {
-			ResourcePickup curResource = ResourcePickup.GetAtPosition(posV2);
-			if (curResource.info.type == info.type) {
-				GameObject resourceGO = CreateResource (info, island.transform);
-				resourceGO.transform.position = new Vector3(position.x, 0f, position.z);
+		List<Vector2> allDirections = new List<Vector2> () {Vector2.zero, Vector2.right, Vector2.up, Vector2.left, Vector2.down };
 
-				curResource.gameObjects.Add (resourceGO);
-				resourceGO.transform.Translate (Vector3.up * ((stackHeight * (curResource.gameObjects.Count - 1)) + startingHeight));
+		foreach (Vector2 direction in allDirections) {
+			Vector2 posToCheck = posV2 + direction;
+//			island = tiles [posToCheck].island;
 
-				if (!initialSpawn && !GameManager.isLoadingFromSave) {
-					UpdateResources ();
-					SavedGame.UpdatePickups ();
+			if (GetTileAtPosition (posToCheck) != null) {
+				float posHeightOffset = GetTileAtPosition (posToCheck).transform.position.y - GetTileAtPosition (posV2).transform.position.y;
+
+				if (ResourcePickup.IsAtPosition (posToCheck)) {
+					ResourcePickup curResource = ResourcePickup.GetAtPosition (posToCheck);
+//					print ("Dir: " + direction + " Resource At Pos, Type: " + curResource.info.type);
+
+					if (curResource.info.type == info.type) {
+						GameObject resourceGO = CreateResource (info, island.transform);
+						resourceGO.transform.position = new Vector3 (posToCheck.x, 0f, posToCheck.y);
+
+						curResource.gameObjects.Add (resourceGO);
+						resourceGO.transform.Translate (Vector3.up * ((stackHeight * (curResource.gameObjects.Count - 1)) + startingHeight + posHeightOffset));
+
+						if (!initialSpawn && !GameManager.isLoadingFromSave) {
+							UpdateResources ();
+							SavedGame.UpdatePickups ();
+						}
+
+						return curResource;
+					}
+				} else {
+//					print ("Dir: " + direction + " creating new resource");
+
+					GameObject resourceGO = CreateResource (info, island.transform);
+					float height = 0f;
+					if (GetTileAtPosition (posToCheck)) {
+						height = GetTileAtPosition (posToCheck).transform.position.y;
+					}
+					resourceGO.transform.position = new Vector3 (posToCheck.x, 0f, posToCheck.y);
+					ResourcePickup resource = new ResourcePickup (info, resourceGO, island);
+
+					pickups.Add (posToCheck, resource);
+					island.pickups.Add (resource);
+					resourceGO.transform.Translate (Vector3.up * (startingHeight + posHeightOffset));
+
+					if (!initialSpawn && !GameManager.isLoadingFromSave) {
+						SavedGame.UpdatePickups ();
+						UpdateResources ();
+					}
+
+					return resource;
 				}
-
-				return curResource;
 			} else {
-				return null;
+//				print ("Dir: " + direction + " no tile at pos:" + posToCheck);
 			}
-		} else {
-			GameObject resourceGO = CreateResource (info, island.transform);
-			resourceGO.transform.position = new Vector3(position.x, 0f, position.z);
-			ResourcePickup resource = new ResourcePickup (info, resourceGO, island);
-
-			pickups.Add (posV2, resource);
-			island.pickups.Add (resource);
-			resourceGO.transform.Translate (Vector3.up * startingHeight);
-
-			if (!initialSpawn && !GameManager.isLoadingFromSave) {
-				SavedGame.UpdatePickups ();
-				UpdateResources ();
-			}
-
-			return resource;
 		}
+
+		return null;
 	}
 
 	public static GameObject CreateResource(ResourceInfo info, Transform parent = null) {
