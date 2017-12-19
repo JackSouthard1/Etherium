@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44824868, g: 0.49827576, b: 0.575583, a: 1}
+  m_IndirectSpecularColor: {r: 0.44824833, g: 0.49827534, b: 0.57558256, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -3907,13 +3907,14 @@ MonoBehaviour:
   - teir: 4
     type: 1
     spawnID: 2
+  mapCenter: {x: 0, y: 0}
   islandPrefab: {fileID: 1957064115911918, guid: 2445b5953a110497c9303ac250f66a2c,
     type: 2}
-  count: 9
-  spacing: 2
-  mapSize: 15
+  count: 16
+  spacing: 5
+  mapSize: 20
   islands: []
-  teirDstIntervals: 10
+  islandsPerTeir: 2
   teirs:
   - layers:
     - color: {r: 0.18431373, g: 0.46274513, b: 0.7372549, a: 0}
@@ -4969,12 +4970,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inventoryParent: {fileID: 2083233573}
-  movesPerResource: 10
   defaultInventorySize: 10
   idleIcon: {fileID: 1228009915}
   playerHealthBar: {fileID: 1398767756}
   body: {fileID: 0}
   inventory: []
+  edibleResources: 
   uiResourcePrefab: {fileID: 1231923437215244, guid: 176c95135f840468098990ee7c8d1fa1,
     type: 2}
 --- !u!114 &919949637
@@ -5696,6 +5697,20 @@ Light:
   m_Lightmapping: 4
   m_AreaSize: {x: 1, y: 1}
   m_BounceIntensity: 1
+  m_FalloffTable:
+    m_Table[0]: 0
+    m_Table[1]: 0
+    m_Table[2]: 0
+    m_Table[3]: 0
+    m_Table[4]: 0
+    m_Table[5]: 0
+    m_Table[6]: 0
+    m_Table[7]: 0
+    m_Table[8]: 0
+    m_Table[9]: 0
+    m_Table[10]: 0
+    m_Table[11]: 0
+    m_Table[12]: 0
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
   m_ShadowRadius: 0

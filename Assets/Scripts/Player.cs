@@ -64,6 +64,7 @@ public class Player : MonoBehaviour {
 
 			body.health = SavedGame.data.playerHealth;
 		} else {
+			playerTransform.position = new Vector3 (tm.mapCenter.x, 0f, tm.mapCenter.y);
 			GameManager.instance.SaveThisTurn ();
 		}
 

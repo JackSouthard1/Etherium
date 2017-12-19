@@ -235,8 +235,11 @@ public class Island : MonoBehaviour {
 			civilizing = true;
 			startPos = transform.position;
 			Transform player = GameObject.FindGameObjectWithTag ("Player").transform;
-			player.parent = tm.GetTileAtPosition (TerrainManager.PosToV2 (player.position)).transform;
-			player.Find ("Model").localPosition = Vector3.zero;
+
+			if (tm.GetTileAtPosition (TerrainManager.PosToV2 (player.position)) != null) {
+				player.parent = tm.GetTileAtPosition (TerrainManager.PosToV2 (player.position)).transform;
+				player.Find ("Model").localPosition = Vector3.zero;
+			}
 		}
 
 		for (int i = 0; i < tiles.Length; i++) {

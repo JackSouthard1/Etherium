@@ -12,6 +12,7 @@ public class TerrainManager : MonoBehaviour {
 
 	[Space(10)]
 	[Header("Islands")]
+	public Vector2 mapCenter;
 	public GameObject islandPrefab;
 	public int count;
 	public float spacing;
@@ -71,6 +72,7 @@ public class TerrainManager : MonoBehaviour {
 
 	void Awake () {
 		instance = this;
+
 		crafting = GameObject.Find ("GameManager").GetComponent<Crafting> ();
 	}
 
@@ -131,9 +133,8 @@ public class TerrainManager : MonoBehaviour {
 
 		for (int i = 0; i < tileGroups.Count; i++) {
 			List<Vector2> tilePositions = tileGroups[i].tilePositions;
-
 			Vector3 pos = new Vector3 (tilePositions[0].x + bottomOffsets[i % sqrtSize], 0f, tilePositions[0].y + heightOffsets[i % sqrtSize, Mathf.FloorToInt(i / sqrtSize)]);
-			Vector3 targetPos = new Vector3 (tileGroups[i].tilePositions[0].x, 0f, tileGroups[i].tilePositions[0].y);
+			Vector3 targetPos = new Vector3 (tileGroups[i].tilePositions[0].x + (2f * mapCenter.x), 0f, tileGroups[i].tilePositions[0].y + (2f * mapCenter.y));
 
 			List<Vector2> centeredTilePositions = new List<Vector2> ();
 			foreach (Vector2 position in tilePositions) {
@@ -157,8 +158,8 @@ public class TerrainManager : MonoBehaviour {
 	}
 
 	int CompareIslands(TileGroup groupA, TileGroup groupB) {
-		Vector2 a = groupA.tilePositions [0];
-		Vector2 b = groupB.tilePositions [0];
+		Vector2 a = groupA.tilePositions [0] - mapCenter;
+		Vector2 b = groupB.tilePositions [0] - mapCenter;
 
 		float da = a.sqrMagnitude;
 		float db = b.sqrMagnitude;
@@ -696,7 +697,6 @@ public class TerrainManager : MonoBehaviour {
 	TileInfo[,] allTiles;
 
 	private List<TileGroup> GetTileGroups () {
-
 		// Make array of all tiles on map (assumign square map)
 		allTiles = new TileInfo[mapSize, mapSize];
 
@@ -710,10 +710,17 @@ public class TerrainManager : MonoBehaviour {
 		List<Vector2> groupAnchorPositions = new List<Vector2> ();
 		int index = 0;
 		int countSqr = Mathf.CeilToInt(Mathf.Sqrt((float)count));
-		float _spacing = Mathf.RoundToInt (mapSize / countSqr);
+		float _spacing = Mathf.RoundToInt (mapSize / (countSqr - 1));
+
+//		mapCenter = new Vector2 (Mathf.RoundToInt (Mathf.RoundToInt(countSqr / 2f) * _spacing), Mathf.RoundToInt (Mathf.RoundToInt(countSqr / 2f) * _spacing));
+		int centerCord = Mathf.RoundToInt(countSqr/2f) - 1;
 		for (int y = 0; y < countSqr; y++) {
 			for (int x = 0; x < countSqr; x++) {
-				Vector2 position = new Vector2 (Mathf.RoundToInt(x * _spacing), Mathf.RoundToInt(y * _spacing));
+				Vector2 position = new Vector2 (Mathf.RoundToInt (x * _spacing), Mathf.RoundToInt (y * _spacing));
+
+				if (x == centerCord && y == centerCord) {
+					mapCenter = position;
+				}
 				groupAnchorPositions.Add (position);
 
 				index++; 
