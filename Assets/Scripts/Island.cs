@@ -39,6 +39,13 @@ public class Island : MonoBehaviour {
 	private bool civilizing = false;
 
 	[Space(10)]
+	[Header("Rifts")]
+	private bool hasRift = false;
+	private int timeToStartRift;
+	public int minTime = 1;
+	public int maxTime = 3;
+
+	[Space(10)]
 	[Header("Voids")]
 	public int voidCount;
 	public List<int> voidTileIndexes;
@@ -101,8 +108,20 @@ public class Island : MonoBehaviour {
 		SaveEnemies ();
 	}
 
-	public void TestEnemyCount () {
-		if (!buildable) {
+	public void TurnOver () {
+		if (buildable) {
+			if (teir != 0) { // starter island cannot have rift
+				if (!hasRift) {
+					timeToStartRift--;
+					print ("Starting rift in turns: " + timeToStartRift);
+					if (timeToStartRift <= 0) {
+						StartRift ();
+					}
+				} else {
+					AdvanceRift ();
+				}
+			}
+		} else {
 			if (enemies.Count <= 0) {
 				StartCivilizing ();
 			}
@@ -271,14 +290,14 @@ public class Island : MonoBehaviour {
 	}
 
 	void Update () {
-		if (borderData.isideBorders.Count > 0) {
-			if (Input.GetKeyDown (KeyCode.R)) {
-				StartRift ();
-			}
-			if (Input.GetKeyDown (KeyCode.T)) {
-				AdvanceRift ();
-			}
-		}
+//		if (borderData.isideBorders.Count > 0) {
+//			if (Input.GetKeyDown (KeyCode.R)) {
+//				StartRift ();
+//			}
+//			if (Input.GetKeyDown (KeyCode.T)) {
+//				AdvanceRift ();
+//			}
+//		}
 
 		if (civilizing) {
 			float timeRatio = Mathf.Clamp01((Time.time - civStartTime) / timeToCivilize);
@@ -405,6 +424,7 @@ public class Island : MonoBehaviour {
 
 		if (teir != 0) {
 			UpdateBorder ();
+			ResetRift ();
 		}
 
 		if (!GameManager.isLoadingFromSave) {
@@ -464,6 +484,13 @@ public class Island : MonoBehaviour {
 	public int riftLength;
 	public int riftCurIndex;
 
+	public void ResetRift () {
+		timeToStartRift = Random.Range (minTime, maxTime);
+		print ("Rift starting in turns: " + timeToStartRift);
+
+		hasRift = false;
+	}
+
 	public void StartRift () {
 		riftLength = 0;
 		riftCurIndex = borderData.isideBorders [0].startIndex;
@@ -471,6 +498,8 @@ public class Island : MonoBehaviour {
 		GameObject riftMarkerGO = Instantiate (marker, transform);
 		riftMarkerGO.transform.position = new Vector3 (borderData.edges[riftCurIndex].position.x, 2f, borderData.edges[riftCurIndex].position.y);
 		riftMarkerGO.GetComponent<MeshRenderer> ().material.color = Color.red;
+
+		hasRift = true;
 	}
 
 	public void AdvanceRift () {
@@ -490,6 +519,7 @@ public class Island : MonoBehaviour {
 	}
 
 	public void EndRift () {
+		ResetRift ();
 		print ("Rift End");
 
 		GameObject finalRiftMarkerGO = Instantiate (marker, transform);

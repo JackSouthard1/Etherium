@@ -63,7 +63,7 @@ public class TerrainManager : MonoBehaviour {
 			buses [i].TurnEnd ();
 		}
 		for (int i = 0; i < islands.Length; i++) {
-			islands [i].TestEnemyCount ();
+			islands [i].TurnOver ();
 		}
 		for (int i = 0; i < buildings.Count; i++) {
 			buildings [i].TurnEnd ();
