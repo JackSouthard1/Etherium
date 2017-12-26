@@ -90,6 +90,9 @@ public class Island : MonoBehaviour {
 	}
 		
 	public void PlayerEnterIsland () {
+		if (hasRift) {
+			ResetRift ();
+		}
 		for (int i = 0; i < enemies.Count; i++) {
 			enemies [i].GetComponentInChildren<Mind> ().active = true;
 		}
@@ -485,6 +488,7 @@ public class Island : MonoBehaviour {
 	public int riftCurIndex;
 
 	public void ResetRift () {
+		ClearMarkers ();
 		timeToStartRift = Random.Range (minTime, maxTime);
 		print ("Rift starting in turns: " + timeToStartRift);
 
@@ -495,9 +499,7 @@ public class Island : MonoBehaviour {
 		riftLength = 0;
 		riftCurIndex = borderData.isideBorders [0].startIndex;
 
-		GameObject riftMarkerGO = Instantiate (marker, transform);
-		riftMarkerGO.transform.position = new Vector3 (borderData.edges[riftCurIndex].position.x, 2f, borderData.edges[riftCurIndex].position.y);
-		riftMarkerGO.GetComponent<MeshRenderer> ().material.color = Color.red;
+		DrawMarker (borderData.edges [riftCurIndex].position, 0f, Color.red);
 
 		hasRift = true;
 	}
@@ -509,9 +511,7 @@ public class Island : MonoBehaviour {
 			riftCurIndex = 0;
 		}
 
-		GameObject riftMarkerGO = Instantiate (marker, transform);
-		riftMarkerGO.transform.position = new Vector3 (borderData.edges[riftCurIndex].position.x, 1f, borderData.edges[riftCurIndex].position.y);
-		riftMarkerGO.GetComponent<MeshRenderer> ().material.color = Color.yellow;
+		DrawMarker (borderData.edges [riftCurIndex].position, 0f, Color.yellow);
 
 		if (riftCurIndex == borderData.isideBorders [0].endIndex) {
 			EndRift ();
@@ -521,22 +521,13 @@ public class Island : MonoBehaviour {
 	public void EndRift () {
 		ResetRift ();
 		print ("Rift End");
-
-		GameObject finalRiftMarkerGO = Instantiate (marker, transform);
-		finalRiftMarkerGO.transform.position = new Vector3 (borderData.edges[riftCurIndex].position.x, 2f, borderData.edges[riftCurIndex].position.y);
-		finalRiftMarkerGO.GetComponent<MeshRenderer> ().material.color = Color.red;
 	}
 
 	List<InsideBorderData> GetInsideBorderDatas () {
 		List<InsideBorderData> insideBorderData = new List<InsideBorderData> ();
 
 		Vector2 firstPos = borderData.edges [0].position;
-
-		// temp
-//		GameObject firstMarkerGO = Instantiate (marker, transform);
-//		firstMarkerGO.transform.position = new Vector3 (firstPos.x, 1f, firstPos.y);
-//		firstMarkerGO.GetComponent<MeshRenderer> ().material.color = Color.magenta;
-
+	
 		bool firstPosExposed = CornerExposed (firstPos);
 
 		int transitionStart;
@@ -575,10 +566,6 @@ public class Island : MonoBehaviour {
 
 		int transitionEnd;
 
-		GameObject transitionMarkerGO = Instantiate (marker, transform);
-		transitionMarkerGO.transform.position = new Vector3 (borderData.edges[transitionStart].position.x, 1f, borderData.edges[transitionStart].position.y);
-		transitionMarkerGO.GetComponent<MeshRenderer> ().material.color = Color.grey;
-
 		int _nextTile = transitionStart + 1;
 		bool secondPosExposed = CornerExposed (borderData.edges [_nextTile].position);
 		bool _nextCornerExposed = secondPosExposed;
@@ -597,10 +584,6 @@ public class Island : MonoBehaviour {
 		if (secondPosExposed) {
 			transitionEnd -= 1;
 		}
-
-		GameObject _transitionMarkerGO = Instantiate (marker, transform);
-		_transitionMarkerGO.transform.position = new Vector3 (borderData.edges[transitionEnd].position.x, 1f, borderData.edges[transitionEnd].position.y);
-		_transitionMarkerGO.GetComponent<MeshRenderer> ().material.color = new Color(1f,0.5f,1f,1f);
 
 		insideBorderData.Add (new InsideBorderData (transitionStart, transitionEnd));
 		return insideBorderData;
@@ -630,28 +613,19 @@ public class Island : MonoBehaviour {
 		Vector2 startingTilePosWorld = startingTilePosLocal + new Vector2 (transform.position.x, transform.position.z);
 		Vector2? startPos = GetExposedCorner (startingTilePosWorld);
 
-		tm.GetTileAtPosition (startingTilePosWorld).GetComponent<MeshRenderer> ().material.color = Color.cyan; // temp
 
 		// if tile is on inside of island, repeat until edge tile is found
 		while (startPos == null) {
 			startingTilePosLocal = tilePositions [Random.Range(0, tilePositions.Count - 1)];
 			startingTilePosWorld = startingTilePosLocal + new Vector2 (transform.position.x, transform.position.z);
 			startPos = GetExposedCorner (startingTilePosWorld);
-
-			tm.GetTileAtPosition (startingTilePosWorld).GetComponent<MeshRenderer> ().material.color = Color.red; // temp
 		}
-
-		tm.GetTileAtPosition (startingTilePosWorld).GetComponent<MeshRenderer> ().material.color = Color.green; // temp
-
-		GameObject firstMarkerGO = Instantiate (marker, transform);
-		firstMarkerGO.transform.localPosition = new Vector3 (startPos.Value.x, 0f, startPos.Value.y);
-		firstMarkerGO.GetComponent<MeshRenderer> ().material.color = Color.green; // temp
-		tm.GetTileAtPosition (startingTilePosWorld).GetComponent<MeshRenderer> ().material.color = Color.blue; // temp
-
-		borderEdges.Add(new TileEdge(new Vector2 (firstMarkerGO.transform.position.x, firstMarkerGO.transform.position.z)));
+			
+		Vector2 startPosWorld = new Vector2 (startPos.Value.x + transform.position.x, startPos.Value.y + transform.position.z); 
+		borderEdges.Add(new TileEdge(startPosWorld));
 
 		// Get Rest of edges
-		Vector2 anchorPos = new Vector2 (firstMarkerGO.transform.position.x, firstMarkerGO.transform.position.z);
+		Vector2 anchorPos = startPosWorld;
 		Vector2 firstPos = anchorPos;
 		Vector2? lastPos = null;
 
@@ -664,14 +638,10 @@ public class Island : MonoBehaviour {
 			}
 			TileEdge? nextEdge = GetNextEdge (firstPos, lastPos, anchorPos);
 			if (nextEdge != null) {
-				GameObject markerGO = Instantiate (marker, transform);
-				markerGO.transform.position = new Vector3 (nextEdge.Value.position.x, 0f, nextEdge.Value.position.y);
-				markerGO.GetComponent<MeshRenderer> ().material.color = Color.cyan;
-
 				borderEdges.Add (new TileEdge (nextEdge.Value.position));
 
 				lastPos = anchorPos;
-				anchorPos = new Vector2(markerGO.transform.position.x, markerGO.transform.position.z);
+				anchorPos = new Vector2(nextEdge.Value.position.x, nextEdge.Value.position.y);
 
 
 			} else {
@@ -733,9 +703,7 @@ public class Island : MonoBehaviour {
 			if (direction == Vector2.down) {
 				if (!foundNewEdge && !isFinalEdge) {
 					print ("Failed to find new edge at: " + pos);
-					GameObject failMarkerGO = Instantiate (marker, transform);
-					failMarkerGO.transform.position = new Vector3 (pos.x, 1f, pos.y);
-					failMarkerGO.GetComponent<MeshRenderer> ().material.color = Color.red; // temp
+					DrawMarker (pos, 1f, Color.red);
 				}
 			}
 		}
@@ -765,5 +733,23 @@ public class Island : MonoBehaviour {
 		}
 
 		return null;
+	}
+
+	List<GameObject> markers = new List<GameObject>();
+
+	void DrawMarker (Vector2 position, float height, Color color) {
+		Vector3 spawnPos = new Vector3 (position.x, height, position.y);
+		GameObject markerGO = Instantiate (marker, transform);
+		markerGO.transform.position = spawnPos;
+		markerGO.GetComponent<MeshRenderer> ().material.color = color;
+
+		markers.Add (markerGO);
+	}
+
+	void ClearMarkers () {
+		for (int i = 0; i < markers.Count; i++) {
+			Destroy (markers [i]);
+		}
+		markers.Clear ();
 	}
 }
