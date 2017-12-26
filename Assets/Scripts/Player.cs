@@ -11,6 +11,7 @@ public class Player : MonoBehaviour {
 	int curInventorySize { get { return defaultInventorySize + body.GetTotalBoostValue (AugmentInfo.BoostType.Inventory);} }
 
 	public GameObject idleIcon;
+	public Animator itemsUI;
 	public HealthBar playerHealthBar;
 
 	Transform playerTransform;
@@ -166,12 +167,19 @@ public class Player : MonoBehaviour {
 	}
 
 	public void PickupWeapon (WeaponPickup newWeapon) {
-		tm.PickupWeapon (newWeapon);
+		if (body.weapon.info.ToIndex () != 0) {
+			return;
+		}
 
+		tm.PickupWeapon (newWeapon);
 		SwitchWeapons (newWeapon.info.ToIndex ());
 	}
 
-	public void SwitchWeapons (int weaponIndex) {
+	public void DropWeapon() {
+		SwitchWeapons (0);
+	}
+
+	void SwitchWeapons (int weaponIndex) {
 		WeaponInfo currentWeaponInfo = body.weapon.info;
 
 		if (currentWeaponInfo.ToIndex() != 0) {
@@ -279,6 +287,10 @@ public class Player : MonoBehaviour {
 			if(uiResource.totalWidth > 0)
 				leftAnchor += (uiResource.totalWidth + inventoryPadding);
 		}
+	}
+
+	public void OpenItemsUI (bool open) {
+		itemsUI.SetBool ("Open", open);
 	}
 
 	public IEnumerator ShowIdleUI() {
