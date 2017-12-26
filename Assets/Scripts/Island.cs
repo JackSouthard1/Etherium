@@ -73,6 +73,7 @@ public class Island : MonoBehaviour {
 		setSpawns = tm.GetSetSpawns (teir);
 		tilePositions = _tilePositions;
 		GenerateTiles ();
+		MakeInitialBorder ();
 		bool alreadyCivilized = SavedGame.data.civilizedIslandIndexes.Contains (index);
 		if (!alreadyCivilized) {
 			SpawnEnemies ();
@@ -270,6 +271,15 @@ public class Island : MonoBehaviour {
 	}
 
 	void Update () {
+		if (borderData.isideBorders.Count > 0) {
+			if (Input.GetKeyDown (KeyCode.R)) {
+				StartRift ();
+			}
+			if (Input.GetKeyDown (KeyCode.T)) {
+				AdvanceRift ();
+			}
+		}
+
 		if (civilizing) {
 			float timeRatio = Mathf.Clamp01((Time.time - civStartTime) / timeToCivilize);
 
@@ -312,7 +322,7 @@ public class Island : MonoBehaviour {
 				pos = tilePositions [random];
 				attempts++;
 				if (attempts > 3) {
-					print (attempts + " Attempts Made");
+//					print (attempts + " Attempts Made");
 					break;
 				}
 			}
@@ -385,6 +395,18 @@ public class Island : MonoBehaviour {
 		buildable = true;
 		civilizing = false;
 
+		List<TileEdge> newEdges = new List<TileEdge> ();
+		foreach (TileEdge edge in borderData.edges) {
+			TileEdge newEdge = new TileEdge ();
+			newEdge.position = edge.position + (new Vector2 (targetPos.x, targetPos.z) - new Vector2 (startPos.x, startPos.z));
+			newEdges.Add (newEdge);
+		}
+		borderData.edges = newEdges;
+
+		if (teir != 0) {
+			UpdateBorder ();
+		}
+
 		if (!GameManager.isLoadingFromSave) {
 			SavedGame.UpdatePickups ();
 		}
@@ -400,11 +422,318 @@ public class Island : MonoBehaviour {
 		public Color color;
 	}
 
-//	public struct VoidInfo {
-//		public Vector2 position;
-//
-//		public VoidInfo (Vector2 _position) {
-//
-//		}
-//	}
+	// Borders
+	public class BorderData {
+		public List<TileEdge> edges = new List<TileEdge>();
+		public List<InsideBorderData> isideBorders = new List<InsideBorderData>();
+	}
+
+	public struct InsideBorderData {
+		public int startIndex;
+		public int endIndex;
+
+		public InsideBorderData (int _startIndex, int _endIndex) {
+			startIndex = _startIndex;
+			endIndex = _endIndex;
+		}
+	}
+
+	public struct TileEdge {
+		public Vector2 position;
+
+		public TileEdge (Vector2 _position) {
+			position = _position;
+		}
+	}
+
+	public BorderData borderData = new BorderData ();
+	public GameObject marker;
+
+	public void MakeInitialBorder () {
+		List<TileEdge> newEdgeData = GetBorderEdges ();
+
+		borderData.edges = newEdgeData;
+	}
+
+	public void UpdateBorder () {
+		List<InsideBorderData> newInsideBorderData = GetInsideBorderDatas ();
+
+		borderData.isideBorders = newInsideBorderData;
+	}
+
+	public int riftLength;
+	public int riftCurIndex;
+
+	public void StartRift () {
+		riftLength = 0;
+		riftCurIndex = borderData.isideBorders [0].startIndex;
+
+		GameObject riftMarkerGO = Instantiate (marker, transform);
+		riftMarkerGO.transform.position = new Vector3 (borderData.edges[riftCurIndex].position.x, 2f, borderData.edges[riftCurIndex].position.y);
+		riftMarkerGO.GetComponent<MeshRenderer> ().material.color = Color.red;
+	}
+
+	public void AdvanceRift () {
+		riftLength++;
+		riftCurIndex++;
+		if (riftCurIndex >= borderData.edges.Count) {
+			riftCurIndex = 0;
+		}
+
+		GameObject riftMarkerGO = Instantiate (marker, transform);
+		riftMarkerGO.transform.position = new Vector3 (borderData.edges[riftCurIndex].position.x, 1f, borderData.edges[riftCurIndex].position.y);
+		riftMarkerGO.GetComponent<MeshRenderer> ().material.color = Color.yellow;
+
+		if (riftCurIndex == borderData.isideBorders [0].endIndex) {
+			EndRift ();
+		}
+	}
+
+	public void EndRift () {
+		print ("Rift End");
+
+		GameObject finalRiftMarkerGO = Instantiate (marker, transform);
+		finalRiftMarkerGO.transform.position = new Vector3 (borderData.edges[riftCurIndex].position.x, 2f, borderData.edges[riftCurIndex].position.y);
+		finalRiftMarkerGO.GetComponent<MeshRenderer> ().material.color = Color.red;
+	}
+
+	List<InsideBorderData> GetInsideBorderDatas () {
+		List<InsideBorderData> insideBorderData = new List<InsideBorderData> ();
+
+		Vector2 firstPos = borderData.edges [0].position;
+
+		// temp
+//		GameObject firstMarkerGO = Instantiate (marker, transform);
+//		firstMarkerGO.transform.position = new Vector3 (firstPos.x, 1f, firstPos.y);
+//		firstMarkerGO.GetComponent<MeshRenderer> ().material.color = Color.magenta;
+
+		bool firstPosExposed = CornerExposed (firstPos);
+
+		int transitionStart;
+		if (firstPosExposed) {
+			// repeat until unexposed corner is found
+			int nextTile = 1;
+			bool nextCornerExposed = CornerExposed (borderData.edges [nextTile].position);
+
+			while (nextCornerExposed) {
+				nextTile++;
+				if (nextTile >= borderData.edges.Count) {
+					print ("Could not find a viable transition point");
+					return insideBorderData;
+				}
+
+				nextCornerExposed = CornerExposed (borderData.edges [nextTile].position);
+			}
+
+			transitionStart = nextTile - 1;
+		} else {
+			// repeat until exposed corner is found
+			int nextTile = 1;
+			bool nextCornerExposed = CornerExposed (borderData.edges [nextTile].position);
+
+			while (!nextCornerExposed) {
+				nextTile++;
+				if (nextTile >= borderData.edges.Count) {
+					print ("Could not find a viable transition point");
+					return insideBorderData;
+				}
+				nextCornerExposed = CornerExposed (borderData.edges [nextTile].position);
+			}
+
+			transitionStart = nextTile;
+		}
+
+		int transitionEnd;
+
+		GameObject transitionMarkerGO = Instantiate (marker, transform);
+		transitionMarkerGO.transform.position = new Vector3 (borderData.edges[transitionStart].position.x, 1f, borderData.edges[transitionStart].position.y);
+		transitionMarkerGO.GetComponent<MeshRenderer> ().material.color = Color.grey;
+
+		int _nextTile = transitionStart + 1;
+		bool secondPosExposed = CornerExposed (borderData.edges [_nextTile].position);
+		bool _nextCornerExposed = secondPosExposed;
+
+		while (_nextCornerExposed == secondPosExposed) {
+			_nextTile++;
+			if (_nextTile >= borderData.edges.Count) {
+				print ("Could not find a viable transition point");
+				return insideBorderData;
+			}
+			_nextCornerExposed = CornerExposed (borderData.edges [_nextTile].position);
+		}
+
+		transitionEnd = _nextTile;
+
+		if (secondPosExposed) {
+			transitionEnd -= 1;
+		}
+
+		GameObject _transitionMarkerGO = Instantiate (marker, transform);
+		_transitionMarkerGO.transform.position = new Vector3 (borderData.edges[transitionEnd].position.x, 1f, borderData.edges[transitionEnd].position.y);
+		_transitionMarkerGO.GetComponent<MeshRenderer> ().material.color = new Color(1f,0.5f,1f,1f);
+
+		insideBorderData.Add (new InsideBorderData (transitionStart, transitionEnd));
+		return insideBorderData;
+	}
+
+	bool CornerExposed (Vector2 pos) {
+		bool TileTopLeft 		= tm.GetTileAtPosition (pos + new Vector2 (-0.5f, 0.5f));
+		bool TileTopRight 		= tm.GetTileAtPosition (pos + new Vector2 (0.5f, 0.5f));
+		bool TileBottomLeft 	= tm.GetTileAtPosition (pos + new Vector2 (-0.5f, -0.5f));
+		bool TileBottomRight 	= tm.GetTileAtPosition (pos + new Vector2 (0.5f, -0.5f));
+
+		if (!TileTopLeft || !TileTopRight || !TileBottomLeft || !TileBottomRight) {
+			// must be on exposed edge
+//			print ("Marker at: " + pos + " is exposed");
+			return true;
+		} else {
+			// must be on an inside edge
+//			print ("Marker at: " + pos + " is not exposed");
+			return false;
+		}
+	}
+
+	List<TileEdge> GetBorderEdges () {
+		List<TileEdge> borderEdges = new List<TileEdge> ();
+
+		Vector2 startingTilePosLocal = tilePositions [tilePositions.Count - 1];
+		Vector2 startingTilePosWorld = startingTilePosLocal + new Vector2 (transform.position.x, transform.position.z);
+		Vector2? startPos = GetExposedCorner (startingTilePosWorld);
+
+		tm.GetTileAtPosition (startingTilePosWorld).GetComponent<MeshRenderer> ().material.color = Color.cyan; // temp
+
+		// if tile is on inside of island, repeat until edge tile is found
+		while (startPos == null) {
+			startingTilePosLocal = tilePositions [Random.Range(0, tilePositions.Count - 1)];
+			startingTilePosWorld = startingTilePosLocal + new Vector2 (transform.position.x, transform.position.z);
+			startPos = GetExposedCorner (startingTilePosWorld);
+
+			tm.GetTileAtPosition (startingTilePosWorld).GetComponent<MeshRenderer> ().material.color = Color.red; // temp
+		}
+
+		tm.GetTileAtPosition (startingTilePosWorld).GetComponent<MeshRenderer> ().material.color = Color.green; // temp
+
+		GameObject firstMarkerGO = Instantiate (marker, transform);
+		firstMarkerGO.transform.localPosition = new Vector3 (startPos.Value.x, 0f, startPos.Value.y);
+		firstMarkerGO.GetComponent<MeshRenderer> ().material.color = Color.green; // temp
+		tm.GetTileAtPosition (startingTilePosWorld).GetComponent<MeshRenderer> ().material.color = Color.blue; // temp
+
+		borderEdges.Add(new TileEdge(new Vector2 (firstMarkerGO.transform.position.x, firstMarkerGO.transform.position.z)));
+
+		// Get Rest of edges
+		Vector2 anchorPos = new Vector2 (firstMarkerGO.transform.position.x, firstMarkerGO.transform.position.z);
+		Vector2 firstPos = anchorPos;
+		Vector2? lastPos = null;
+
+		int attempts = 100;
+		bool borderComplete = false;
+		while (!borderComplete && attempts > 0) {
+			attempts--;
+			if (attempts == 0) {
+				print ("Failed to find new pos at: " + anchorPos + " LastPos: " + lastPos + " because ran out of attempts");
+			}
+			TileEdge? nextEdge = GetNextEdge (firstPos, lastPos, anchorPos);
+			if (nextEdge != null) {
+				GameObject markerGO = Instantiate (marker, transform);
+				markerGO.transform.position = new Vector3 (nextEdge.Value.position.x, 0f, nextEdge.Value.position.y);
+				markerGO.GetComponent<MeshRenderer> ().material.color = Color.cyan;
+
+				borderEdges.Add (new TileEdge (nextEdge.Value.position));
+
+				lastPos = anchorPos;
+				anchorPos = new Vector2(markerGO.transform.position.x, markerGO.transform.position.z);
+
+
+			} else {
+				borderComplete = true;
+			}
+		}
+
+		return borderEdges;
+	}
+
+	TileEdge? GetNextEdge (Vector2 firstPos, Vector2? lastPos, Vector2 pos) {
+		float newDir = 0f;
+		Vector2 newPos = Vector2.zero;
+
+		Vector2 rawTestLeft = new Vector2 (-0.5f, 0.5f);
+		Vector2 rawTestRight = new Vector2 (0.5f, 0.5f);
+
+		List<Vector2> allDirections = new List<Vector2> () { Vector2.right, Vector2.up, Vector2.left, Vector2.down };
+		bool foundNewEdge = false;
+		bool isFinalEdge = false;
+
+		foreach (Vector2 direction in allDirections) {
+			Vector2 posToCheck = pos + direction;
+			float degrees = -Vector2.SignedAngle (Vector2.up, direction);
+			Vector2 rotatedTestLeft = Quaternion.Euler (0, 0, degrees) * rawTestLeft;
+			Vector2 rotatedTestRight = Quaternion.Euler (0, 0, degrees) * rawTestRight;
+
+			if (direction == Vector2.right || direction == Vector2.left) {
+				rotatedTestLeft = -rotatedTestLeft;
+				rotatedTestRight = -rotatedTestRight;
+			}
+			
+			Vector2 posTestLeft = pos + rotatedTestLeft;
+//			posTestLeft = new Vector2 (Mathf.RoundToInt (posTestLeft.x), Mathf.RoundToInt (posTestLeft.y));
+			Vector2 posTestRight = pos + rotatedTestRight;
+//			posTestRight = new Vector2 (Mathf.RoundToInt (posTestRight.x), Mathf.RoundToInt (posTestRight.y));
+
+			// left test
+//				if (direction == Vector2.up) {
+//					print ("Dir: " + direction + "Left Check: " + posTestLeft + "Right Check: " + posTestRight);
+//				}
+			bool leftTile = TerrainManager.instance.isTileAtPosition (posTestLeft);
+			bool rightTile = TerrainManager.instance.isTileAtPosition (posTestRight);
+
+			if ((leftTile && !rightTile) || (!leftTile && rightTile)) {
+				if (posToCheck != lastPos) {
+					if (posToCheck == firstPos) {
+						isFinalEdge = true;
+					} else {
+						newDir = degrees;
+						newPos = posToCheck;
+						foundNewEdge = true;
+					}
+				}
+			}
+
+//			print ("Dir: " + direction + " Pos: " + pos + " First Pos: " + firstPos + " Vector Left: " + posTestLeft + " Left Tile: " + leftTile + " Vector Right: " + posTestRight + " Right Tile: " + rightTile);
+
+			if (direction == Vector2.down) {
+				if (!foundNewEdge && !isFinalEdge) {
+					print ("Failed to find new edge at: " + pos);
+					GameObject failMarkerGO = Instantiate (marker, transform);
+					failMarkerGO.transform.position = new Vector3 (pos.x, 1f, pos.y);
+					failMarkerGO.GetComponent<MeshRenderer> ().material.color = Color.red; // temp
+				}
+			}
+		}
+
+		if (foundNewEdge) {
+			return new TileEdge (newPos); 
+		} else {
+//			print ("First Pos: " + firstPos + " Last Pos: " + lastPos + " Anchor Pos: " + pos);
+			return null;
+		}
+	}
+
+	Vector2? GetExposedCorner (Vector2 tilePos) {
+		List<Vector2> allDirections = new List<Vector2> () { Vector2.right, Vector2.up, Vector2.left, Vector2.down };
+		Vector2 rawVector = new Vector2 (0.5f, 0.5f);
+		foreach (Vector2 direction in allDirections) {
+			Vector2 posToCheck = tilePos + direction;
+
+			if (tm.GetTileAtPosition (posToCheck) == null) {
+				float degrees = -Vector2.SignedAngle (Vector2.up, direction);
+				Vector2 rotatedVector = Quaternion.Euler(0,0,degrees) * rawVector;
+				if (direction == Vector2.right || direction == Vector2.left) {
+					rotatedVector = -rotatedVector;
+				}
+				return tilePos + rotatedVector - new Vector2 (transform.position.x, transform.position.z);
+			}
+		}
+
+		return null;
+	}
 }

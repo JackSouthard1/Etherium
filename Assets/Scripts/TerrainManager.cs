@@ -445,10 +445,22 @@ public class TerrainManager : MonoBehaviour {
 	}
 
 	public GameObject GetTileAtPosition (Vector2 position) {
+		position = new Vector2 (Mathf.RoundToInt (position.x), Mathf.RoundToInt (position.y));
 		if (tiles.ContainsKey (position)) {
 			return tiles [position].tile;
 		} else {
 			return null;
+		}
+	}
+
+	public bool isTileAtPosition (Vector2 position) {
+		position = new Vector2 (Mathf.RoundToInt (position.x), Mathf.RoundToInt (position.y));
+		if (tiles.ContainsKey (position)) {
+//			print ("Pos: " + position + " is tile: true");
+			return true;
+		} else {
+//			print ("Pos: " + position + " is tile: false");
+			return false;
 		}
 	}
 
