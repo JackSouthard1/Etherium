@@ -5290,12 +5290,12 @@ MonoBehaviour:
     recipe:
       rows:
       - columns:
-        - resourceType: 7
+        - resourceType: 8
           tileType: 0
-          count: 1
-        - resourceType: 7
+          count: 3
+        - resourceType: 2
           tileType: 0
-          count: 1
+          count: 2
     anchorOffset: {x: 0, y: 0}
     damage: 2
     range: 2
@@ -5311,12 +5311,12 @@ MonoBehaviour:
     recipe:
       rows:
       - columns:
-        - resourceType: 8
+        - resourceType: 9
           tileType: 0
           count: 1
-        - resourceType: 8
+        - resourceType: 2
           tileType: 0
-          count: 1
+          count: 3
     anchorOffset: {x: 0, y: 0}
     damage: 1
     range: 5
