@@ -33,10 +33,11 @@ public class Island : MonoBehaviour {
 	[Header("Civilizing")]
 	public Color civilizedColor;
 	public float timeToCivilize;
-	private float civStartTime;
-	private Vector3 targetPos;
-	private Vector3 startPos;
-	private bool civilizing = false;
+	private float moveStartTime;
+	private Vector3 civilizedPos;
+	private Vector3 uncivilizedPos;
+	private bool movingIsland = false;
+	private bool civilizing;
 
 	[Space(10)]
 	[Header("Rifts")]
@@ -69,7 +70,8 @@ public class Island : MonoBehaviour {
 
 	public void InitIsland(List<Vector2> _tilePositions, Vector3 civilizedPosition, int index, int _teir) {
 		islandIndex = index;
-		targetPos = civilizedPosition;
+		civilizedPos = civilizedPosition;
+		uncivilizedPos = transform.position;
 //		teir = Mathf.Clamp(Mathf.FloorToInt(transform.position.magnitude / tm.teirDstIntervals), 0, tm.teirs.Length - 1);
 		if (_teir > (tm.teirs.Length - 1)) {
 			_teir = tm.teirs.Length - 1;
@@ -216,6 +218,32 @@ public class Island : MonoBehaviour {
 		}
 	}
 
+	void RepopulateEnemies () {
+		List<int> spawnIDs = new List<int> ();
+		for (int i = 0; i < teirInfo.enemyCount; i++) {
+			spawnIDs.Add (teirInfo.enemyIDs [Random.Range (0, teirInfo.enemyIDs.Length)]);
+		}
+
+		List<int> spawnTileIndexs = new List<int> ();
+
+		for (int f = 0; f < spawnIDs.Count; f++) {
+			spawnTileIndexs.Add (GetAvaiableTileIndex (true));
+		}
+
+		for (int i = 0; i < spawnIDs.Count; i++) {
+			GameObject enemyPrefab = tm.enemyPrefabs [spawnIDs [i]];
+			GameObject enemy = (GameObject)Instantiate (enemyPrefab, transform);
+			enemy.transform.position = tiles [spawnTileIndexs [i]].tile.transform.position;
+
+			Body enemyBody = enemy.GetComponent<Body> ();
+			gm.enemies.Add (enemyBody);
+			enemyBody.location = GetComponent<Island> ();
+			enemyBody.id = spawnIDs [i];
+			enemies.Add (enemyBody);
+			print (enemies.Count);
+		}
+	}
+
 	void SpawnEnemies () {
 		if (!SavedGame.data.savedEnemyLists.ContainsKey (islandIndex)) {
 			List<int> spawnIDs = new List<int> ();
@@ -256,16 +284,33 @@ public class Island : MonoBehaviour {
 			return;
 		}
 
+		civilizing = true;
+		MoveIsland (transform.position, civilizedPos);
+
+		if (!GameManager.isLoadingFromSave) {
+			SavedGame.AddCivilizedIsland (islandIndex);
+		} else {
+			FinishMoving ();
+		}
+	}
+
+	Vector3 moveStartPos;
+	Vector3 moveEndPos;
+	void MoveIsland (Vector3 startPos, Vector3 targetPos) {
+		moveStartPos = startPos;
+		moveEndPos = targetPos;
+
 		if (!GameManager.isLoadingFromSave) {
 			gm.TransitionStart();
-			civStartTime = Time.time;
-			civilizing = true;
-			startPos = transform.position;
+			moveStartTime = Time.time;
+			movingIsland = true;
 			Transform player = GameObject.FindGameObjectWithTag ("Player").transform;
 
-			if (tm.GetTileAtPosition (TerrainManager.PosToV2 (player.position)) != null) {
-				player.parent = tm.GetTileAtPosition (TerrainManager.PosToV2 (player.position)).transform;
-				player.Find ("Model").localPosition = Vector3.zero;
+			if (player.GetComponent<Body> ().location == GetComponent<Island> ()) {
+				if (tm.GetTileAtPosition (TerrainManager.PosToV2 (player.position)) != null) {
+					player.parent = tm.GetTileAtPosition (TerrainManager.PosToV2 (player.position)).transform;
+					player.Find ("Model").localPosition = Vector3.zero;
+				}
 			}
 		}
 
@@ -286,9 +331,6 @@ public class Island : MonoBehaviour {
 			foreach (Pickup pickup in pickups) {
 				tm.pickups.Remove (pickup.position);
 			}
-			SavedGame.AddCivilizedIsland (islandIndex);
-		} else {
-			FinishCivilizing ();
 		}
 	}
 
@@ -302,12 +344,14 @@ public class Island : MonoBehaviour {
 //			}
 //		}
 
-		if (civilizing) {
-			float timeRatio = Mathf.Clamp01((Time.time - civStartTime) / timeToCivilize);
+		if (movingIsland) {
+			float timeRatio = Mathf.Clamp01((Time.time - moveStartTime) / timeToCivilize);
 
-			transform.position = Vector3.Lerp (startPos, targetPos, timeRatio);
-			for (int i = 0; i < tiles.Length; i++) {
-				if (!voidTileIndexes.Contains (i)) {
+			transform.position = Vector3.Lerp (moveStartPos, moveEndPos, timeRatio);
+
+
+//			for (int i = 0; i < tiles.Length; i++) {
+//				if (!voidTileIndexes.Contains (i)) {
 //					GameObject tileGO = tiles [i].tile;
 //					float newHeight = tiles [i].originalY * (1f - timeRatio);
 //					tileGO.transform.position = new Vector3 (tileGO.transform.position.x, newHeight, tileGO.transform.position.z);
@@ -316,19 +360,19 @@ public class Island : MonoBehaviour {
 //						Color newColor = Color.Lerp (tiles [i].originalColor, civilizedColor, timeRatio);
 //						tileGO.GetComponentInChildren<MeshRenderer> ().material.color = newColor;
 //					}
-				}
-			}
+//				}
+//			}
 
-			foreach (Pickup pickup in pickups) {
-				for (int i = 0; i < pickup.gameObjects.Count; i++) {
+//			foreach (Pickup pickup in pickups) {
+//				for (int i = 0; i < pickup.gameObjects.Count; i++) {
 //					float newHeight = ((pickup.originalBaseHeight) * (1f - timeRatio)) + (tm.stackHeight * i);
 //					Vector3 newPos = new Vector3 (pickup.gameObjects [i].transform.position.x, newHeight, pickup.gameObjects [i].transform.position.z);
 //					pickup.gameObjects[i].transform.position = newPos;
-				}
-			}
+//				}
+//			}
 
 			if (timeRatio == 1) {
-				FinishCivilizing();
+				FinishMoving();
 			}
 		}
 	}
@@ -379,12 +423,13 @@ public class Island : MonoBehaviour {
 		return false;
 	}
 
-	void FinishCivilizing () {
-		if (buildable) {
+	void FinishMoving () {
+		if (civilizing && buildable) {
+			print ("Error: island already buildable");
 			return;
 		}
 
-		transform.position = targetPos;
+		transform.position = moveEndPos;
 		foreach (Pickup pickup in pickups) {
 			List<GameObject> gameObjects = pickup.gameObjects;
 
@@ -412,15 +457,24 @@ public class Island : MonoBehaviour {
 			tm.pickups.Add (pickups[i].position, pickups [i]);
 		}
 
-		GameObject.FindGameObjectWithTag ("Player").transform.parent = null;
+		GameObject playerGO = GameObject.FindGameObjectWithTag ("Player");
+		if (playerGO.GetComponent<Body>().location == GetComponent<Island>()) {
+			playerGO.transform.parent = null;
+		}
 
-		buildable = true;
-		civilizing = false;
+		movingIsland = false;
+		if (civilizing) {
+			buildable = true;
+		} else {
+			buildable = false;
+			RepopulateEnemies ();
+		}
 
+		// update edge positions
 		List<TileEdge> newEdges = new List<TileEdge> ();
 		foreach (TileEdge edge in borderData.edges) {
 			TileEdge newEdge = new TileEdge ();
-			newEdge.position = edge.position + (new Vector2 (targetPos.x, targetPos.z) - new Vector2 (startPos.x, startPos.z));
+			newEdge.position = edge.position + (new Vector2 (moveEndPos.x, moveEndPos.z) - new Vector2 (moveStartPos.x, moveStartPos.z));
 			newEdges.Add (newEdge);
 		}
 		borderData.edges = newEdges;
@@ -484,6 +538,7 @@ public class Island : MonoBehaviour {
 		borderData.isideBorders = newInsideBorderData;
 	}
 
+	// rifts
 	public int riftLength;
 	public int riftCurIndex;
 
@@ -496,6 +551,7 @@ public class Island : MonoBehaviour {
 	}
 
 	public void StartRift () {
+		print (borderData.isideBorders.Count);
 		riftLength = 0;
 		riftCurIndex = borderData.isideBorders [0].startIndex;
 
@@ -505,22 +561,36 @@ public class Island : MonoBehaviour {
 	}
 
 	public void AdvanceRift () {
+		int direction = 1;
+		if (GetExposedCorner (borderData.edges [0].position) == null) {
+			direction = -1;
+			print ("Reverse");
+		}
+
 		riftLength++;
-		riftCurIndex++;
+		riftCurIndex += direction;
+
 		if (riftCurIndex >= borderData.edges.Count) {
 			riftCurIndex = 0;
+		}
+
+		if (riftCurIndex < 0) {
+			riftCurIndex = borderData.edges.Count - 1;
 		}
 
 		DrawMarker (borderData.edges [riftCurIndex].position, 0f, Color.yellow);
 
 		if (riftCurIndex == borderData.isideBorders [0].endIndex) {
-			EndRift ();
+			RiftComplete ();
 		}
 	}
 
-	public void EndRift () {
+	public void RiftComplete () {
 		ResetRift ();
-		print ("Rift End");
+		print ("Rift Complete");
+
+		civilizing = false;
+		MoveIsland (transform.position, uncivilizedPos);
 	}
 
 	List<InsideBorderData> GetInsideBorderDatas () {
@@ -539,7 +609,7 @@ public class Island : MonoBehaviour {
 			while (nextCornerExposed) {
 				nextTile++;
 				if (nextTile >= borderData.edges.Count) {
-					print ("Could not find a viable transition point");
+					print ("Could not find a viable transition point in stage 1");
 					return insideBorderData;
 				}
 
@@ -555,7 +625,7 @@ public class Island : MonoBehaviour {
 			while (!nextCornerExposed) {
 				nextTile++;
 				if (nextTile >= borderData.edges.Count) {
-					print ("Could not find a viable transition point");
+					print ("Could not find a viable transition point in stage 2");
 					return insideBorderData;
 				}
 				nextCornerExposed = CornerExposed (borderData.edges [nextTile].position);
@@ -738,6 +808,7 @@ public class Island : MonoBehaviour {
 	List<GameObject> markers = new List<GameObject>();
 
 	void DrawMarker (Vector2 position, float height, Color color) {
+//		print ("Drawing Marker at " + position);
 		Vector3 spawnPos = new Vector3 (position.x, height, position.y);
 		GameObject markerGO = Instantiate (marker, transform);
 		markerGO.transform.position = spawnPos;
