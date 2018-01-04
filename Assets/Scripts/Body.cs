@@ -130,6 +130,7 @@ public class Body : MonoBehaviour {
 		if (player) {
 			if (!mind.initializing) {
 				playerScript.Eat ();
+				playerScript.OpenItemsUI (false);
 			}
 		}
 

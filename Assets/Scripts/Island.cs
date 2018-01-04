@@ -89,6 +89,10 @@ public class Island : MonoBehaviour {
 		} else {
 			StartCivilizing ();
 		}
+
+		if (teir == 0) {
+			Player.instance.spawnTile = tiles [0];
+		}
 	}
 		
 	public void PlayerEnterIsland () {

@@ -11,6 +11,7 @@ public class Player : MonoBehaviour {
 	int curInventorySize { get { return defaultInventorySize + body.GetTotalBoostValue (AugmentInfo.BoostType.Inventory);} }
 
 	public GameObject idleIcon;
+	public Animator itemsUI;
 	public HealthBar playerHealthBar;
 
 	Transform playerTransform;
@@ -25,6 +26,9 @@ public class Player : MonoBehaviour {
 	public List<int> edibleResources = new List<int>();
 
 	public GameObject uiResourcePrefab;
+
+	[HideInInspector]
+	public TerrainManager.Tile spawnTile;
 
 	const float healAmount = 1f;
 	const float inventoryPadding = 15f;
@@ -166,12 +170,19 @@ public class Player : MonoBehaviour {
 	}
 
 	public void PickupWeapon (WeaponPickup newWeapon) {
-		tm.PickupWeapon (newWeapon);
+		if (body.weapon.info.ToIndex () != 0) {
+			return;
+		}
 
+		tm.PickupWeapon (newWeapon);
 		SwitchWeapons (newWeapon.info.ToIndex ());
 	}
 
-	public void SwitchWeapons (int weaponIndex) {
+	public void DropWeapon() {
+		SwitchWeapons (0);
+	}
+
+	void SwitchWeapons (int weaponIndex) {
 		WeaponInfo currentWeaponInfo = body.weapon.info;
 
 		if (currentWeaponInfo.ToIndex() != 0) {
@@ -281,6 +292,10 @@ public class Player : MonoBehaviour {
 		}
 	}
 
+	public void OpenItemsUI (bool open) {
+		itemsUI.SetBool ("Open", open);
+	}
+
 	public IEnumerator ShowIdleUI() {
 		idleIcon.SetActive (true);
 		yield return new WaitForSeconds (0.5f);
@@ -291,8 +306,8 @@ public class Player : MonoBehaviour {
 		if (isTeleporting) {
 			yield break;
 		}
-
-		yield return StartCoroutine (Teleport(Vector2.zero, "Respawning"));
+			
+		yield return StartCoroutine (Teleport(TerrainManager.PosToV2(spawnTile.tile.transform.position), "Respawning"));
 
 		ResetInventory ();
 		body.ResetHealth ();
