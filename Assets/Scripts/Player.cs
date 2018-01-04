@@ -180,6 +180,8 @@ public class Player : MonoBehaviour {
 
 	public void DropWeapon() {
 		SwitchWeapons (0);
+
+		OpenItemsUI (false);
 	}
 
 	void SwitchWeapons (int weaponIndex) {
@@ -233,6 +235,8 @@ public class Player : MonoBehaviour {
 		if (!GameManager.isLoadingFromSave) {
 			GameManager.instance.SaveThisTurn ();
 		}
+
+		OpenItemsUI (false);
 	}
 
 	public void Heal() {
