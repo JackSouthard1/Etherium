@@ -27,6 +27,9 @@ public class Player : MonoBehaviour {
 
 	public GameObject uiResourcePrefab;
 
+	[HideInInspector]
+	public TerrainManager.Tile spawnTile;
+
 	const float healAmount = 1f;
 	const float inventoryPadding = 15f;
 	const float teleportTime = 3f;
@@ -303,8 +306,8 @@ public class Player : MonoBehaviour {
 		if (isTeleporting) {
 			yield break;
 		}
-
-		yield return StartCoroutine (Teleport(Vector2.zero, "Respawning"));
+			
+		yield return StartCoroutine (Teleport(TerrainManager.PosToV2(spawnTile.tile.transform.position), "Respawning"));
 
 		ResetInventory ();
 		body.ResetHealth ();
