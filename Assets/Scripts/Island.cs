@@ -86,10 +86,10 @@ public class Island : MonoBehaviour {
 		setSpawns = tm.GetSetSpawns (teir);
 		tilePositions = _tilePositions;
 		GenerateTiles ();
-		MakeInitialBorder ();
 		bool alreadyCivilized = SavedGame.data.civilizedIslandIndexes.Contains (index);
 		if (!alreadyCivilized) {
 			SpawnEnemies ();
+			MakeInitialBorder ();
 		} else {
 			StartCivilizing ();
 		}
@@ -213,16 +213,18 @@ public class Island : MonoBehaviour {
 				TerrainManager.Tile tileInfo = new TerrainManager.Tile (tileGO, resourceInfoType, GetComponent<Island> (), tileColor, y);
 				tileGO.GetComponent<MeshRenderer> ().material.color = tileColor;
 				tiles [index] = tileInfo;
-				tm.tiles.Add (new Vector2 (tile.x + transform.position.x, tile.y + transform.position.z), tileInfo);
+				if (!GameManager.isLoadingFromSave || !SavedGame.data.civilizedIslandIndexes.Contains (islandIndex)) {
+					tm.tiles.Add (new Vector2 (tile.x + transform.position.x, tile.y + transform.position.z), tileInfo);
+				}
 
 				if (resourceTileSpawnIndexs.Contains (index) && !GameManager.isLoadingFromSave) {
 					for (int i = 0; i < resourcesPerTile; i++) {
 						tm.SpawnResource(position: transform.TransformPoint(position), info: resourceInfo, island: GetComponent<Island>(), initialSpawn: true);
 					}
-				}
-				//TODO: it's kinda dumb to have this if statement twice
-				if (resourceTileSpawnIndexs.Contains (index) && tileInfo.resourceType != ResourceInfo.ResourceType.None && !GameManager.isLoadingFromSave) {
-					SavedGame.AddResourceTile (tileInfo);
+
+					if (tileInfo.resourceType != ResourceInfo.ResourceType.None) {
+						SavedGame.AddResourceTile (tileInfo);
+					}
 				}
 			}
 
@@ -330,14 +332,16 @@ public class Island : MonoBehaviour {
 			}
 		}
 
-		for (int i = 0; i < tiles.Length; i++) {
-			if (!voidTileIndexes.Contains (i)) {
-				GameObject tile = tiles [i].tile;
-				tm.tiles.Remove (TerrainManager.PosToV2(tile.transform.position));
+		if (!GameManager.isLoadingFromSave || !SavedGame.data.civilizedIslandIndexes.Contains (islandIndex)) {
+			for (int i = 0; i < tiles.Length; i++) {
+				if (!voidTileIndexes.Contains (i)) {
+					GameObject tile = tiles [i].tile;
+					tm.tiles.Remove (TerrainManager.PosToV2 (tile.transform.position));
 
-				if (!GameManager.isLoadingFromSave) {
-					if (tiles [i].resourceType != ResourceInfo.ResourceType.None) {
-						SavedGame.RemoveResourceTile (tiles [i]);
+					if (!GameManager.isLoadingFromSave) {
+						if (tiles [i].resourceType != ResourceInfo.ResourceType.None) {
+							SavedGame.RemoveResourceTile (tiles [i]);
+						}
 					}
 				}
 			}
@@ -488,14 +492,18 @@ public class Island : MonoBehaviour {
 			SavedGame.RemoveCivilizedIsland (islandIndex);
 		}
 
-		// update edge positions
-		List<TileEdge> newEdges = new List<TileEdge> ();
-		foreach (TileEdge edge in borderData.edges) {
-			TileEdge newEdge = new TileEdge ();
-			newEdge.position = edge.position + (new Vector2 (moveEndPos.x, moveEndPos.z) - new Vector2 (moveStartPos.x, moveStartPos.z));
-			newEdges.Add (newEdge);
+		if (!GameManager.isLoadingFromSave) {
+			// update edge positions
+			List<TileEdge> newEdges = new List<TileEdge> ();
+			foreach (TileEdge edge in borderData.edges) {
+				TileEdge newEdge = new TileEdge ();
+				newEdge.position = edge.position + (new Vector2 (moveEndPos.x, moveEndPos.z) - new Vector2 (moveStartPos.x, moveStartPos.z));
+				newEdges.Add (newEdge);
+			}
+			borderData.edges = newEdges;
+		} else {
+			MakeInitialBorder ();
 		}
-		borderData.edges = newEdges;
 
 		if (teir != 0) {
 			UpdateBorder ();
@@ -570,7 +578,10 @@ public class Island : MonoBehaviour {
 	}
 
 	public void StartRift () {
-		print (borderData.isideBorders.Count);
+		if (borderData.isideBorders.Count == 0) {
+			UpdateBorder ();
+		}
+
 		riftLength = 0;
 		curTimeToAdvance = advanceTime;
 		riftCurIndex = borderData.isideBorders [0].startIndex;
@@ -776,8 +787,8 @@ public class Island : MonoBehaviour {
 //				if (direction == Vector2.up) {
 //					print ("Dir: " + direction + "Left Check: " + posTestLeft + "Right Check: " + posTestRight);
 //				}
-			bool leftTile = TerrainManager.instance.isTileAtPosition (posTestLeft);
-			bool rightTile = TerrainManager.instance.isTileAtPosition (posTestRight);
+			bool leftTile = IsInside (posTestLeft);
+			bool rightTile = IsInside (posTestRight);
 
 			if ((leftTile && !rightTile) || (!leftTile && rightTile)) {
 				if (posToCheck != lastPos) {
@@ -806,6 +817,15 @@ public class Island : MonoBehaviour {
 		} else {
 //			print ("First Pos: " + firstPos + " Last Pos: " + lastPos + " Anchor Pos: " + pos);
 			return null;
+		}
+	}
+
+	bool IsInside(Vector2 pos) {
+		if (TerrainManager.instance.isTileAtPosition (pos)) {
+			Vector2 roundedPos = new Vector2 (Mathf.Round(pos.x), Mathf.Round(pos.y));
+			return TerrainManager.instance.tiles [roundedPos].island == this;
+		} else {
+			return false;
 		}
 	}
 
