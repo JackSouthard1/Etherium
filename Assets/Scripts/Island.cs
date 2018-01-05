@@ -245,6 +245,10 @@ public class Island : MonoBehaviour {
 			gm.enemies.Add (enemyBody);
 			enemyBody.location = GetComponent<Island> ();
 			enemyBody.id = spawnIDs [i];
+
+			Mind enemyMind = enemy.GetComponentInChildren<Mind> ();
+			enemyMind.Init ();
+
 			enemies.Add (enemyBody);
 			print (enemies.Count);
 		}
