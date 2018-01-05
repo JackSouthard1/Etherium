@@ -611,8 +611,14 @@ public class Island : MonoBehaviour {
 		}
 
 //		DrawMarker (borderData.edges [riftCurIndex].position, 0f, Color.yellow);
-		if (riftCurIndex - 1 >= 0) {
-			DrawRift (borderData.edges [riftCurIndex - 1].position, borderData.edges [riftCurIndex].position);
+		if (direction == 1) {
+			if (riftCurIndex - 1 >= 0) {
+				DrawRift (borderData.edges [riftCurIndex - 1].position, borderData.edges [riftCurIndex].position);
+			}
+		} else {
+			if (riftCurIndex + 1 < borderData.edges.Count) {
+				DrawRift (borderData.edges [riftCurIndex + 1].position, borderData.edges [riftCurIndex].position);
+			}
 		}
 
 		if (riftCurIndex == borderData.isideBorders [0].endIndex) {
