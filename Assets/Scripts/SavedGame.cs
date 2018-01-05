@@ -51,6 +51,12 @@ public class SavedGame {
 		GameManager.instance.SaveThisTurn ();
 	}
 
+	public static void RemoveCivilizedIsland(int islandIndex) {
+		data.civilizedIslandIndexes.Remove (islandIndex);
+
+		UpdateEnemyList (islandIndex, TerrainManager.instance.islands[islandIndex].enemies);
+	}
+
 	public static void UpdateBuildings() {
 		List<Building> allBuildings = TerrainManager.instance.buildings;
 		data.buildings = new List<SavedBuilding> ();
