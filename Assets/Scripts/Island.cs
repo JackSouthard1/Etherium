@@ -45,6 +45,8 @@ public class Island : MonoBehaviour {
 	private List<GameObject> rifts = new List<GameObject>();
 	private bool hasRift = false;
 	private int timeToStartRift;
+	private int curTimeToAdvance;
+	public int advanceTime = 1;
 	public int minTime = 1;
 	public int maxTime = 3;
 
@@ -129,7 +131,11 @@ public class Island : MonoBehaviour {
 						StartRift ();
 					}
 				} else {
-					AdvanceRift ();
+					curTimeToAdvance--;
+					if (curTimeToAdvance <= 0) {
+						AdvanceRift ();
+						curTimeToAdvance = advanceTime;
+					}
 				}
 			}
 		} else {
@@ -566,6 +572,7 @@ public class Island : MonoBehaviour {
 	public void StartRift () {
 		print (borderData.isideBorders.Count);
 		riftLength = 0;
+		curTimeToAdvance = advanceTime;
 		riftCurIndex = borderData.isideBorders [0].startIndex;
 
 //		DrawMarker (borderData.edges [riftCurIndex].position, 0f, Color.red);
