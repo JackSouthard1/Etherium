@@ -476,6 +476,8 @@ public class Island : MonoBehaviour {
 		} else {
 			buildable = false;
 			RepopulateEnemies ();
+
+			SavedGame.RemoveCivilizedIsland (islandIndex);
 		}
 
 		// update edge positions
