@@ -124,17 +124,19 @@ public class Island : MonoBehaviour {
 	public void TurnOver () {
 		if (buildable) {
 			if (teir != 0) { // starter island cannot have rift
-				if (!hasRift) {
-					timeToStartRift--;
-					print ("Starting rift in turns: " + timeToStartRift);
-					if (timeToStartRift <= 0) {
-						StartRift ();
-					}
-				} else {
-					curTimeToAdvance--;
-					if (curTimeToAdvance <= 0) {
-						AdvanceRift ();
-						curTimeToAdvance = advanceTime;
+				if (borderData.isideBorders.Count == 1) {
+					if (!hasRift) {
+						timeToStartRift--;
+						print ("Starting rift in turns: " + timeToStartRift);
+						if (timeToStartRift <= 0) {
+							StartRift ();
+						}
+					} else {
+						curTimeToAdvance--;
+						if (curTimeToAdvance <= 0) {
+							AdvanceRift ();
+							curTimeToAdvance = advanceTime;
+						}
 					}
 				}
 			}
@@ -309,7 +311,7 @@ public class Island : MonoBehaviour {
 			FinishMoving ();
 		}
 	}
-
+		
 	Vector3 moveStartPos;
 	Vector3 moveEndPos;
 	void MoveIsland (Vector3 startPos, Vector3 targetPos) {
@@ -498,8 +500,11 @@ public class Island : MonoBehaviour {
 		borderData.edges = newEdges;
 
 		if (teir != 0) {
-			UpdateBorder ();
-			ResetRift ();
+			if (!GameManager.isLoadingFromSave) {
+				foreach (var island in tm.islands) {
+					island.OtherIslandCivilized ();
+				}
+			}
 		}
 
 		if (!GameManager.isLoadingFromSave) {
@@ -507,6 +512,13 @@ public class Island : MonoBehaviour {
 		}
 
 		gm.TransitionEnd();
+	}
+
+	void OtherIslandCivilized () {
+		if (buildable && teir != 0) {
+			UpdateBorder ();
+			ResetRift ();
+		}
 	}
 
 	public void SaveEnemies() {

@@ -62,8 +62,8 @@ MonoBehaviour:
   timeToCivilize: 2
   riftPrefab: {fileID: 1854581453951840, guid: 47fefca6d5f7e45aca8af88f0f3e95e3, type: 2}
   advanceTime: 3
-  minTime: 5
-  maxTime: 7
+  minTime: 30
+  maxTime: 100
   voidCount: 0
   voidTileIndexes: 
   usedTilePositions: []
