@@ -568,7 +568,7 @@ public class Island : MonoBehaviour {
 		riftLength = 0;
 		riftCurIndex = borderData.isideBorders [0].startIndex;
 
-		DrawMarker (borderData.edges [riftCurIndex].position, 0f, Color.red);
+//		DrawMarker (borderData.edges [riftCurIndex].position, 0f, Color.red);
 
 		hasRift = true;
 	}
