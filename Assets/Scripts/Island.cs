@@ -41,6 +41,8 @@ public class Island : MonoBehaviour {
 
 	[Space(10)]
 	[Header("Rifts")]
+	public GameObject riftPrefab;
+	private List<GameObject> rifts = new List<GameObject>();
 	private bool hasRift = false;
 	private int timeToStartRift;
 	public int minTime = 1;
@@ -547,7 +549,8 @@ public class Island : MonoBehaviour {
 	public int riftCurIndex;
 
 	public void ResetRift () {
-		ClearMarkers ();
+//		ClearMarkers ();
+		ClearRifts ();
 		timeToStartRift = Random.Range (minTime, maxTime);
 		print ("Rift starting in turns: " + timeToStartRift);
 
@@ -582,7 +585,10 @@ public class Island : MonoBehaviour {
 			riftCurIndex = borderData.edges.Count - 1;
 		}
 
-		DrawMarker (borderData.edges [riftCurIndex].position, 0f, Color.yellow);
+//		DrawMarker (borderData.edges [riftCurIndex].position, 0f, Color.yellow);
+		if (riftCurIndex - 1 >= 0) {
+			DrawRift (borderData.edges [riftCurIndex - 1].position, borderData.edges [riftCurIndex].position);
+		}
 
 		if (riftCurIndex == borderData.isideBorders [0].endIndex) {
 			RiftComplete ();
@@ -591,7 +597,7 @@ public class Island : MonoBehaviour {
 
 	public void RiftComplete () {
 		ResetRift ();
-		print ("Rift Complete");
+//		print ("Rift Complete");
 
 		civilizing = false;
 		MoveIsland (transform.position, uncivilizedPos);
@@ -821,10 +827,44 @@ public class Island : MonoBehaviour {
 		markers.Add (markerGO);
 	}
 
+	void DrawRift (Vector2 pos1, Vector2 pos2) {
+		Vector2 dir = pos2 - pos1;
+
+		Vector3 spawnRotEuler = Vector3.zero;
+		Vector2 spawnOffset = Vector2.zero;
+
+		if (dir == Vector2.up) {
+			spawnRotEuler = new Vector3 (0, 90, 0);
+			spawnOffset = new Vector2 (0, 0.5f);
+		} else if (dir == Vector2.down) {
+			spawnRotEuler = new Vector3 (0, 90, 0);
+			spawnOffset = new Vector2 (0, -0.5f);
+		} else if (dir == Vector2.right) {
+			spawnRotEuler = new Vector3 (0, 0, 0);
+			spawnOffset = new Vector2 (0.5f, 0);
+		} else if (dir == Vector2.left) {
+			spawnRotEuler = new Vector3 (0, 0, 0);
+			spawnOffset = new Vector2 (-0.5f, 0);
+		}
+
+		Vector3 spawnPos = new Vector3 (pos1.x + spawnOffset.x, 0.5f, pos1.y + spawnOffset.y);
+		Quaternion spawnRot = Quaternion.Euler (spawnRotEuler);
+
+		GameObject riftGO = (GameObject)Instantiate (riftPrefab, spawnPos, spawnRot, transform);
+		rifts.Add (riftGO);
+	}
+
 	void ClearMarkers () {
 		for (int i = 0; i < markers.Count; i++) {
 			Destroy (markers [i]);
 		}
 		markers.Clear ();
+	}
+
+	void ClearRifts () {
+		for (int i = 0; i < rifts.Count; i++) {
+			Destroy (rifts [i]);
+		}
+		rifts.Clear ();
 	}
 }

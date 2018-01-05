@@ -60,6 +60,9 @@ MonoBehaviour:
   buildable: 0
   civilizedColor: {r: 0.49264705, g: 0.40346092, b: 0.30790442, a: 0}
   timeToCivilize: 2
+  riftPrefab: {fileID: 1854581453951840, guid: 47fefca6d5f7e45aca8af88f0f3e95e3, type: 2}
+  minTime: 1
+  maxTime: 3
   voidCount: 0
   voidTileIndexes: 
   usedTilePositions: []
@@ -67,3 +70,5 @@ MonoBehaviour:
   usedTiles: 
   diffuculty: 0
   marker: {fileID: 1479336272104074, guid: 5dd65a6d72332443fbfdc9b84485512e, type: 2}
+  riftLength: 0
+  riftCurIndex: 0
