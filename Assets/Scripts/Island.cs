@@ -46,6 +46,7 @@ public class Island : MonoBehaviour {
 	private bool hasRift = false;
 	private int timeToStartRift;
 	private int curTimeToAdvance;
+	private int lastRiftEndIndex = 0;
 	public int advanceTime = 1;
 	public int minTime = 1;
 	public int maxTime = 3;
@@ -524,8 +525,13 @@ public class Island : MonoBehaviour {
 
 	void OtherIslandCivilized () {
 		if (buildable && teir != 0) {
-			UpdateBorder ();
-			ResetRift ();
+			bool sameData = UpdateBorder ();
+			if (sameData) {
+				print ("Rift Hasn't Changed");
+			} else {
+				print ("Rift Has Changed. Reseting...");
+				ResetRift ();
+			}
 		}
 	}
 
@@ -570,10 +576,23 @@ public class Island : MonoBehaviour {
 		borderData.edges = newEdgeData;
 	}
 
-	public void UpdateBorder () {
+	public bool UpdateBorder () {
+		bool sameData = false;
+
+		if (borderData.isideBorders.Count > 0) {
+			lastRiftEndIndex = borderData.isideBorders [0].endIndex;
+		}
 		List<InsideBorderData> newInsideBorderData = GetInsideBorderDatas ();
 
+		if (lastRiftEndIndex == newInsideBorderData[0].endIndex) {
+			sameData = true;
+		}
+
+
 		borderData.isideBorders = newInsideBorderData;
+		lastRiftEndIndex = borderData.isideBorders[0].endIndex;
+
+		return sameData;
 	}
 
 	// rifts
