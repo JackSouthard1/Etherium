@@ -31,7 +31,7 @@ public class Crafting : MonoBehaviour {
 	Dictionary<string, Craftable> craftableInfos = new Dictionary<string, Craftable>();
 	Dictionary<ResourcePickup, Building> blueprints = new Dictionary<ResourcePickup, Building>();
 
-	List<Recipe> recipes = new List<Recipe> ();
+	public List<Recipe> recipes = new List<Recipe> ();
 	List<Stack> anchors = new List<Stack>();
 
 	Camera gameCam;
