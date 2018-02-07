@@ -119,7 +119,7 @@ GameObject:
   - component: {fileID: 31804529}
   - component: {fileID: 31804528}
   m_Layer: 5
-  m_Name: Tile [1,0]
+  m_Name: Tile [0,1]
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6357,7 +6357,7 @@ GameObject:
   - component: {fileID: 1057501794}
   - component: {fileID: 1057501793}
   m_Layer: 5
-  m_Name: Tile [0,1]
+  m_Name: Tile [1,0]
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6656,7 +6656,7 @@ GameObject:
   - component: {fileID: 1168794976}
   - component: {fileID: 1168794975}
   m_Layer: 5
-  m_Name: Number [0,1]
+  m_Name: Number [1,0]
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7960,7 +7960,7 @@ GameObject:
   - component: {fileID: 1397469032}
   - component: {fileID: 1397469031}
   m_Layer: 5
-  m_Name: Resource [1,0]
+  m_Name: Resource [0,1]
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8370,7 +8370,7 @@ GameObject:
   - component: {fileID: 1719944145}
   - component: {fileID: 1719944144}
   m_Layer: 5
-  m_Name: Number [1,0]
+  m_Name: Number [0,1]
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9018,7 +9018,7 @@ GameObject:
   - component: {fileID: 2128537445}
   - component: {fileID: 2128537444}
   m_Layer: 5
-  m_Name: Resource [0,1]
+  m_Name: Resource [1,0]
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
