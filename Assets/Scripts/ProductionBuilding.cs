@@ -71,6 +71,10 @@ public class ProductionBuilding : Building
 
 	bool exceedsPadCapacity {
 		get {
+			if (maxPadCapacity == 0) {
+				return false;
+			}
+
 			Vector2 posV2 = TerrainManager.PosToV2 (spawnPos);
 			if (!ResourcePickup.IsAtPosition (posV2)) {
 				return false;

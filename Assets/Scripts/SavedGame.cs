@@ -29,6 +29,9 @@ public class SavedGame {
 	static Dictionary<Vector2, SavedResourceTile> resourceTilesByPos = new Dictionary<Vector2, SavedResourceTile> ();
 
 	public static void Init(int _seed) {
+		buildingsByPos.Clear ();
+		resourceTilesByPos.Clear ();
+
 		data = new SavedGame ();
 		data.seed = _seed;
 
@@ -164,6 +167,9 @@ public class SavedGame {
 			var m = new MemoryStream (Convert.FromBase64String (savedData));
 
 			data = (SavedGame)b.Deserialize (m);
+
+			buildingsByPos.Clear ();
+			resourceTilesByPos.Clear ();
 
 			foreach (SavedBuilding building in data.buildings) {
 				buildingsByPos.Add (building.tilePos.ToVector2(), building);

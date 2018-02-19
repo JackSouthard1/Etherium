@@ -2,10 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour {
 	public static GameManager instance;
 	public static bool isLoadingFromSave;
+	public static bool usesRifts = false;
+
+	public GameObject defaultButtons;
+	public GameObject altButtons;
 
 	public List<Body> enemies = new List<Body>();
 	private int enemiesMoving = 0;
@@ -23,6 +28,11 @@ public class GameManager : MonoBehaviour {
 		tm = TerrainManager.instance;
 		cutsceneBars = GameObject.Find ("CutsceneBars").GetComponent<Animator> ();
 		cutsceneBars.gameObject.SetActive (false);
+
+		if (string.IsNullOrEmpty (PlayerPrefs.GetString ("SavedGame"))) {
+			defaultButtons.SetActive (false);
+			altButtons.SetActive (true);
+		}
 	}
 
 	public void NewGame() {
@@ -84,6 +94,7 @@ public class GameManager : MonoBehaviour {
 			GetComponent<MapReveal> ().LoadSavedRevealArea ();
 		}
 
+		print ("Done loading");
 		PlayerTurnStart ();
 		isLoadingFromSave = false;
 	}
@@ -155,5 +166,9 @@ public class GameManager : MonoBehaviour {
 		SavedGame.UpdatePlayerInfo ();
 		PlayerPrefs.SetString ("SavedGame", SavedGame.Serialize ());
 		savingThisTurn = false;
+	}
+
+	public void Restart() {
+		SceneManager.LoadScene (0);
 	}
 }

@@ -90,7 +90,9 @@ public class Island : MonoBehaviour {
 		bool alreadyCivilized = SavedGame.data.civilizedIslandIndexes.Contains (index);
 		if (!alreadyCivilized) {
 			SpawnEnemies ();
-			MakeInitialBorder ();
+			if (GameManager.usesRifts) {
+				MakeInitialBorder ();
+			}
 		} else {
 			StartCivilizing ();
 		}
@@ -101,8 +103,10 @@ public class Island : MonoBehaviour {
 	}
 		
 	public void PlayerEnterIsland () {
-		if (hasRift) {
-			ResetRift ();
+		if (GameManager.usesRifts) {
+			if (hasRift) {
+				ResetRift ();
+			}
 		}
 		for (int i = 0; i < enemies.Count; i++) {
 			enemies [i].GetComponentInChildren<Mind> ().active = true;
@@ -124,19 +128,22 @@ public class Island : MonoBehaviour {
 
 	public void TurnOver () {
 		if (buildable) {
-			if (teir != 0) { // starter island cannot have rift
-				if (borderData.isideBorders.Count == 1) {
-					if (!hasRift) {
-						timeToStartRift--;
-						print ("Starting rift in turns: " + timeToStartRift);
-						if (timeToStartRift <= 0) {
-							StartRift ();
-						}
-					} else {
-						curTimeToAdvance--;
-						if (curTimeToAdvance <= 0) {
-							AdvanceRift ();
-							curTimeToAdvance = advanceTime;
+			if (GameManager.usesRifts) {
+				
+				if (teir != 0) { // starter island cannot have rift
+					if (borderData.isideBorders.Count == 1) {
+						if (!hasRift) {
+							timeToStartRift--;
+							print ("Starting rift in turns: " + timeToStartRift);
+							if (timeToStartRift <= 0) {
+								StartRift ();
+							}
+						} else {
+							curTimeToAdvance--;
+							if (curTimeToAdvance <= 0) {
+								AdvanceRift ();
+								curTimeToAdvance = advanceTime;
+							}
 						}
 					}
 				}
@@ -495,17 +502,20 @@ public class Island : MonoBehaviour {
 			SavedGame.RemoveCivilizedIsland (islandIndex);
 		}
 
-		if (!GameManager.isLoadingFromSave) {
-			// update edge positions
-			List<TileEdge> newEdges = new List<TileEdge> ();
-			foreach (TileEdge edge in borderData.edges) {
-				TileEdge newEdge = new TileEdge ();
-				newEdge.position = edge.position + (new Vector2 (moveEndPos.x, moveEndPos.z) - new Vector2 (moveStartPos.x, moveStartPos.z));
-				newEdges.Add (newEdge);
+		if (GameManager.usesRifts) {
+			
+			if (!GameManager.isLoadingFromSave) {
+				// update edge positions
+				List<TileEdge> newEdges = new List<TileEdge> ();
+				foreach (TileEdge edge in borderData.edges) {
+					TileEdge newEdge = new TileEdge ();
+					newEdge.position = edge.position + (new Vector2 (moveEndPos.x, moveEndPos.z) - new Vector2 (moveStartPos.x, moveStartPos.z));
+					newEdges.Add (newEdge);
+				}
+				borderData.edges = newEdges;
+			} else {
+				MakeInitialBorder ();
 			}
-			borderData.edges = newEdges;
-		} else {
-			MakeInitialBorder ();
 		}
 
 		if (teir != 0) {
@@ -524,13 +534,15 @@ public class Island : MonoBehaviour {
 	}
 
 	void OtherIslandCivilized () {
-		if (buildable && teir != 0) {
-			bool sameData = UpdateBorder ();
-			if (sameData) {
-				print ("Rift Hasn't Changed");
-			} else {
-				print ("Rift Has Changed. Reseting...");
-				ResetRift ();
+		if (GameManager.usesRifts) {
+			if (buildable && teir != 0) {
+				bool sameData = UpdateBorder ();
+				if (sameData) {
+					print ("Rift Hasn't Changed");
+				} else {
+					print ("Rift Has Changed. Reseting...");
+					ResetRift ();
+				}
 			}
 		}
 	}

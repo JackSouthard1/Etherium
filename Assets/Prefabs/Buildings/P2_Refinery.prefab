@@ -1227,11 +1227,13 @@ MonoBehaviour:
   anim: {fileID: 0}
   coveredTiles: []
   pad: {fileID: 0}
+  hasLimitedSupply: 1
   supply: 50
   autoCycles: 1
   resourceType: 9
   resourcesProducedPerCycle: 1
   turnWaitPerResource: 10
+  maxPadCapacity: 0
   movesResources: 1
   productionCenter: {fileID: 4123918071699630}
   consumedType: 8

@@ -18,6 +18,7 @@ public class MapReveal : MonoBehaviour {
 	public static Dictionary<Vector2, FieldData> revealTiles = new Dictionary<Vector2, FieldData>();
 
 	void Awake () {
+		revealTiles.Clear ();
 		revealArea = GameObject.Find("RevealArea").transform;
 	}
 

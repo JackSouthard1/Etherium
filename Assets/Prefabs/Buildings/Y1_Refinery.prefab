@@ -1233,7 +1233,7 @@ MonoBehaviour:
   resourceType: 2
   resourcesProducedPerCycle: 1
   turnWaitPerResource: 10
-  maxPadCapacity: 5
+  maxPadCapacity: 0
   movesResources: 1
   productionCenter: {fileID: 4123918071699630}
   consumedType: 1

@@ -451,8 +451,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   id: 0
-  dropType: 8
-  dropCount: 2
+  dropType: 7
+  dropCount: 3
   tm: {fileID: 0}
   weapon: {fileID: 0}
   player: 0
@@ -463,15 +463,7 @@ MonoBehaviour:
   health: 2
   location: {fileID: 0}
   healthBar: {fileID: 0}
-  augmentParent: {fileID: 0}
-  augment:
-    name: 
-    recipe:
-      rows: []
-    anchorOffset: {x: 0, y: 0}
-    extraInventorySpace: 0
-    pickupPrefab: {fileID: 0}
-    augmentPrefab: {fileID: 0}
+  augmentSlots: []
   anim: {fileID: 0}
 --- !u!114 &114466805065543528
 MonoBehaviour:
